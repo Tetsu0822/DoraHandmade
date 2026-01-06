@@ -1,5 +1,12 @@
 # 2025 React 專題班-愛哆啦也愛手作 | DoraHandmade
 
+## 更新紀錄
+
+請在更新時，記得在此填寫更新紀錄！
+
+- 2026/01/06 README 新增更新紀錄 By Tetsu
+- 2026/01/04 開發環境建立 By PeiYiWu
+
 ## 團隊成員
 
 - Tetsu
