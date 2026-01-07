@@ -6,6 +6,7 @@
 
 - 2026/01/06 README 新增更新紀錄 By Tetsu
 - 2026/01/04 開發環境建立 By PeiYiWu
+- 2026/01/07 安裝 Lucide By PeiYiWu
 
 ## 團隊成員
 

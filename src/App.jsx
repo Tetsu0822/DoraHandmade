@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
+import { ShoppingCart, User, BookOpen } from 'lucide-react'
 
 import './App.css'
 
@@ -16,6 +17,9 @@ function App() {
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
+        <ShoppingCart strokeWidth={2.5} />
+        <User strokeWidth={2.5} />
+        <BookOpen />
       </div>
     </>
   )
