@@ -643,7 +643,7 @@ $aspect-ratios: (
 
 // scss-docs-start font-variables
 // stylelint-disable value-keyword-case
-$font-family-sans-serif:      system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$font-family-sans-serif:     "Noto Serif TC", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
 $font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
 // stylelint-enable value-keyword-case
 $font-family-base:            var(--#{$prefix}font-sans-serif) !default;
@@ -670,12 +670,18 @@ $line-height-base:            1.5 !default;
 $line-height-sm:              1.25 !default;
 $line-height-lg:              2 !default;
 
-$h1-font-size:                $font-size-base * 2.5 !default;
-$h2-font-size:                $font-size-base * 2 !default;
-$h3-font-size:                $font-size-base * 1.75 !default;
-$h4-font-size:                $font-size-base * 1.5 !default;
-$h5-font-size:                $font-size-base * 1.25 !default;
-$h6-font-size:                $font-size-base !default;
+// $h1-font-size:                $font-size-base * 2.5 !default;
+$h1-font-size:                $font-size-base * 3.75 !default;
+// $h2-font-size:                $font-size-base * 2 !default;
+$h2-font-size:                $font-size-base * 3 !default;
+// $h3-font-size:                $font-size-base * 1.75 !default;
+$h3-font-size:                $font-size-base * 2.5 !default;
+// $h4-font-size:                $font-size-base * 1.5 !default;
+$h4-font-size:                $font-size-base * 2.25 !default;
+// $h5-font-size:                $font-size-base * 1.25 !default;
+$h5-font-size:                $font-size-base * 2 !default;
+// $h6-font-size:                $font-size-base !default;
+$h6-font-size:                $font-size-base * 1.75 !default;
 // scss-docs-end font-variables
 
 // scss-docs-start font-sizes
@@ -687,10 +693,47 @@ $font-sizes: (
   5: $h5-font-size,
   6: $h6-font-size
 ) !default;
+
+// Font sizes
+$font-sizes: (
+  24: 24px,
+  20: 20px,
+  16: 16px,
+  14: 14px
+);
+
+// Font weights
+$font-weights: (
+  r: 400, // regular
+  b: 700  // bold
+);
+
+// Line height
+$line-height-p: 1.5;
+
+@each $size-key, $size-value in $font-sizes {
+
+  // 預設 Regular
+  .text-p-#{$size-key} {
+    font-size: $size-value;
+    font-weight: map-get($font-weights, r);
+    line-height: $line-height-p;
+  }
+
+  // 指定字重（b / r）
+  @each $weight-key, $weight-value in $font-weights {
+    .text-p-#{$size-key}-#{$weight-key} {
+      font-size: $size-value;
+      font-weight: $weight-value;
+      line-height: $line-height-p;
+    }
+  }
+}
+
 // scss-docs-end font-sizes
 
 // scss-docs-start headings-variables
-$headings-margin-bottom:      $spacer * .5 !default;
+$headings-margin-bottom:      0;//$spacer * .5 !default;
 $headings-font-family:        null !default;
 $headings-font-style:         null !default;
 $headings-font-weight:        500 !default;
