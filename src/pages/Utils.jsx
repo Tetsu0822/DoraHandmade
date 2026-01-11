@@ -1,3 +1,5 @@
+import { Camera, House, ListFilter, ThumbsUp } from 'lucide-react';
+
 export default function Utils() {
     return (
     <section class="container mt-10">
@@ -64,6 +66,21 @@ export default function Utils() {
                         <td><code>text-p-14-r</code></td>
                     </tr>
                 </table>
+            </div>
+        </div>
+        <div className="d-flex gap-8">
+            <div className="mb-8 text-success w-100">
+                <h6 className="mb-4">ICON（Lucide Icon）</h6>
+                <div className="mb-4">
+                    <House className='me-3' />
+                    <ListFilter color="green" size={36} className='me-3' />
+                    <Camera color="red" size={48} />
+                </div>
+                <button className="btn btn-primary" style={{ color: "#fff" }}>
+                    <ThumbsUp /> Like
+                </button>
+            </div>
+            <div className="mb-8 text-success w-100">
             </div>
         </div>
     </section>
