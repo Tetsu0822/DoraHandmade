@@ -38,31 +38,31 @@ export default function Utils() {
                 <h6 className="mb-4">文字（Text）</h6>
                 <table className="table table-striped">
                     <tr>
-                        <td><p className="text-p-24">P-L 愛哆啦也愛手作</p></td>
+                        <td><p className="text-p-24 text-bg-primary-700">P-L 愛哆啦也愛手作</p></td>
                         <td><code>text-p-24</code></td>
                     </tr>
                     <tr>
-                        <td><p className="text-p-20-b">P-M-B 愛哆啦也愛手作</p></td>
+                        <td><p className="text-p-20-b text-bg-primary-500">P-M-B 愛哆啦也愛手作</p></td>
                         <td><code>text-p-20-b</code></td>
                     </tr>
                     <tr>
-                        <td><p className="text-p-20-r">P-M-R 愛哆啦也愛手作</p></td>
+                        <td><p className="text-p-20-r text-bg-primary-200">P-M-R 愛哆啦也愛手作</p></td>
                         <td><code>text-p-20-r</code></td>
                     </tr>
                     <tr>
-                        <td><p className="text-p-16-b">P-R-B 愛哆啦也愛手作</p></td>
+                        <td><p className="text-p-16-b text-bg-secondary-500">P-R-B 愛哆啦也愛手作</p></td>
                         <td><code>text-p-16-b</code></td>
                     </tr>
                     <tr>
-                        <td><p className="text-p-16-r">P-R-R 愛哆啦也愛手作</p></td>
+                        <td><p className="text-p-16-r text-white bg-secondary-300">P-R-R 愛哆啦也愛手作</p></td>
                         <td><code>text-p-16-r</code></td>
                     </tr>
                     <tr>
-                        <td><p className="text-p-14-b">P-S-B 愛哆啦也愛手作</p></td>
+                        <td><p className="text-p-14-b text-dark bg-gray-500">P-S-B 愛哆啦也愛手作</p></td>
                         <td><code>text-p-14-b</code></td>
                     </tr>
                     <tr>
-                        <td><p className="text-p-14-r">P-S-R 愛哆啦也愛手作</p></td>
+                        <td><p className="text-p-14-r text-dark bg-gray-300">P-S-R 愛哆啦也愛手作</p></td>
                         <td><code>text-p-14-r</code></td>
                     </tr>
                 </table>

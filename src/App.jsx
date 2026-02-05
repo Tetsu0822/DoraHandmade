@@ -1,16 +1,9 @@
-import { useState } from 'react'
-import axios from 'axios'
-import Utils from './pages/Utils'
-
-import './App.css'
+import { RouterProvider } from "react-router"
+import routes from "./routes/index.jsx"
 
 function App() {
 
-  return (
-    <>
-        <Utils />
-    </>
-  )
+  return <RouterProvider router={routes} />
 }
 
 export default App

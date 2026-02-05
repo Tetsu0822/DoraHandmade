@@ -4,6 +4,9 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/02/05 設定 Router By Tetsu
+- 2026/02/05 Gray Color utility class By Tetsu
+- 2026/02/05 間距(spacing) 設定 By Tetsu
 - 2026/01/11 安裝 Lucide 圖庫 By Tetsu
 - 2026/01/09 設定 SCSS 文字變數 By Tetsu
 - 2026/01/06 README 新增更新紀錄 By Tetsu
