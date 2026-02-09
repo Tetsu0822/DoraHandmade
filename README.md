@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/02/10 更新 Axios 版本 By PeiYiWu
 - 2026/02/05 設定 Router By Tetsu
 - 2026/02/05 Gray Color utility class By Tetsu
 - 2026/02/05 間距(spacing) 設定 By Tetsu
