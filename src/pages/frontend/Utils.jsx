@@ -1,8 +1,9 @@
 import { Camera, House, ListFilter, ThumbsUp } from 'lucide-react';
+import { HeartFill, Facebook, Instagram, Line } from '../../components/icons';
 
 export default function Utils() {
     return (
-    <section class="container mt-10">
+    <section className="container mt-10">
         <h2 className="mb-6">文字（Typograghy）</h2>
         <div className="d-flex gap-8">
             <div className="mb-8 text-success w-100">
@@ -71,10 +72,17 @@ export default function Utils() {
         <div className="d-flex gap-8">
             <div className="mb-8 text-success w-100">
                 <h6 className="mb-4">ICON（Lucide Icon）</h6>
-                <div className="mb-4">
+                <div className="mb-8">
                     <House className='me-3' />
                     <ListFilter color="green" size={36} className='me-3' />
                     <Camera color="red" size={48} />
+                </div>
+                <h6 className="mb-4">ICON (SVG)</h6>
+                <div className="mb-8">
+                    <Instagram color="#D75E7E" className="me-3" />
+                    <Facebook color="#5A4C4F" className="me-3" />
+                    <Line color="#8F7E82" className="me-3" />
+                    <HeartFill color="#CC355D" className="me-3" />
                 </div>
                 <button className="btn btn-primary" style={{ color: "#fff" }}>
                     <ThumbsUp /> Like
