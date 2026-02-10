@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 修正 router 設定、加入網站icon到 /public、修改index.html icon 名稱 By Tetsu
 - 2026/02/10 將設計稿上需自行匯出的 svg icon 整理到 components/icons By PeiYiWu
 - 2026/02/10 更新 Axios 版本 By PeiYiWu
 - 2026/02/05 設定 Router By Tetsu

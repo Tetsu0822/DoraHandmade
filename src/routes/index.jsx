@@ -1,16 +1,18 @@
-import FrontendLayout from "../layout/FrontendLayout";
-import Cart from "../pages/frontend/Cart";
-import Home from "../pages/frontend/Home";
-import NotFound from "../pages/frontend/NotFound";
-import Products from "../pages/frontend/Products";
-import SingleProduct from "../pages/frontend/SingleProduct";
-import Utils from "../pages/frontend/Utils";
+import { createHashRouter } from "react-router";
+import FrontendLayout from "../layout/FrontendLayout.jsx";
+import Home from "../pages/frontend/Home.jsx";
+import Product from "../pages/frontend/Products.jsx";
+import SingleProduct from "../pages/frontend/SingleProduct.jsx";
+import Cart from "../pages/frontend/Cart.jsx";
+import Utils from "../pages/frontend/Utils.jsx";
+import NotFound from "../pages/frontend/NotFound.jsx";
+import AdminProducts from "../pages/backend/AdminProducts.jsx";
+import BackendLayout from "../layout/BackendLayout.jsx";
+import AdminOrders from "../pages/backend/AdminOrders.jsx";
 
-// 前後台 Routes 分離
-const routes = [
-    // 前台路由
+export const routes = createHashRouter([
     {
-        path: '/',
+        path: "/",
         element: <FrontendLayout />,
         children: [
             {
@@ -18,31 +20,39 @@ const routes = [
                 element: <Home />
             },
             {
-                path: 'product',
-                element: <Products />
+                path: "product",
+                element: <Product />
             },
             {
-                path: 'product/:id',
+                path: "product/:id",
                 element: <SingleProduct />
             },
             {
-                path: 'product/category/:child',
-                element: <Products />
-            },
-            {
-                path: 'cart',
+                path: "cart",
                 element: <Cart />
             },
             {
-                path: '*',
-                element: <NotFound />
+                path: "utils",
+                element: <Utils />
             },
             {
-                path: 'utilis',
-                element: <Utils />
+                path: "*",
+                element: <NotFound />
             }
         ]
     },
-]
-
-export default routes;
+    {
+        path: "/admin",
+        element: <BackendLayout />,
+        children: [
+            {
+                path: "product",
+                element: <AdminProducts />
+            },
+            {
+                path: "order",
+                element: <AdminOrders />
+            }
+        ]
+    }
+]);

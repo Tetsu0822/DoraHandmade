@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link } from "react-router";
 
 const FrontendLayout = () => {
   return (
@@ -15,7 +15,8 @@ const FrontendLayout = () => {
                         <li className="nav-item"><Link className="nav-link" to="/">首頁</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/product">商品列表</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/cart">購物車</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/utilis">工具(Utils)</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/utils">工具(Utils)</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/admin">管理後台</Link></li>
                     </ul>
                     </div>
                 </div>
