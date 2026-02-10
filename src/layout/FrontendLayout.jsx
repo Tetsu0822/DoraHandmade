@@ -1,35 +1,17 @@
-import { Outlet, Link } from "react-router";
+import { Outlet } from "react-router";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const FrontendLayout = () => {
   return (
-    <>
-        <header>
-            <nav className="navbar navbar-expand-lg bg-body-tertiary">
-                <div className="container-fluid">
-                    <a className="navbar-brand" href="#">Navbar</a>
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item"><Link className="nav-link" to="/">首頁</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/product">商品列表</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/cart">購物車</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/utils">工具(Utils)</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/admin">管理後台</Link></li>
-                    </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <main>
-            <Outlet />
-        </main>
-        <footer>
-            <p>© 2026 愛哆啦也愛手作 | Dora Handmade.</p>
-        </footer>
-    </>
+    <div className="d-flex flex-column min-vh-100">
+      <Header />
+      <main className="flex-grow-1">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
   );
-}
+};
 
 export default FrontendLayout;
