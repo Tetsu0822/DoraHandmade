@@ -9,8 +9,9 @@ const Header = () => {
           {/* Logo */}
           <Link className="navbar-brand d-flex align-items-center" to="/">
             <span className="me-2" style={{ fontSize: "1.5rem" }}>🎀</span>
-            <span className="fw-bold" style={{ color: "#E91E63" }}>
-              愛哆啦也愛手作
+            <span className="fw-bold">
+              <span style={{ color: "#000" }}>愛哆啦也愛</span>
+              <span style={{ color: "#E91E63" }}>手作</span>
             </span>
           </Link>
 
@@ -31,27 +32,28 @@ const Header = () => {
           <div className="collapse navbar-collapse" id="navbarContent">
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
               {/* 手作小教室 */}
-              <li className="nav-item">
+              <li className="nav-item me-lg-3">
                 <Link className="nav-link" to="/workshop">
                   手作小教室
                 </Link>
               </li>
 
               {/* 客製化專區 */}
-              <li className="nav-item">
+              <li className="nav-item me-lg-3">
                 <Link className="nav-link" to="/custom">
                   客製化專區
                 </Link>
               </li>
 
               {/* 商品分類 Dropdown */}
-              <li className="nav-item dropdown">
+              <li className="nav-item dropdown me-lg-4">
                 <a
-                  className="nav-link dropdown-toggle d-flex align-items-center"
+                  className="nav-link d-flex align-items-center"
                   href="#"
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
+                  style={{ cursor: "pointer" }}
                 >
                   商品分類
                   <ChevronDown size={16} className="ms-1" />
@@ -84,7 +86,7 @@ const Header = () => {
               </li>
 
               {/* 購物車 */}
-              <li className="nav-item ms-lg-3">
+              <li className="nav-item me-lg-2">
                 <Link className="nav-link" to="/cart">
                   <ShoppingCart size={20} />
                 </Link>

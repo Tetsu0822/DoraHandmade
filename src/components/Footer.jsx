@@ -8,25 +8,26 @@ const Footer = () => {
       style={{ backgroundColor: "#FFF0F5", borderTop: "1px solid #FFE5F0" }}
     >
       <div className="container">
-        <div className="row">
+        <div className="row align-items-center">
           {/* Logo & Copyright */}
           <div className="col-lg-4 mb-3 mb-lg-0">
             <div className="d-flex align-items-center mb-2">
               <span className="me-2" style={{ fontSize: "1.25rem" }}>🎀</span>
-              <span className="fw-bold" style={{ color: "#E91E63" }}>
-                愛哆啦也愛手作
+              <span className="fw-bold">
+                <span style={{ color: "#000" }}>愛哆啦也愛</span>
+                <span style={{ color: "#E91E63" }}>手作</span>
               </span>
             </div>
-            <p className="text-muted small mb-0">
+            <p className="small mb-0" style={{ color: "#333" }}>
               <span className="me-1">©</span>
               Copyright 2025 愛哆啦也愛手作
             </p>
           </div>
 
           {/* 聯絡我們 */}
-          <div className="col-lg-4 mb-3 mb-lg-0">
+          <div className="col-lg-4 mb-3 mb-lg-0 text-center">
             <h6 className="fw-bold mb-3">聯絡我們</h6>
-            <div className="d-flex gap-3">
+            <div className="d-flex gap-3 justify-content-center">
               <a
                 href="https://facebook.com"
                 target="_blank"
@@ -67,8 +68,8 @@ const Footer = () => {
               <li className="mb-2">
                 <Link
                   to="/faq"
-                  className="text-decoration-none text-muted"
-                  style={{ fontSize: "0.9rem" }}
+                  className="text-decoration-none"
+                  style={{ fontSize: "0.9rem", color: "#333" }}
                 >
                   常見問題
                 </Link>
@@ -76,8 +77,8 @@ const Footer = () => {
               <li className="mb-2">
                 <Link
                   to="/articles"
-                  className="text-decoration-none text-muted"
-                  style={{ fontSize: "0.9rem" }}
+                  className="text-decoration-none"
+                  style={{ fontSize: "0.9rem", color: "#333" }}
                 >
                   文章專區
                 </Link>
@@ -85,8 +86,8 @@ const Footer = () => {
               <li className="mb-2">
                 <Link
                   to="/site-info"
-                  className="text-decoration-none text-muted"
-                  style={{ fontSize: "0.9rem" }}
+                  className="text-decoration-none"
+                  style={{ fontSize: "0.9rem", color: "#333" }}
                 >
                   關站連結
                 </Link>
