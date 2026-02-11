@@ -12,7 +12,11 @@ const Footer = () => {
           {/* Logo & Copyright */}
           <div className="col-lg-4 mb-3 mb-lg-0 text-center">
             <div className="d-flex align-items-center justify-content-center mb-2">
-              <img src="public\Handmade_Bow.png" className="me-2" style={{ fontSize: "1.25rem" }} />
+              <img
+                src="public\Handmade_Bow.png"
+                className="me-2"
+                style={{ fontSize: "1.25rem" }}
+              />
               <span className="fw-bold" style={{ fontFamily: "Texturina" }}>
                 <span style={{ color: "#493B3F" }}>愛哆啦也愛</span>
                 <span style={{ color: "#D75E7E" }}>手作</span>

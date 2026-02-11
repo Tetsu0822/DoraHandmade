@@ -5,6 +5,8 @@
 請在更新時，記得在此填寫更新紀錄！
 
 - 2026/02/11 根據 Figma 設計稿實作 Header/Footer 元件 By Tim
+- 2026/02/11 拆分Header Footer元件結構 By Tim
+- 2026/02/11 拆分並重構 CSS 至 SCSS By Tim
 - 修正 router 設定、加入網站icon到 /public、修改index.html icon 名稱 By Tetsu
 - 2026/02/10 將設計稿上需自行匯出的 svg icon 整理到 components/icons By PeiYiWu
 - 2026/02/10 更新 Axios 版本 By PeiYiWu
