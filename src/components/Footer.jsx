@@ -66,8 +66,8 @@ const Footer = () => {
           {/* 快速連結 */}
           <div className="col-lg-4 text-center">
             <h6 className="fw-bold mb-3">快速連結</h6>
-            <ul className="list-unstyled">
-              <li className="mb-2">
+            <ul className="list-unstyled d-flex justify-content-center">
+              <li className="mx-2">
                 <Link
                   to="/faq"
                   className="text-decoration-none"
@@ -76,7 +76,7 @@ const Footer = () => {
                   常見問題
                 </Link>
               </li>
-              <li className="mb-2">
+              <li className="mx-2">
                 <Link
                   to="/articles"
                   className="text-decoration-none"
@@ -85,7 +85,7 @@ const Footer = () => {
                   文章專區
                 </Link>
               </li>
-              <li className="mb-2">
+              <li className="mx-2">
                 <Link
                   to="/site-info"
                   className="text-decoration-none"
