@@ -7,11 +7,11 @@ const Footer = () => {
       className="py-4"
       style={{ backgroundColor: "#FFF0F5", borderTop: "1px solid #FFE5F0" }}
     >
-      <div className="container h-100">
-        <div className="row align-items-center h-100">
+      <div className="container">
+        <div className="row align-items-center">
           {/* Logo & Copyright */}
           <div className="col-lg-4 mb-3 mb-lg-0 text-center">
-            <div className="d-flex align-items-center mb-2">
+            <div className="d-flex align-items-center justify-content-center mb-2">
               <span className="me-2" style={{ fontSize: "1.25rem" }}>
                 🎀
               </span>
@@ -20,7 +20,7 @@ const Footer = () => {
                 <span style={{ color: "#E91E63" }}>手作</span>
               </span>
             </div>
-            <p className="small mb-0 " style={{ color: "#333" }}>
+            <p className="small mb-0" style={{ color: "#333" }}>
               <span className="me-1">©</span>
               Copyright 2025 愛哆啦也愛手作
             </p>
@@ -64,10 +64,10 @@ const Footer = () => {
           </div>
 
           {/* 快速連結 */}
-          <div className="col-lg-4 text-center d-flex flex-column justify-content-center h-100">
+          <div className="col-lg-4 text-center">
             <h6 className="fw-bold mb-3">快速連結</h6>
-            <ul className="list-unstyled d-flex justify-content-center">
-              <li className="mx-2">
+            <ul className="list-unstyled">
+              <li className="mb-2">
                 <Link
                   to="/faq"
                   className="text-decoration-none"
@@ -76,7 +76,7 @@ const Footer = () => {
                   常見問題
                 </Link>
               </li>
-              <li className="mx-2">
+              <li className="mb-2">
                 <Link
                   to="/articles"
                   className="text-decoration-none"
@@ -85,7 +85,7 @@ const Footer = () => {
                   文章專區
                 </Link>
               </li>
-              <li className="mx-2">
+              <li className="mb-2">
                 <Link
                   to="/site-info"
                   className="text-decoration-none"
