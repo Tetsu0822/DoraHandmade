@@ -1,16 +1,16 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router";
 import { ShoppingCart, User, ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState("Amy");
 
   return (
     <>
       {/* Header Hover 樣式 */}
       <style>{`
-        /* Icon 預設顏色 */
+        /* ⭐ Icon 預設顏色 */
         .navbar-nav .nav-link svg {
           color: #6c757d;
           transition: color 0.3s ease;
@@ -34,7 +34,7 @@ const Header = () => {
           color: #D75E7E !important;
         }
 
-        /* Dropdown 展開時的樣式（更高優先級） */
+        /* ⭐ Dropdown 展開時的樣式（更高優先級） */
         .navbar-nav .nav-item.dropdown.show > .nav-link {
           color: #D75E7E !important;
         }
@@ -87,7 +87,7 @@ const Header = () => {
         >
           <div className="container">
             {/* Logo */}
-            <NavLink className="navbar-brand d-flex align-items-center" to="/">
+            <Link className="navbar-brand d-flex align-items-center" to="/">
               <span className="me-2" style={{ fontSize: "1.5rem" }}>
                 🎀
               </span>
@@ -100,7 +100,7 @@ const Header = () => {
                 <span style={{ color: "#493B3F" }}>愛哆啦也愛</span>
                 <span style={{ color: "#D75E7E" }}>手作</span>
               </span>
-            </NavLink>
+            </Link>
 
             {/* Mobile Toggle */}
             <button
@@ -120,16 +120,16 @@ const Header = () => {
               <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                 {/* 手作小教室 */}
                 <li className="nav-item me-lg-3">
-                  <NavLink className="nav-link fw-bold" to="/workshop">
+                  <Link className="nav-link fw-bold" to="/workshop">
                     手作小教室
-                  </NavLink>
+                  </Link>
                 </li>
 
                 {/* 客製化專區 */}
                 <li className="nav-item me-lg-3">
-                  <NavLink className="nav-link fw-bold" to="/custom">
+                  <Link className="nav-link fw-bold" to="/custom">
                     客製化專區
-                  </NavLink>
+                  </Link>
                 </li>
 
                 {/* 商品分類 Dropdown */}
@@ -152,12 +152,12 @@ const Header = () => {
                     style={{ borderColor: "#F9D9E1" }}
                   >
                     <li>
-                      <NavLink
+                      <Link
                         className="dropdown-item fw-bold text-center"
                         to="/product"
                       >
                         全部商品
-                      </NavLink>
+                      </Link>
                     </li>
 
                     {/* 成品（含子選單） */}
@@ -175,12 +175,12 @@ const Header = () => {
                         style={{ borderColor: "#F9D9E1" }}
                       >
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/category/handmade/bow"
                           >
                             蝴蝶結
-                          </NavLink>
+                          </Link>
                         </li>
                       </ul>
                     </li>
@@ -200,28 +200,28 @@ const Header = () => {
                         style={{ borderColor: "#F9D9E1" }}
                       >
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/category/material/ribbon"
                           >
                             帶子
-                          </NavLink>
+                          </Link>
                         </li>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/category/material/clip"
                           >
                             夾子
-                          </NavLink>
+                          </Link>
                         </li>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/category/material/patch"
                           >
                             貼片
-                          </NavLink>
+                          </Link>
                         </li>
                       </ul>
                     </li>
@@ -230,9 +230,9 @@ const Header = () => {
 
                 {/* 購物車 */}
                 <li className="nav-item me-lg-2">
-                  <NavLink className="nav-link fw-bold" to="/cart">
+                  <Link className="nav-link fw-bold" to="/cart">
                     <ShoppingCart size={20} />
-                  </NavLink>
+                  </Link>
                 </li>
 
                 {/* 會員 */}
@@ -254,20 +254,20 @@ const Header = () => {
                     {!isLoggedIn ? (
                       <>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/register"
                           >
                             會員註冊
-                          </NavLink>
+                          </Link>
                         </li>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/login"
                           >
                             會員登入
-                          </NavLink>
+                          </Link>
                         </li>
                       </>
                     ) : (
@@ -282,36 +282,36 @@ const Header = () => {
                           </span>
                         </li>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/account"
                           >
                             我的帳戶
-                          </NavLink>
+                          </Link>
                         </li>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/orders"
                           >
                             訂單查詢
-                          </NavLink>
+                          </Link>
                         </li>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/favorites"
                           >
                             我的收藏
-                          </NavLink>
+                          </Link>
                         </li>
                         <li>
-                          <NavLink
+                          <Link
                             className="dropdown-item fw-bold text-center"
                             to="/admin"
                           >
                             後台管理
-                          </NavLink>
+                          </Link>
                         </li>
                         <li>
                           <a
