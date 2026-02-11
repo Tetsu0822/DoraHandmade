@@ -4,7 +4,7 @@ function ProductCard({ product }) {
   return (
     <div className="product-card">
       <div className={`position-relative ${product.bgClass} p-4 rounded-4 mb-4`}>
-        <img src={product.image} className="w-100" alt={`新品上架-${product.name}`} />
+        <img src={product.image} className="w-100" alt={product.name} />
         <div className="product-card__like">
           <button type="button" className="d-block bg-gray-50 p-4 rounded-5">
             <Heart />
