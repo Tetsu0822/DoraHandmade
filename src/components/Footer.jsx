@@ -15,9 +15,9 @@ const Footer = () => {
               <span className="me-2" style={{ fontSize: "1.25rem" }}>
                 🎀
               </span>
-              <span className="fw-bold">
-                <span style={{ color: "#000" }}>愛哆啦也愛</span>
-                <span style={{ color: "#E91E63" }}>手作</span>
+              <span className="fw-bold" style={{ fontFamily: "Texturina" }}>
+                <span style={{ color: "#493B3F" }}>愛哆啦也愛</span>
+                <span style={{ color: "#D75E7E" }}>手作</span>
               </span>
             </div>
             <p className="small mb-0" style={{ color: "#333" }}>
