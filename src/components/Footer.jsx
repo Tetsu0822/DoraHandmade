@@ -5,22 +5,20 @@ const Footer = () => {
   return (
     <footer
       className="py-4"
-      style={{ backgroundColor: "#FFF0F5", borderTop: "1px solid #FFE5F0" }}
+      style={{ backgroundColor: "#FFEDF1", borderTop: "1px solid #FFE5F0" }}
     >
       <div className="container">
         <div className="row align-items-center">
           {/* Logo & Copyright */}
           <div className="col-lg-4 mb-3 mb-lg-0 text-center">
             <div className="d-flex align-items-center justify-content-center mb-2">
-              <span className="me-2" style={{ fontSize: "1.25rem" }}>
-                🎀
-              </span>
+              <img src="public\Handmade_Bow.png" className="me-2" style={{ fontSize: "1.25rem" }} />
               <span className="fw-bold" style={{ fontFamily: "Texturina" }}>
                 <span style={{ color: "#493B3F" }}>愛哆啦也愛</span>
                 <span style={{ color: "#D75E7E" }}>手作</span>
               </span>
             </div>
-            <p className="small mb-0" style={{ color: "#333" }}>
+            <p className="fw-bold small mb-0" style={{ color: "#7D6D71" }}>
               <span className="me-1">©</span>
               Copyright 2025 愛哆啦也愛手作
             </p>
@@ -70,7 +68,7 @@ const Footer = () => {
               <li className="mx-2">
                 <Link
                   to="/faq"
-                  className="text-decoration-none"
+                  className="fw-bold text-decoration-none"
                   style={{ fontSize: "0.9rem", color: "#333" }}
                 >
                   常見問題
@@ -79,7 +77,7 @@ const Footer = () => {
               <li className="mx-2">
                 <Link
                   to="/articles"
-                  className="text-decoration-none"
+                  className="fw-bold text-decoration-none"
                   style={{ fontSize: "0.9rem", color: "#333" }}
                 >
                   文章專區
@@ -88,7 +86,7 @@ const Footer = () => {
               <li className="mx-2">
                 <Link
                   to="/site-info"
-                  className="text-decoration-none"
+                  className="fw-bold text-decoration-none"
                   style={{ fontSize: "0.9rem", color: "#333" }}
                 >
                   網站連結

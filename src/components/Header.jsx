@@ -9,8 +9,9 @@ const Header = () => {
   return (
     <>
       {/* Header Hover 樣式 */}
+      {/* TODO：重構成scss */}
       <style>{`
-        /* ⭐ Icon 預設顏色 */
+        /* Icon 預設顏色 */
         .navbar-nav .nav-link svg {
           color: #6c757d;
           transition: color 0.3s ease;
@@ -34,7 +35,7 @@ const Header = () => {
           color: #D75E7E !important;
         }
 
-        /* ⭐ Dropdown 展開時的樣式（更高優先級） */
+        /* Dropdown 展開時的樣式 */
         .navbar-nav .nav-item.dropdown.show > .nav-link {
           color: #D75E7E !important;
         }
@@ -88,9 +89,11 @@ const Header = () => {
           <div className="container">
             {/* Logo */}
             <Link className="navbar-brand d-flex align-items-center" to="/">
-              <span className="me-2" style={{ fontSize: "1.5rem" }}>
-                🎀
-              </span>
+              <img
+                src="public\Handmade_Bow.png"
+                className="me-2"
+                style={{ fontSize: "1.25rem" }}
+              />
               <span
                 className="fw-bold"
                 style={{
