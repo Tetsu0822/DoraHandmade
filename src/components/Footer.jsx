@@ -19,7 +19,7 @@ const Footer = () => {
             </div>
             <p className="footer-copyright">
               <span className="me-1">
-                <Copyright className="text-secondary-400 me-1" size={20} />
+                <Copyright className="text-secondary-400 mb-1" size={20} />
               </span>
               Copyright 2025 愛哆啦也愛手作
             </p>
