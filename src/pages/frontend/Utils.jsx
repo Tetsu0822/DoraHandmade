@@ -71,6 +71,31 @@ export default function Utils() {
         </div>
         <div className="d-flex gap-8">
             <div className="mb-8 text-success w-100">
+                <h6 className="mb-4">_fonts.scss自訂文字樣式</h6>
+                <table className="table table-striped">
+                    <tr>
+                        <td>
+                            <p className="t-page-title">為日常，綁上一點可愛</p>
+                        </td>
+                        <td><code>t-page-title</code></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p className="t-page-subtitle">手作蝴蝶結，讓每一天都多一點溫柔與亮點</p>
+                        </td>
+                        <td><code>t-page-subtitle</code></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p className="t-section-title">新品上架</p>
+                        </td>
+                        <td><code>t-section-title</code></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div className="d-flex gap-8">
+            <div className="mb-8 text-success w-100">
                 <h6 className="mb-4">ICON（Lucide Icon）</h6>
                 <div className="mb-8">
                     <House className='me-3' />
