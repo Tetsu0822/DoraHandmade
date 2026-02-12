@@ -29,7 +29,7 @@ const Footer2 = () => {
 
         {/* 快速連結區 */}
         <nav className="footer__nav">
-            <p className="footer__title text-p-24">快速連結</p>
+            <p className="footer__title text-p-24 mb-2">快速連結</p>
             <ul className="footer__links list-unstyled d-flex">
             <li><Link to="/">常見問題</Link></li>
             <li><Link to="/">文章專區</Link></li>
