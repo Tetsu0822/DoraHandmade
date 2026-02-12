@@ -1,0 +1,69 @@
+//
+
+.footer {
+  background-color: $primary-50;
+  padding: 60px 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 48px;
+
+  // 抽離共同樣式
+  &__brand, &__contact, &__nav {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__title {
+    color: $secondary-700;
+    font-weight: $font-weight-bold;
+    padding: 0 12px;
+  }
+
+  &__social-icons {
+    gap: 10px;
+    a {
+      padding: 12px;
+      transition: opacity 0.3s;
+      &:hover { opacity: 0.8; }
+    }
+  }
+
+  &__links {
+    gap: 4px;
+    li {
+      padding: 12px 24px;
+      a {
+        color: $secondary-700;
+        text-decoration: none;
+        font-weight: $font-weight-bold;
+        &:hover { color: $primary-700; }
+      }
+    }
+  }
+
+  &__copyright {
+    color: $secondary-400;
+    font-weight: $font-weight-bold;
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: $font-bp-md) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 32px;
+
+    &__brand, &__contact, &__nav {
+      align-items: center;
+    }
+
+    &__links {
+      flex-direction: column;
+      gap: 0;
+      li { padding: 8px 0; }
+    }
+  }
+}

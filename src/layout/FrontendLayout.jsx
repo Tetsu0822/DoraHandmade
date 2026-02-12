@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
+import Footer2 from "../components/Footer2.jsx";
 
 const FrontendLayout = () => {
   return (
@@ -9,7 +10,8 @@ const FrontendLayout = () => {
       <main className="flex-grow-1 container py-4">
         <Outlet />
       </main>
-      <Footer />
+      <Footer2 />
+      {/* <Footer /> */}
     </div>
   );
 };

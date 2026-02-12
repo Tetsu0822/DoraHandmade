@@ -58,8 +58,8 @@ function Home() {
       <div className="container">
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8">
           {productNew.map((product) => (
-            <div className="col">
-              <ProductCard key={product.name} product={product} />
+            <div className="col" key={product.id ?? product.name}>
+              <ProductCard product={product} />
             </div>
           ))}
         </div>
