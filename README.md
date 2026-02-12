@@ -4,6 +4,8 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/02/12 修改 _base.scss a 標籤設定 By Tetsu
+- 2026/02/12 新增Footer2 元件，請參考 By Tetsu
 - 2026/02/12 新增_fonts.scss，如有需要可自訂class By Tetsu
 - 2026/02/11 拆分Header Footer元件結構 By Tim
 - 2026/02/11 拆分並重構 CSS 至 SCSS By Tim
