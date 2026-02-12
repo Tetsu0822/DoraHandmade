@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { Copyright } from "lucide-react";
 import { Facebook, Instagram, Line } from "../components/icons";
 
 const Footer = () => {
@@ -17,8 +18,10 @@ const Footer = () => {
               </span>
             </div>
             <p className="footer-copyright">
-              <span className="me-1">©</span>
-              Copyright 2026 愛哆啦也愛手作
+              <span className="me-1">
+                <Copyright className="text-secondary-400 me-1" size={20} />
+              </span>
+              Copyright 2025 愛哆啦也愛手作
             </p>
           </div>
 
