@@ -7,10 +7,12 @@ const Footer2 = () => {
     <footer className="footer">
         {/* 品牌與版權區 */}
         <div className="footer__brand">
-            <a className="footer__logo d-flex flex-column flex-sm-row gap-2 align-items-center mb-4" href="#">
-            <img src={logo} alt="愛哆啦也愛手作 Logo" width="36" height="20" />
-            <span className="logo-title mb-0">愛哆啦也愛<span className="text-primary-700">手作</span></span>
-            </a>
+            <div className="mb-4">
+                <a className="footer__logo d-flex flex-column flex-sm-row gap-2 align-items-center mb-4" href="#">
+                <img src={logo} alt="愛哆啦也愛手作 Logo" width="36" height="20" />
+                <span className="logo-title mb-0">愛哆啦也愛<span className="text-primary-700">手作</span></span>
+                </a>
+            </div>
             <div className="footer__copyright d-none d-sm-block">
             <Copyright className="text-secondary-400 me-1" size={20} />
             <span>Copyright 2025 愛哆啦也愛手作</span>
