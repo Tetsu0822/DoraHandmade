@@ -41,14 +41,14 @@ $typography-tokens: (
   // Page
   page-title: (
     scale: heading,
-    mobile-level: 2,
+    mobile-level: 1,
     desktop-level: 1,
     weight: 700
   ),
 
   page-subtitle: (
     scale: heading,
-    mobile-level: 6,
+    mobile-level: 5,
     desktop-level: 5,
     weight: 700
   ),
@@ -56,7 +56,7 @@ $typography-tokens: (
   // Section
   section-title: (
     scale: heading,
-    mobile-level: 6,
+    mobile-level: 5,
     desktop-level: 4,
     weight: 700
   ),
@@ -66,20 +66,6 @@ $typography-tokens: (
     scale: paragraph,
     mobile-level: l,
     desktop-level: l,
-    weight: 400
-  ),
-
-  body: (
-    scale: paragraph,
-    mobile-level: r,
-    desktop-level: r,
-    weight: 400
-  ),
-
-  body-md: (
-    scale: paragraph,
-    mobile-level: m,
-    desktop-level: m,
     weight: 400
   ),
 );
