@@ -1,0 +1,20 @@
+.product-card__like {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+
+  @media (max-width: 992px) {
+    top: 32px;
+    right: 32px;
+  }
+
+  &:hover svg {
+    color: $primary-500;
+  }
+}
+
+.product-card__cart {
+  &:hover svg {
+    color: $primary-500 !important;
+  }
+}
