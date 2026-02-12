@@ -1,43 +1,36 @@
 import { Link } from "react-router";
-import { Facebook, Instagram, MessageCircle } from "lucide-react";
+import { Facebook, Instagram, Line } from "../components/icons";
 
 const Footer = () => {
   return (
-    <footer
-      className="py-4"
-      style={{ backgroundColor: "#FFEDF1", borderTop: "1px solid #FFE5F0" }}
-    >
+    <footer className="footer">
       <div className="container">
-        <div className="row align-items-center">
-          {/* Logo & Copyright */}
-          <div className="col-lg-4 mb-3 mb-lg-0 text-center">
-            <div className="d-flex align-items-center justify-content-center mb-2">
-              <img
-                src="public\Handmade_Bow.png"
-                className="me-2"
-                style={{ fontSize: "1.25rem" }}
-              />
-              <span className="fw-bold" style={{ fontFamily: "Texturina" }}>
-                <span style={{ color: "#493B3F" }}>愛哆啦也愛</span>
-                <span style={{ color: "#D75E7E" }}>手作</span>
+        {/* 桌面版佈局 */}
+        <div className="row align-items-center d-none d-lg-flex">
+          {/* Logo & 版權 */}
+          <div className="col-lg-4 text-center">
+            <div className="footer-logo-container">
+              <img src="/Handmade_Bow.png" alt="愛哆啦也愛手作" />
+              <span className="footer-logo-text text-p-24-b">
+                <span className="footer-logo-dark">愛哆啦也愛</span>
+                <span className="footer-logo-brand">手作</span>
               </span>
             </div>
-            <p className="fw-bold small mb-0" style={{ color: "#7D6D71" }}>
+            <p className="footer-copyright">
               <span className="me-1">©</span>
-              Copyright 2025 愛哆啦也愛手作
+              Copyright 2026 愛哆啦也愛手作
             </p>
           </div>
 
           {/* 聯絡我們 */}
-          <div className="col-lg-4 mb-3 mb-lg-0 text-center">
-            <h6 className="fw-bold mb-3">聯絡我們</h6>
-            <div className="d-flex gap-3 justify-content-center">
+          <div className="col-lg-4 text-center">
+            <h6 className="footer-section-title">聯絡我們</h6>
+            <div className="footer-social-links">
               <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-decoration-none"
-                style={{ color: "#1877F2" }}
+                className="facebook"
                 aria-label="Facebook"
               >
                 <Facebook size={24} />
@@ -46,18 +39,16 @@ const Footer = () => {
                 href="https://line.me"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-decoration-none"
-                style={{ color: "#06C755" }}
+                className="line"
                 aria-label="LINE"
               >
-                <MessageCircle size={24} />
+                <Line size={24} />
               </a>
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-decoration-none"
-                style={{ color: "#E4405F" }}
+                className="instagram"
                 aria-label="Instagram"
               >
                 <Instagram size={24} />
@@ -67,36 +58,90 @@ const Footer = () => {
 
           {/* 快速連結 */}
           <div className="col-lg-4 text-center">
-            <h6 className="fw-bold mb-3">快速連結</h6>
-            <ul className="list-unstyled d-flex justify-content-center">
-              <li className="mx-2">
-                <Link
-                  to="/faq"
-                  className="fw-bold text-decoration-none"
-                  style={{ fontSize: "0.9rem", color: "#333" }}
-                >
-                  常見問題
-                </Link>
+            <h6 className="footer-section-title">快速連結</h6>
+            <ul className="footer-quick-links ">
+              <li>
+                <Link to="/faq">常見問題</Link>
               </li>
-              <li className="mx-2">
-                <Link
-                  to="/articles"
-                  className="fw-bold text-decoration-none"
-                  style={{ fontSize: "0.9rem", color: "#333" }}
-                >
-                  文章專區
-                </Link>
+              <li>
+                <Link to="/articles">文章專區</Link>
               </li>
-              <li className="mx-2">
-                <Link
-                  to="/site-info"
-                  className="fw-bold text-decoration-none"
-                  style={{ fontSize: "0.9rem", color: "#333" }}
-                >
-                  網站連結
-                </Link>
+              <li>
+                <Link to="/site-info">網站連結</Link>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* 手機版佈局 */}
+        <div className="d-lg-none text-center">
+          {/* Logo */}
+          <div className="footer-section">
+            <div className="footer-logo-container">
+              <img src="/Handmade_Bow.png" alt="愛哆啦也愛手作" />
+              <span className="footer-logo-text">
+                <span className="footer-logo-dark">愛哆啦也愛</span>
+                <span className="footer-logo-brand">手作</span>
+              </span>
+            </div>
+          </div>
+
+          {/* 聯絡我們 */}
+          <div className="footer-section ">
+            <h2 className="footer-section-title text-p-24-b">聯絡我們</h2>
+            <div className="footer-social-links">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="facebook"
+                aria-label="Facebook"
+              >
+                <Facebook size={24} />
+              </a>
+              <a
+                href="https://line.me"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="line"
+                aria-label="LINE"
+              >
+                <Line size={24} />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="instagram"
+                aria-label="Instagram"
+              >
+                <Instagram size={24} />
+              </a>
+            </div>
+          </div>
+
+          {/* 快速連結 */}
+          <div className="footer-section">
+            <h6 className="footer-section-title text-p-24-b">快速連結</h6>
+            <ul className="footer-quick-links">
+              <li>
+                <Link to="/faq">常見問題</Link>
+              </li>
+              <li>
+                <Link to="/articles">文章專區</Link>
+              </li>
+              <li>
+                <Link to="/site-info">網站連結</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* 版權 */}
+          <div className="footer-section">
+            <p className="footer-copyright">
+              <span className="me-1">©</span>
+              Copyright 2025 愛哆啦也愛手作
+            </p>
           </div>
         </div>
       </div>

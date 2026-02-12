@@ -1,0 +1,150 @@
+.footer {
+  background-color: $primary-50; // #FFEDF1
+  border-top: 1px solid $primary-100;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+// Logo 區塊
+.footer-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.footer-logo-text {
+  font-family: "Texturina", serif;
+  font-weight: 700;
+}
+
+.footer-logo-dark {
+  color: $secondary-700;
+}
+
+.footer-logo-brand {
+  color: $primary-700;
+}
+
+// 版權宣告
+.footer-copyright {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: $gray-600;
+  margin-bottom: 0;
+}
+
+// 標題 (聯絡我們、快速連結)
+.footer-section-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: $secondary-700;
+  letter-spacing: 1px; // 增加一點字距
+}
+
+// 社群圖示
+.footer-social-links {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+
+  a {
+    display: inline-flex;
+    text-decoration: none;
+    transition:
+      transform 0.3s ease,
+      opacity 0.3s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      opacity: 0.8;
+    }
+  }
+}
+
+// 快速連結
+.footer-quick-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  a {
+    font-weight: 700;
+    font-size: 1rem;
+    color: $secondary-700;
+    text-decoration: none;
+    transition: 0.3s ease;
+    // letter-spacing: 1px;
+
+    &:hover {
+      color: $primary-700;
+    }
+  }
+}
+
+// 桌面版 - 水平排列
+@media (min-width: 992px) {
+  .footer-quick-links {
+    display: flex;
+    justify-content: center;
+
+    li {
+      margin: 0 1rem;
+    }
+  }
+}
+
+// 手機版 - 垂直排列
+@media (max-width: 991px) {
+  .footer {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .footer-section {
+    margin-bottom: 2.5rem; // 區塊間距加大
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  //聯絡我們、快速連結標題
+  .footer-section-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: $secondary-700;
+    letter-spacing: 1px; // 增加一點字距
+  }
+
+  // Logo 區塊
+  .footer-logo-container {
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+  }
+
+  .footer-logo-text {
+    font-size: 1.8rem; // 手機版 Logo 字體加大
+  }
+
+  .footer-copyright {
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  // 社群圖示 (手機版)
+  .footer-social-links {
+    gap: 2rem; // 手機版間距更寬鬆
+    margin-bottom: 1rem;
+  }
+
+  // 快速連結 (手機版垂直排列)
+  .footer-quick-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; // 連結之間的垂直間距
+  }
+}
