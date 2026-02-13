@@ -9,10 +9,14 @@ const Footer = () => {
         {/* 桌面版佈局 */}
         <div className="row align-items-center d-none d-lg-flex">
           {/* Logo & 版權 */}
-          <div className="col-lg-4 text-center">
+          <div className="col-lg-4">
             <div className="footer-logo-container">
-              <img src="/Handmade_Bow.png" alt="愛哆啦也愛手作" />
-              <span className="footer-logo-text text-p-24-b">
+              <img
+                src="/Handmade_Bow.png"
+                alt="愛哆啦也愛手作"
+                className="me-2"
+              />
+              <span className="footer-logo-text">
                 <span className="footer-logo-dark">愛哆啦也愛</span>
                 <span className="footer-logo-brand">手作</span>
               </span>
@@ -26,7 +30,7 @@ const Footer = () => {
           </div>
 
           {/* 聯絡我們 */}
-          <div className="col-lg-4 text-center">
+          <div className="col-lg-4">
             <h6 className="footer-section-title">聯絡我們</h6>
             <div className="footer-social-links">
               <a
@@ -36,7 +40,7 @@ const Footer = () => {
                 className="facebook"
                 aria-label="Facebook"
               >
-                <Facebook size={24} />
+                <Facebook size={20} />
               </a>
               <a
                 href="https://line.me"
@@ -45,7 +49,7 @@ const Footer = () => {
                 className="line"
                 aria-label="LINE"
               >
-                <Line size={24} />
+                <Line size={20} />
               </a>
               <a
                 href="https://instagram.com"
@@ -54,13 +58,13 @@ const Footer = () => {
                 className="instagram"
                 aria-label="Instagram"
               >
-                <Instagram size={24} />
+                <Instagram size={20} />
               </a>
             </div>
           </div>
 
           {/* 快速連結 */}
-          <div className="col-lg-4 text-center">
+          <div className="col-lg-4">
             <h6 className="footer-section-title">快速連結</h6>
             <ul className="footer-quick-links ">
               <li>
@@ -81,7 +85,11 @@ const Footer = () => {
           {/* Logo */}
           <div className="footer-section">
             <div className="footer-logo-container">
-              <img src="/Handmade_Bow.png" alt="愛哆啦也愛手作" />
+              <img
+                src="/Handmade_Bow.png"
+                alt="愛哆啦也愛手作"
+                className="me-2"
+              />
               <span className="footer-logo-text">
                 <span className="footer-logo-dark">愛哆啦也愛</span>
                 <span className="footer-logo-brand">手作</span>
@@ -100,7 +108,7 @@ const Footer = () => {
                 className="facebook"
                 aria-label="Facebook"
               >
-                <Facebook size={24} />
+                <Facebook size={20} />
               </a>
               <a
                 href="https://line.me"
@@ -109,7 +117,7 @@ const Footer = () => {
                 className="line"
                 aria-label="LINE"
               >
-                <Line size={24} />
+                <Line size={20} />
               </a>
               <a
                 href="https://instagram.com"
@@ -118,7 +126,7 @@ const Footer = () => {
                 className="instagram"
                 aria-label="Instagram"
               >
-                <Instagram size={24} />
+                <Instagram size={20} />
               </a>
             </div>
           </div>

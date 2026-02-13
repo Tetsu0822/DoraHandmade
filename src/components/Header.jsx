@@ -12,7 +12,7 @@ const Header = () => {
         <div className="container">
           {/* Logo */}
           <Link className="navbar-brand d-flex align-items-center" to="/">
-            <span className="logo-font text-p-24-b">
+            <span className="logo-font">
               <img
                 src="/Handmade_Bow.png"
                 className="mb-2 me-1"

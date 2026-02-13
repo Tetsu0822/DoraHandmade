@@ -8,13 +8,14 @@
 .footer-logo-container {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 23px;
+  padding: 7px 0 0;
 }
 
 .footer-logo-text {
   font-family: "Texturina", serif;
-  font-weight: 700;
+  font-weight: bold;
+  font-size: 28px;
 }
 
 .footer-logo-dark {
@@ -28,7 +29,7 @@
 // 版權宣告
 .footer-copyright {
   font-weight: 700;
-  font-size: 0.875rem;
+  font-size: 16px;
   color: $gray-600;
   margin-bottom: 0;
 }
@@ -36,17 +37,16 @@
 // 標題 (聯絡我們、快速連結)
 .footer-section-title {
   font-weight: 700;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
+  font-size: 24px;
+  margin-bottom: 20px;
   color: $secondary-700;
-  letter-spacing: 1px; // 增加一點字距
 }
 
 // 社群圖示
 .footer-social-links {
   display: flex;
-  gap: 1.5rem;
-  justify-content: center;
+  gap: 42px;
+  // justify-content: flex-start;
   align-items: center;
 
   a {
@@ -87,11 +87,8 @@
 @media (min-width: 992px) {
   .footer-quick-links {
     display: flex;
-    justify-content: center;
-
-    li {
-      margin: 0 1rem;
-    }
+    justify-content: flex-start;
+    gap: 2rem;
   }
 }
 
@@ -103,7 +100,12 @@
   }
 
   .footer-section {
-    margin-bottom: 2.5rem; // 區塊間距加大
+    margin-bottom: 36px;
+
+    // Logo 區塊與「聯絡我們」區塊之間的間距
+    &:first-child {
+      margin-bottom: 24px;
+    }
 
     &:last-child {
       margin-bottom: 0;
@@ -114,19 +116,19 @@
   .footer-section-title {
     font-weight: 700;
     font-size: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 20px;
     color: $secondary-700;
-    letter-spacing: 1px; // 增加一點字距
   }
 
   // Logo 區塊
   .footer-logo-container {
     flex-direction: column;
-    margin-bottom: 1.5rem;
-  }
+    justify-content: center;
+    margin-bottom: 24px!important;
 
-  .footer-logo-text {
-    font-size: 1.8rem; // 手機版 Logo 字體加大
+    img {
+      margin-bottom: 8px;
+    }
   }
 
   .footer-copyright {
@@ -136,7 +138,8 @@
 
   // 社群圖示 (手機版)
   .footer-social-links {
-    gap: 2rem; // 手機版間距更寬鬆
+    justify-content: center;
+    gap: 42px;
     margin-bottom: 1rem;
   }
 
@@ -144,6 +147,7 @@
   .footer-quick-links {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem; // 連結之間的垂直間距
   }
 }
