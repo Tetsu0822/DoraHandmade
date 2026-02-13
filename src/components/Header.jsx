@@ -6,6 +6,19 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [userName, setUserName] = useState("愛哆啦");
 
+  // 自動判斷子選單展開方向
+  const handleSubmenuEnter = (e) => {
+    const item = e.currentTarget;
+    const rect = item.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+
+    if (windowWidth - rect.right < 170) {
+      item.classList.add("submenu-left");
+    } else {
+      item.classList.remove("submenu-left");
+    }
+  };
+
   return (
     <header className="header">
       <nav className="navbar navbar-expand-lg navbar-custom">
@@ -132,9 +145,11 @@ const Header = () => {
                       全部商品
                     </Link>
                   </li>
-
                   {/* 成品 Submenu */}
-                  <li className="dropdown-submenu">
+                  <li
+                    className="dropdown-submenu"
+                    onMouseEnter={handleSubmenuEnter}
+                  >
                     <a
                       className="dropdown-item d-flex justify-content-center align-items-center"
                       href="#"
@@ -156,7 +171,10 @@ const Header = () => {
                   </li>
 
                   {/* 材料 Submenu */}
-                  <li className="dropdown-submenu">
+                  <li
+                    className="dropdown-submenu"
+                    onMouseEnter={handleSubmenuEnter}
+                  >
                     <a
                       className="dropdown-item d-flex justify-content-center align-items-center"
                       href="#"

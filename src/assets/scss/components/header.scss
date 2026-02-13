@@ -143,6 +143,12 @@ body {
       display: none;
     }
 
+    // 新增：讓子選單向左展開的樣式
+    &.submenu-left > .dropdown-menu {
+      left: auto;
+      right: 100%;
+    }
+
     &:hover > .dropdown-menu {
       display: block !important;
     }
