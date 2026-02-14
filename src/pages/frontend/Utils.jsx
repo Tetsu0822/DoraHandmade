@@ -142,15 +142,15 @@ export default function Utils() {
                         <button type="button" className="btn btn-dora-outline d-flex align-items-center gap-2">
                             按鈕文字<MoveRight />
                         </button>
-                        <code className="me-12">.btn.btn-outline-dora</code>
+                        <code className="me-12">.btn.btn-dora-outline</code>
                     </div>
                 </div>
                 <div className="col">
                     <div className="d-flex align-items-center gap-8">
-                        <button type="button" className="btn btn-outline-dora d-flex align-items-center gap-2" disabled>
+                        <button type="button" className="btn btn-dora-outline d-flex align-items-center gap-2" disabled>
                             按鈕文字<MoveRight />
                         </button>
-                        <code>.btn.btn-outline-dora disabled</code>
+                        <code>.btn.btn-dora-outline disabled</code>
                     </div>
                 </div>
             </div>
