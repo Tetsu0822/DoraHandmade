@@ -1,4 +1,4 @@
-import { Camera, House, ListFilter, ThumbsUp } from 'lucide-react';
+import { Camera, House, ListFilter, ThumbsUp, MoveRight } from 'lucide-react';
 import { HeartFill, Facebook, Instagram, Line } from '../../components/icons';
 
 export default function Utils() {
@@ -114,6 +114,61 @@ export default function Utils() {
                 </button>
             </div>
             <div className="mb-8 text-success w-100">
+            </div>
+        </div>
+        <h2 className="mb-6">按鈕（Button）</h2>
+        <div>
+            <div className="row mb-4">
+                <div className="col-5">
+                    <div className="d-flex align-items-center gap-8">
+                        <button type="button" className="btn btn-dora d-flex align-items-center gap-2">
+                            按鈕文字<MoveRight />
+                        </button>
+                        <code>.btn.btn-dora</code>
+                    </div>
+                </div>
+                <div className="col">
+                    <div className="d-flex align-items-center gap-8">
+                        <button type="button" className="btn btn-dora d-flex align-items-center gap-2" disabled>
+                            按鈕文字<MoveRight />
+                        </button>
+                        <code>.btn.btn-dora disabled</code>
+                    </div>
+                </div>
+            </div>
+            <div className="row mb-4">
+                <div className="col-5">
+                    <div className="d-flex align-items-center gap-8">
+                        <button type="button" className="btn btn-dora-outline d-flex align-items-center gap-2">
+                            按鈕文字<MoveRight />
+                        </button>
+                        <code className="me-12">.btn.btn-outline-dora</code>
+                    </div>
+                </div>
+                <div className="col">
+                    <div className="d-flex align-items-center gap-8">
+                        <button type="button" className="btn btn-outline-dora d-flex align-items-center gap-2" disabled>
+                            按鈕文字<MoveRight />
+                        </button>
+                        <code>.btn.btn-outline-dora disabled</code>
+                    </div>
+                </div>
+            </div>
+            <div className="row mb-8">
+                <div className="col-5">
+                    <div className="d-flex align-items-center gap-8">
+                        <button type="button" className="btn btn-underline">
+                            按鈕文字
+                        </button>
+                        <code>.btn.btn-underline</code>
+                    </div>
+                </div>
+                <div className="col">
+                    <button type="button" className="btn btn-underline" disabled>
+                        按鈕文字
+                    </button>
+                    <code>.btn.btn-underline disabled</code>
+                </div>
             </div>
         </div>
     </section>

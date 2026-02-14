@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/02/14 將設計稿的按鈕樣式整理成各自的 class By PeiYiWu
 - 2026/02/13 加入Header桌機子選單自動判定向右或向左展開功能 By Tim
 - 2026/02/13 修改 FrontendLayout 的 main element class By PeiYiWu
 - 2026/02/12 新增 Header/Footer 元件 By Tim

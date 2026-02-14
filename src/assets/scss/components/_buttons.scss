@@ -1,0 +1,48 @@
+.btn-dora {
+  @include button-variant(
+    $primary-700,  //background
+    $primary-700,  //border
+    $white,        //color
+    $primary-900,  //hover-background
+    $primary-900,  //hover-border
+    $white,        //hover-color
+    $primary-900,  //active-background
+    $primary-900,  //active-border
+    $white,        //active-color
+    $primary-700,  //disabled-background
+    $primary-700,  //disabled-border
+    $white,        //disabled-color
+  );
+}
+
+.btn-dora-outline {
+  @include button-outline-variant(
+    $primary-500,  //color
+    $primary-500,  //color-hover
+    $primary-50,   //active-background = hover-background
+    $primary-500,  //active-border = hover-border
+    $primary-500,  //active-color
+  );
+
+  --#{$prefix}btn-active-bg: #{$primary-100};
+}
+
+.btn-underline {
+  @include button-variant(
+    transparent,      //background
+    transparent,      //border
+    $secondary-700,   //color
+    transparent,      //hover-background
+    transparent,      //hover-border
+    $primary-700,     //hover-color
+    transparent,      //active-background
+    transparent,      //active-border
+    $primary-900,     //active-color
+    transparent,      //disabled-background
+    transparent,      //disabled-border
+    $secondary-700,   //disabled-color
+  );
+  text-decoration: underline;
+  text-underline-offset: .5rem;
+  padding: .75rem 1.5rem 1.25rem 1.5rem;
+}
