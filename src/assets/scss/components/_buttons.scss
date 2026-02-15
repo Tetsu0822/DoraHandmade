@@ -24,6 +24,7 @@
     $primary-500,  //active-color
   );
 
+  --#{$prefix}btn-bg: #{$white};
   --#{$prefix}btn-active-bg: #{$primary-100};
 }
 
