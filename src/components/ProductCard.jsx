@@ -3,14 +3,16 @@ import { Heart, ShoppingCart } from "lucide-react";
 function ProductCard({ product }) {
   return (
     <div className="product-card">
-      <div className={`position-relative ${product.bgClass} p-4 rounded-4 mb-4`}>
-        <img src={product.image} className="w-100" alt={product.name} />
+      <a href="#" className={`position-relative d-block ${product.bgClass} p-4 rounded-4 mb-4`}>
+        <div className="overflow-hidden rounded-4">
+          <img src={product.image} className="w-100 zoom-in" alt={product.name} />
+        </div>
         <div className="product-card__like">
           <button type="button" className="d-block bg-gray-50 p-4 rounded-5">
             <Heart />
           </button>
         </div>
-      </div>
+      </a>
       <div className="product-card-body">
         <div className="d-flex align-items-center justify-content-between">
           <div>
