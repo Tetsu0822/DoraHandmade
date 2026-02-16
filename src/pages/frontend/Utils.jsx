@@ -122,7 +122,7 @@ export default function Utils() {
                 <div className="col-5">
                     <div className="d-flex align-items-center gap-8">
                         <button type="button" className="btn btn-dora d-flex align-items-center gap-2">
-                            按鈕文字<MoveRight />
+                            按鈕文字<MoveRight strokeWidth={2.5} />
                         </button>
                         <code>.btn.btn-dora</code>
                     </div>
@@ -130,7 +130,7 @@ export default function Utils() {
                 <div className="col">
                     <div className="d-flex align-items-center gap-8">
                         <button type="button" className="btn btn-dora d-flex align-items-center gap-2" disabled>
-                            按鈕文字<MoveRight />
+                            按鈕文字<MoveRight strokeWidth={2.5} />
                         </button>
                         <code>.btn.btn-dora disabled</code>
                     </div>
@@ -140,7 +140,7 @@ export default function Utils() {
                 <div className="col-5">
                     <div className="d-flex align-items-center gap-8">
                         <button type="button" className="btn btn-dora-outline d-flex align-items-center gap-2">
-                            按鈕文字<MoveRight />
+                            按鈕文字<MoveRight strokeWidth={2.5} />
                         </button>
                         <code className="me-12">.btn.btn-dora-outline</code>
                     </div>
@@ -148,7 +148,7 @@ export default function Utils() {
                 <div className="col">
                     <div className="d-flex align-items-center gap-8">
                         <button type="button" className="btn btn-dora-outline d-flex align-items-center gap-2" disabled>
-                            按鈕文字<MoveRight />
+                            按鈕文字<MoveRight strokeWidth={2.5} />
                         </button>
                         <code>.btn.btn-dora-outline disabled</code>
                     </div>
