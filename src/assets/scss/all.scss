@@ -7,12 +7,17 @@
 @import "bootstrap/scss/bootstrap";
 // TODO: Lean Sass imports
 
+@import "swiper/css";
+@import "swiper/css/autoplay";
+
 @import "./base";
 @import "./fonts";
 @import "./pages/home";
 @import "./components/articleCard";
 @import "./components/buttons";
 @import "./components/productCard";
+@import "./components/swiper";
+@import "./components/swiperNav";
 @import "./components/header";
 @import "./components/footer";
 @import "./utilities/animation";

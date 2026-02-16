@@ -1,0 +1,50 @@
+.swiper-nav-btn {
+  display: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  z-index: 2;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  color: $secondary-700;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  transition: color .15s;
+  cursor: pointer;
+  
+  @include media-breakpoint-up(md) {
+    display: flex;
+  }
+
+  &:hover {
+    color: $primary-700;
+  }
+}
+
+.swiper-nav-btn-prev {
+  @include media-breakpoint-up(md) {
+    left: 24px;
+  }
+  @include media-breakpoint-up(lg) {
+    left: 5%;
+  }
+  @include media-breakpoint-up(xxl) {
+    left: 10%;
+  }
+}
+
+.swiper-nav-btn-next {
+  @include media-breakpoint-up(md) {
+    right: 24px;
+  }
+  @include media-breakpoint-up(lg) {
+    right: 5%;
+  }
+  @include media-breakpoint-up(xxl) {
+    right: 10%;
+  }
+}

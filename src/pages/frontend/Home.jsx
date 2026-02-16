@@ -1,8 +1,10 @@
-import React from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
 import { Sparkles, Crown, MoveRight, Scissors, BookOpen } from 'lucide-react';
 import { ClassicBow, WavyLine } from '@components/icons';
 import ProductCard from '@components/ProductCard';
 import ArticleCard from '@components/ArticleCard';
+import SwiperNavButtons from '@components/SwiperNavButtons';
 import productImage1 from '@images/product-1.png';
 import productImage2 from '@images/product-2.png';
 import productImage3 from '@images/product-3.png';
@@ -125,6 +127,45 @@ const newMaterials = productData['材料新上架'];
 function Home() {
   return (
     <div className="home">
+      <Swiper
+        modules={[Autoplay]}
+        spaceBetween={0}
+        slidesPerView={1}
+        autoplay={{
+          delay: 6000
+        }}
+        loop
+      >
+        <SwiperSlide className="swiper-slide-1">
+          <div className="container">
+            <h1 className="t-page-title mb-2 mb-lg-4">為日常，綁上一點可愛</h1>
+            <p className="t-page-subtitle mb-6">手作蝴蝶結，讓每一天都多一點溫柔與亮點</p>
+            <a href="#" className="btn btn-dora d-inline-flex align-items-center gap-2">
+              逛逛手作商品<MoveRight />
+            </a>
+          </div>
+        </SwiperSlide>
+        <SwiperSlide className="swiper-slide-2">
+          <div className="container">
+            <h1 className="t-title mb-2 mb-lg-4">暖冬限定，為你準備的溫柔色系</h1>
+            <p className="t-page-subtitle mb-6">季節限定蝴蝶結，專屬這個時刻的可愛</p>
+            <a href="#" className="btn btn-dora d-inline-flex align-items-center gap-2">
+              查看季節限定<MoveRight />
+            </a>
+          </div>
+        </SwiperSlide>
+        <SwiperSlide className="swiper-slide-3">
+          <div className="container">
+            <h1 className="t-title mb-2 mb-lg-4">嚴選材料，讓手作更安心</h1>
+            <p className="t-page-subtitle mb-6">我們也販售創作者愛用的緞帶與材料</p>
+            <a href="#" className="btn btn-dora d-inline-flex align-items-center gap-2">
+              查看手作材料<MoveRight />
+            </a>
+          </div>
+        </SwiperSlide>
+        <SwiperNavButtons />
+      </Swiper>
+      
       <div className="container py-10 py-lg-15">
         <h2 className="d-flex flex-column flex-lg-row align-items-center justify-content-center gap-2 gap-lg-3 text-p-28-b text-primary-700 mb-6 mb-lg-12">
           <Sparkles style={{ marginTop: "2px" }} />

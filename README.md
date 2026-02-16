@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/02/16 完成首頁 Banner 切版 By PeiYiWu
 - 2026/02/16 完成首頁主要區塊切版 (不含 Banner) By PeiYiWu
 - 2026/02/15 調整 ProductCard 樣式 By PeiYiWu
 - 2026/02/14 將設計稿的按鈕樣式整理成各自的 class By PeiYiWu
