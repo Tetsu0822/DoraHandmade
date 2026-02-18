@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Toast } from 'bootstrap';
+// import { Toast } from 'bootstrap';
+// TODO: 考慮是否統一使用 import from 'bootstrap';
+// https://chatgpt.com/share/6995f1df-8118-800e-b0ef-78fa5ced6b15
+import { Toast } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // TODO: 考慮將此狀態提升至 Global Context，以支援全域呼叫與防止卸載消失
 export function useCartToast() {
