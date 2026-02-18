@@ -8,22 +8,45 @@ export function useCartToast() {
   const [isSuccess, setIsSuccess] = useState(true);
   const toastRef = useRef(null);
   const bsToastRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    bsToastRef.current = new Toast(toastRef.current);
+    bsToastRef.current = new Toast(toastRef.current, { autohide: false });
   }, []);
 
   useEffect(() => {
     if (showToast) {
       bsToastRef.current.show();
     }
+    else {
+      bsToastRef.current.hide();
+    }
   }, [showToast]);
 
   function showCartToast(message, isSuccess = true) {
-    setMessage(message);
-    setIsSuccess(isSuccess);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 5000);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      setShowToast(false);
+      setTimeout(() => {
+        setMessage(message);
+        setIsSuccess(isSuccess);
+        setShowToast(true);
+        setHideTimeout();
+      }, 300); // 等待隱藏動畫
+    }
+    else {
+      setMessage(message);
+      setIsSuccess(isSuccess);
+      setShowToast(true);
+      setHideTimeout();
+    }
+
+    function setHideTimeout() {
+      timeoutRef.current = setTimeout(() => {
+        setShowToast(false);
+        timeoutRef.current = null;
+      }, 5000);
+    }
   }
  
   return {
