@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'), // 設定 @ 指向 src 目錄
       '@components': path.resolve(__dirname, './src/components'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
       '@images': path.resolve(__dirname, './src/assets/images'),
     },
   },

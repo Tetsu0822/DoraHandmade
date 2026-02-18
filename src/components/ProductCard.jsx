@@ -1,6 +1,6 @@
 import { Heart, ShoppingCart } from "lucide-react";
 
-function ProductCard({ product }) {
+function ProductCard({ product, onAddToCart }) {
   return (
     <div className="product-card">
       <a href="#" className={`position-relative d-block ${product.bgClass} p-4 rounded-4 mb-4`}>
@@ -20,7 +20,11 @@ function ProductCard({ product }) {
             <p className="text-p-20-b text-secondary-700 mb-0">NT${product.price}</p>
           </div>
           <div className="p-3">
-            <button type="button" className="product-card__cart d-block bg-transparent p-0">
+            <button
+              type="button"
+              onClick={() => onAddToCart(product)}
+              className="product-card__cart d-block bg-transparent p-0"
+            >
               <ShoppingCart strokeWidth={2.5} className="text-secondary-700" />
             </button>
           </div>

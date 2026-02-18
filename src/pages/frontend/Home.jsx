@@ -5,6 +5,8 @@ import { ClassicBow, WavyLine } from '@components/icons';
 import ProductCard from '@components/ProductCard';
 import ArticleCard from '@components/ArticleCard';
 import SwiperNavButtons from '@components/SwiperNavButtons';
+import CartToast from '@components/CartToast';
+import { useCartToast } from '@hooks/useCartToast';
 import productImage1 from '@images/product-1.png';
 import productImage2 from '@images/product-2.png';
 import productImage3 from '@images/product-3.png';
@@ -125,8 +127,26 @@ const bestSellers = productData['熱銷 TOP'];
 const newMaterials = productData['材料新上架'];
 
 function Home() {
+  const {
+    toastRef, 
+    message: toastMessage,
+    isSuccess: toastIsSuccess,
+    showCartToast
+  } = useCartToast();
+
+  function handleAddToCart(product) {
+    // TODO: 送出 API 請求
+    const response = true;
+    if (response) {
+      showCartToast('商品已加入購物車！', true);
+    } else {
+      showCartToast("商品加入失敗，請稍後再試！", false);
+    }
+  }
+
   return (
     <div className="home">
+      <CartToast ref={toastRef} message={toastMessage} isSuccess={toastIsSuccess} />
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -174,7 +194,7 @@ function Home() {
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
           {newProducts.map((product) => (
             <li className="col list-unstyled" key={product.id ?? product.name}>
-              <ProductCard product={product} />
+              <ProductCard product={product} onAddToCart={handleAddToCart} />
             </li>
           ))}
         </ul>
@@ -194,7 +214,7 @@ function Home() {
           <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
             {bestSellers.map((product) => (
               <li className="col list-unstyled" key={product.id ?? product.name}>
-                <ProductCard product={product} />
+                <ProductCard product={product} onAddToCart={handleAddToCart} />
               </li>
             ))}
           </ul>
@@ -214,7 +234,7 @@ function Home() {
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
           {newMaterials.map((product) => (
             <li className="col list-unstyled" key={product.id ?? product.name}>
-              <ProductCard product={product} />
+              <ProductCard product={product} onAddToCart={handleAddToCart} />
             </li>
           ))}
         </ul>
