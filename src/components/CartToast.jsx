@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 function CartToast({ ref, message = "商品已加入購物車！", isSuccess = true }) {
   return (
     <div className="toast-container position-fixed bottom-0 end-0 p-3">
@@ -6,7 +8,7 @@ function CartToast({ ref, message = "商品已加入購物車！", isSuccess = t
           <div className="d-flex align-items-center gap-6">
             <p className="fw-bold mb-0">{message}</p>
             {isSuccess && (
-              <a href="#" className="btn btn-underline">立即查看</a>
+              <Link to="/cart" className="btn btn-underline">立即查看</Link>
             )}
           </div>
         </div>
