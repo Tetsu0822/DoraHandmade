@@ -5,7 +5,6 @@ import { ClassicBow, WavyLine } from '@components/icons';
 import ProductCard from '@components/ProductCard';
 import ArticleCard from '@components/ArticleCard';
 import SwiperNavButtons from '@components/SwiperNavButtons';
-import { useCartToastContext } from '@contexts/CartToast';
 import productImage1 from '@images/product-1.png';
 import productImage2 from '@images/product-2.png';
 import productImage3 from '@images/product-3.png';
@@ -126,8 +125,6 @@ const bestSellers = productData['熱銷 TOP'];
 const newMaterials = productData['材料新上架'];
 
 function Home() {
-  const { handleAddToCart } = useCartToastContext();
-
   return (
     <div className="home">
       <Swiper
@@ -177,7 +174,7 @@ function Home() {
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
           {newProducts.map((product) => (
             <li className="col list-unstyled" key={product.id ?? product.name}>
-              <ProductCard product={product} onAddToCart={handleAddToCart} />
+              <ProductCard product={product} />
             </li>
           ))}
         </ul>
@@ -197,7 +194,7 @@ function Home() {
           <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
             {bestSellers.map((product) => (
               <li className="col list-unstyled" key={product.id ?? product.name}>
-                <ProductCard product={product} onAddToCart={handleAddToCart} />
+                <ProductCard product={product} />
               </li>
             ))}
           </ul>
@@ -217,7 +214,7 @@ function Home() {
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
           {newMaterials.map((product) => (
             <li className="col list-unstyled" key={product.id ?? product.name}>
-              <ProductCard product={product} onAddToCart={handleAddToCart} />
+              <ProductCard product={product} />
             </li>
           ))}
         </ul>

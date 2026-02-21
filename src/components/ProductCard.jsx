@@ -1,6 +1,8 @@
 import { Heart, ShoppingCart } from "lucide-react";
+import { useCartToastContext } from '@contexts/CartToast';
 
-function ProductCard({ product, onAddToCart }) {
+function ProductCard({ product }) {
+  const { handleAddToCart } = useCartToastContext();
   return (
     <div className="product-card">
       <a href="#" className={`position-relative d-block ${product.bgClass} p-4 rounded-4 mb-4`}>
@@ -22,7 +24,7 @@ function ProductCard({ product, onAddToCart }) {
           <div className="p-3">
             <button
               type="button"
-              onClick={() => onAddToCart(product)}
+              onClick={() => handleAddToCart(product)}
               className="product-card__cart d-block bg-transparent p-0"
             >
               <ShoppingCart strokeWidth={2.5} className="text-secondary-700" />
