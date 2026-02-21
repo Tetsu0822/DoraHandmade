@@ -1,0 +1,109 @@
+import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router';
+// import { Toast } from 'bootstrap';
+// TODO: 考慮是否統一使用 import from 'bootstrap';
+// https://chatgpt.com/share/6995f1df-8118-800e-b0ef-78fa5ced6b15
+import { Toast } from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import CartToast from '@components/CartToast';
+import { CartToastContext } from './CartToastContext';
+
+export function CartToastProvider({ children }) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(true);
+  const toastRef = useRef(null);
+  const bsToastRef = useRef(null);
+  const timeoutRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    bsToastRef.current = new Toast(toastRef.current, { autohide: false });
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      bsToastRef.current?.dispose();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!bsToastRef.current) return;
+    if (showToast) {
+      bsToastRef.current.show();
+    }
+    else {
+      bsToastRef.current.hide();
+    }
+  }, [showToast]);
+
+  // 路徑變動時關閉 toast
+  useEffect(() => {
+    setShowToast(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, [location.pathname]);
+
+  function showCartToast(message, isSuccess = true) {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      setShowToast(false);
+      setTimeout(() => {
+        setMessage(message);
+        setIsSuccess(isSuccess);
+        setShowToast(true);
+        setHideTimeout();
+      }, 300); // 等待隱藏動畫
+    }
+    else {
+      setMessage(message);
+      setIsSuccess(isSuccess);
+      setShowToast(true);
+      setHideTimeout();
+    }
+
+    function setHideTimeout() {
+      timeoutRef.current = setTimeout(() => {
+        setShowToast(false);
+        timeoutRef.current = null;
+      }, 5000);
+    }
+  }
+
+  async function handleAddToCart(product) {
+    if (isAdding) return; // 防止重複點擊
+    setIsAdding(true);
+
+    try {
+      // TODO: 送出 API 請求
+
+      // 模擬 API 請求
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const response = true;
+      if (response) {
+        showCartToast('商品已加入購物車！', true);
+      } else {
+        showCartToast("商品加入失敗，請稍後再試！", false);
+      }
+    } catch (error) {
+      showCartToast("商品加入失敗，請稍後再試！", false);
+    } finally {
+      setIsAdding(false);
+    }
+  }
+
+  const value = {
+    isAdding,
+    handleAddToCart,
+    showCartToast
+  };
+
+  return (
+    <CartToastContext.Provider value={value}>
+      {children}
+      {/* 統一在這裡渲染 UI，這樣全站只會出現這一個元件 */}
+      <CartToast ref={toastRef} message={message} isSuccess={isSuccess} />
+    </CartToastContext.Provider>
+  );
+}

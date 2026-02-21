@@ -5,8 +5,7 @@ import { ClassicBow, WavyLine } from '@components/icons';
 import ProductCard from '@components/ProductCard';
 import ArticleCard from '@components/ArticleCard';
 import SwiperNavButtons from '@components/SwiperNavButtons';
-import CartToast from '@components/CartToast';
-import { useCartToast } from '@hooks/useCartToast';
+import { useCartToastContext } from '@contexts/CartToast';
 import productImage1 from '@images/product-1.png';
 import productImage2 from '@images/product-2.png';
 import productImage3 from '@images/product-3.png';
@@ -127,26 +126,10 @@ const bestSellers = productData['熱銷 TOP'];
 const newMaterials = productData['材料新上架'];
 
 function Home() {
-  const {
-    toastRef, 
-    message: toastMessage,
-    isSuccess: toastIsSuccess,
-    showCartToast
-  } = useCartToast();
-
-  function handleAddToCart(product) {
-    // TODO: 送出 API 請求
-    const response = true;
-    if (response) {
-      showCartToast('商品已加入購物車！', true);
-    } else {
-      showCartToast("商品加入失敗，請稍後再試！", false);
-    }
-  }
+  const { handleAddToCart } = useCartToastContext();
 
   return (
     <div className="home">
-      <CartToast ref={toastRef} message={toastMessage} isSuccess={toastIsSuccess} />
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
