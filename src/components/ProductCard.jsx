@@ -3,14 +3,25 @@ import { useCartToastContext } from '@contexts/CartToast';
 
 function ProductCard({ product }) {
   const { handleAddToCart } = useCartToastContext();
+
+  const handleImageClick = (e) => {
+    e.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className="product-card">
-      <a href="#" className={`position-relative d-block ${product.bgClass} p-4 rounded-4 mb-4`}>
+      <a href="#" onClick={handleImageClick}
+      className={`position-relative d-block ${product.bgClass} p-4 rounded-4 mb-4`}>
         <div className="overflow-hidden rounded-4">
           <img src={product.image} className="w-100 hover:zoom-in" alt={product.name} />
         </div>
         <div className="product-card__like">
-          <button type="button" className="d-block bg-gray-50 p-4 rounded-5">
+          <button type="button" className="d-block bg-gray-50 p-4 rounded-5"
+          >
             <Heart />
           </button>
         </div>
