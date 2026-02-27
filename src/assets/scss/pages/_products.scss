@@ -136,11 +136,14 @@ nav .nav-link,
   .dropdown-menu {
     border: none;
     box-shadow: none;
+
+  a.dropdown-item {
+      padding-left: 48px;
+    }
   }
 
   .nav-link.dropdown-toggle {
     border: none;
-    padding-left: 0;
   }
 }
 
