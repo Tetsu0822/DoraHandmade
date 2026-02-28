@@ -23,79 +23,91 @@ import articleImage2 from '@images/article-2.png';
 const productData = {
   '新品上架': [
     {
-      name: '聖誕雪花點點蝴蝶結',
+      id: '1',
+      title: '聖誕雪花點點蝴蝶結',
       price: 777,
-      image: productImage1,
+      imageUrl: productImage1,
       bgClass: 'bg-gray-100'
     },
     {
-      name: '聖誕紅緞帶雙層蝴蝶結',
+      id: '2',
+      title: '聖誕紅緞帶雙層蝴蝶結',
       price: 777,
-      image: productImage2,
+      imageUrl: productImage2,
       bgClass: 'bg-gray-100'
     },
     {
-      name: '暖冬毛絨小鹿蝴蝶結',
+      id: '-OmXJ9VMvg_vf8k2Otut',
+      title: '暖冬毛絨小鹿蝴蝶結',
       price: 777,
-      image: productImage3,
+      imageUrl: productImage3,
       bgClass: 'bg-gray-100'
     },
     {
-      name: '銀白冬夜亮片蝴蝶結',
+      id: '-OmXJapyvdgyrHWL-t5y',
+      title: '銀白冬夜亮片蝴蝶結',
       price: 777,
-      image: productImage4,
+      imageUrl: productImage4,
       bgClass: 'bg-gray-100'
     },
     {
-      name: '秋野麥色復古蝴蝶結',
+      id: '-OmXJz4tzso3-Y__bDDB',
+      title: '秋野麥色復古蝴蝶結',
       price: 777,
-      image: productImage5,
+      imageUrl: productImage5,
       bgClass: 'bg-gray-100'
     },
     {
-      name: '天鵝絨質感蝴蝶結',
+      id: '-OmXKPPfsZOFjm3zGOye',
+      title: '天鵝絨質感蝴蝶結',
       price: 777,
-      image: productImage6,
+      imageUrl: productImage6,
       bgClass: 'bg-gray-100'
     },
   ],
   '熱銷 TOP': [
     {
-      name: '晨光霧面緞帶蝴蝶結',
+      id: '-OmXKpr9WRXYbQMaK6yL',
+      title: '晨光霧面緞帶蝴蝶結',
       price: 777,
-      image: productImage7,
+      imageUrl: productImage7,
       bgClass: 'bg-secondary-100'
     },
     {
-      name: '柔霧奶茶雙層蝴蝶結',
+      id: '-OmXLBHYDeSQyR_TRpwU',
+      title: '柔霧奶茶雙層蝴蝶結',
       price: 777,
-      image: productImage8,
+      imageUrl: productImage8,
       bgClass: 'bg-gray-100'
     },
     {
-      name: '夢幻粉雙層蕾絲蝴蝶結',
+      id: '-OmXLSqQrwLpV0J6QjvX',
+      title: '夢幻粉雙層蕾絲蝴蝶結',
       price: 777,
-      image: productImage9,
+      imageUrl: productImage9,
       bgClass: 'bg-gray-100'
     },
   ],
   '材料新上架': [
     {
-      name: '霧面緞帶（奶霜白 25mm）',
+      id: '-OmXNI6CHUcS_PqnOXmY',
+      title: '霧面緞帶（奶霜白 25mm）',
       price: 777,
-      image: materialImage1,
+      imageUrl: materialImage1,
       bgClass: 'bg-secondary-100'
     },
     {
-      name: '亮面緞帶（櫻花粉 38mm）',
+      id: '-OmXMxaGNtxlAorxufcM',
+      title: '毛邊紗帶 (墨綠色 38mm)',
       price: 777,
-      image: materialImage2,
+      imageUrl: materialImage2,
       bgClass: 'bg-gray-100'
     },
     {
-      name: '金邊緞帶（焦糖棕 25mm）',
+      id: '-OmXMV2t6OCRaBAb_Tqy',
+      title: '金邊緞帶（焦糖棕 25mm）',
       price: 777,
-      image: materialImage3,
+      imageUrl: materialImage3,
       bgClass: 'bg-gray-100'
     },
   ]
@@ -127,6 +139,7 @@ const newMaterials = productData['材料新上架'];
 function Home() {
   return (
     <div className="home">
+      {/* TODO: 修改 SwiperSlide 的連結 */}
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -213,7 +226,7 @@ function Home() {
         </h2>
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
           {newMaterials.map((product) => (
-            <li className="col list-unstyled" key={product.id ?? product.name}>
+            <li className="col list-unstyled" key={product.id || product.title}>
               <ProductCard product={product} />
             </li>
           ))}

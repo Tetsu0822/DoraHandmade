@@ -17,7 +17,7 @@ function ProductCard({ product }) {
       <a href="#" onClick={handleImageClick}
       className={`position-relative d-block ${product.bgClass} p-4 rounded-4 mb-4`}>
         <div className="overflow-hidden rounded-4">
-          <img src={product.image} className="w-100 hover:zoom-in" alt={product.name} />
+          <img src={product.imageUrl} className="w-100 hover:zoom-in" alt={product.title} />
         </div>
         <div className="product-card__like">
           <button type="button" className="d-block bg-gray-50 p-4 rounded-5"
@@ -29,7 +29,7 @@ function ProductCard({ product }) {
       <div className="product-card-body">
         <div className="d-flex align-items-center justify-content-between">
           <div>
-            <h5 className="text-p-24-b text-gray-600">{product.name}</h5>
+            <h5 className="text-p-24-b text-gray-600">{product.title}</h5>
             <p className="text-p-20-b text-secondary-700 mb-0">NT${product.price}</p>
           </div>
           <div className="p-3">
