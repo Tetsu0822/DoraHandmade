@@ -21,8 +21,6 @@ import products14 from '@images/products/material-5.jpg';
 import products15 from '@images/products/material-6.jpg';
 import products16 from '@images/products/material-7.jpg';
 
-import "/src/assets/scss/pages/_products.scss";
-
 const productData = [
   { id: 'p1', title: '聖誕雪花點點蝴蝶結', category: '蝴蝶結', price: 777, img: products1 },
   { id: 'p2', title: '聖誕紅緞帶雙層蝴蝶結', category: '蝴蝶結', price: 777, img: products2 },
