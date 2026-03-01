@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
+import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { Sparkles, Crown, MoveRight, Scissors, BookOpen } from 'lucide-react';
@@ -20,6 +22,9 @@ import materialImage2 from '@images/material-2.png';
 import materialImage3 from '@images/material-3.png';
 import articleImage1 from '@images/article-1.png';
 import articleImage2 from '@images/article-2.png';
+
+const API_BASE = import.meta.env.VITE_API_BASE;
+const API_PATH = import.meta.env.VITE_API_PATH;
 
 const productData = {
   '新品上架': [
@@ -133,11 +138,39 @@ const articleData = [
   }
 ];
 
-const newProducts = productData['新品上架'];
-const bestSellers = productData['熱銷 TOP'];
-const newMaterials = productData['材料新上架'];
+// const newProducts = productData['新品上架'];
+// const bestSellers = productData['熱銷 TOP'];
+// const newMaterials = productData['材料新上架'];
 
 function Home() {
+  const [products, setProducts] = useState([]);
+  const [newProducts, setNewProducts] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
+  const [newMaterials, setNewMaterials] = useState([]);
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  async function getProducts() {
+    try {
+      const response = await axios.get(`${API_BASE}/api/${API_PATH}/products`);
+      const _products = response.data.products?.filter(product => product.is_enabled);
+      setProducts(_products);
+
+      const _newProducts = _products.filter(product => product.is_new && product.parentCategory === '成品');
+      setNewProducts(_newProducts);
+
+      const _bestSellers = _products.filter(product => product.is_hot);
+      setBestSellers(_bestSellers);
+
+      const _newMaterials = _products.filter(product => product.is_new && product.parentCategory === '材料');
+      setNewMaterials(_newMaterials);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className="home">
       <Swiper

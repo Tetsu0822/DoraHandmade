@@ -15,7 +15,7 @@ function ProductCard({ product }) {
   return (
     <div className="product-card">
       <a href="#" onClick={handleImageClick}
-      className={`position-relative d-block ${product.bgClass} p-4 rounded-4 mb-4`}>
+      className={`position-relative d-block bg-gray-100 p-4 rounded-4 mb-4`}>
         <div className="overflow-hidden rounded-4">
           <img src={product.imageUrl} className="w-100 hover:zoom-in" alt={product.title} />
         </div>
