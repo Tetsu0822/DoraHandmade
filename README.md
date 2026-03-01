@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/01 完成 singleProduct 商品詳細頁切版 By cindy
 - 2026/02/27 完成 Products 商品列表頁切版、修改ProductCard 元件 By MidyWu
 - 2026/02/22 將購物車 Toast 邏輯封裝到 Context，並提升至 FrontendLayout By PeiYiWu
 - 2026/02/17 新增購物車 Toast 通知元件與自定義 Hook By PeiYiWu
