@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import { Sparkles, Crown, MoveRight, Scissors, BookOpen } from 'lucide-react';
@@ -139,7 +140,6 @@ const newMaterials = productData['材料新上架'];
 function Home() {
   return (
     <div className="home">
-      {/* TODO: 修改 SwiperSlide 的連結 */}
       <Swiper
         modules={[Autoplay]}
         spaceBetween={0}
@@ -153,27 +153,27 @@ function Home() {
           <div className="container">
             <h1 className="t-page-title mb-2 mb-lg-4">為日常，綁上一點可愛</h1>
             <p className="t-page-subtitle mb-6">手作蝴蝶結，讓每一天都多一點溫柔與亮點</p>
-            <a href="#" className="btn btn-dora d-inline-flex align-items-center gap-2">
+            <Link to="/product" className="btn btn-dora d-inline-flex align-items-center gap-2">
               逛逛手作商品<MoveRight strokeWidth={2.5} />
-            </a>
+            </Link>
           </div>
         </SwiperSlide>
         <SwiperSlide className="swiper-slide-2">
           <div className="container">
             <h1 className="t-title mb-2 mb-lg-4">暖冬限定，為你準備的溫柔色系</h1>
             <p className="t-page-subtitle mb-6">季節限定蝴蝶結，專屬這個時刻的可愛</p>
-            <a href="#" className="btn btn-dora d-inline-flex align-items-center gap-2">
+            <Link to="/product" className="btn btn-dora d-inline-flex align-items-center gap-2">
               查看季節限定<MoveRight strokeWidth={2.5} />
-            </a>
+            </Link>
           </div>
         </SwiperSlide>
         <SwiperSlide className="swiper-slide-3">
           <div className="container">
             <h1 className="t-title mb-2 mb-lg-4">嚴選材料，讓手作更安心</h1>
             <p className="t-page-subtitle mb-6">我們也販售創作者愛用的緞帶與材料</p>
-            <a href="#" className="btn btn-dora d-inline-flex align-items-center gap-2">
+            <Link to="/product" className="btn btn-dora d-inline-flex align-items-center gap-2">
               查看手作材料<MoveRight strokeWidth={2.5} />
-            </a>
+            </Link>
           </div>
         </SwiperSlide>
         <SwiperNavButtons />
@@ -192,9 +192,9 @@ function Home() {
           ))}
         </ul>
         <div className="text-center">
-          <a href="#" className="btn btn-underline">
+          <Link to="/product" className="btn btn-underline">
             查看全部新品
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -212,9 +212,9 @@ function Home() {
             ))}
           </ul>
           <div className="text-center">
-            <a href="#" className="btn btn-underline">
+            <Link to="/product" className="btn btn-underline">
               查看更多人氣商品
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -232,9 +232,9 @@ function Home() {
           ))}
         </ul>
         <div className="text-center">
-          <a href="#" className="btn btn-underline">
+          <Link to="/product" className="btn btn-underline">
             查看全部新材料
-          </a>
+          </Link>
         </div>
       </div>
       
