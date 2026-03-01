@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { ShoppingCart } from 'lucide-react';
 import { Heart } from 'lucide-react';
 import { Minus } from 'lucide-react';
