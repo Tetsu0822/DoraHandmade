@@ -118,10 +118,10 @@ function SingleProduct() {
                 
 
                   <button 
-                    className="btn btn-sm  flex-grow-1 text-nowrap d-flex align-items-center justify-content-center d-none d-md-block"
+                    className="btn btn-sm  flex-grow-1 text-nowrap d-flex align-items-center justify-content-center d-none d-md-block btn-add-cart"
                     onClick={handleAddToWishlist}>
                   
-                    <span className='mr-2'><Heart /></span>
+                    <span className='mr-2 '><Heart /></span>
                     <span>加入收藏</span>
                   </button>
                 
@@ -195,7 +195,7 @@ function SingleProduct() {
                 
                 {/* 1. 愛心收藏按鈕 (絕對定位在圖片右上角) */}
                 <button 
-                  className="btn btn-light shadow-sm rounded-circle position-absolute wishlist-btn.filled "
+                  className="btn btn-light shadow-sm rounded-circle position-absolute wishlist-btn  "
                   style={{ top: '30px', right: '30px', zIndex: 10, padding: '12px 12px' }}
                   onClick={handleAddToWishlist}
                 >
@@ -211,7 +211,7 @@ function SingleProduct() {
                   <div className="d-flex justify-content-between align-items-center mt-auto">
                     <span className=" fw-bold">NT${item.price}</span>
                     <button 
-                      className="btn btn-sm  p-1" 
+                      className="btn btn-sm  p-1 btn-add-cart-icon" 
                       onClick={() => handleAddToCart(item.id)}
                     >
                       <ShoppingCart />

@@ -5,6 +5,37 @@
 button {
   border-radius: 0;
 }
+.btn-add-cart {
+    background: #ffff;
+    color: #333333;
+    border: none;
+    border-radius: none;
+    
+    font-weight: 700;
+    
+}
+.btn-add-cart:hover {
+    background: white;
+    color: #E3879F;
+    border: 2px solid #E3879F;
+    border-radius: none;
+    
+    font-weight: 700;
+    
+}
+.btn-add-cart-icon{
+  background: #ffff;
+  color: #333333;
+  border: none;
+}
+.btn-add-cart-icon:hover {
+    background: white;
+    color: #E3879F;
+    border: none;
+    border-radius: none;  
+      
+}
+
 
 /* 相關商品卡片容器 */
 .product-card-sm {
@@ -30,13 +61,13 @@ button {
 }
 
 
-/* 愛心收藏按鈕：絕對定位在右上角 */
+/* 愛心按鈕 Hover 效果 */
 .wishlist-btn {
   position: absolute;
-  top: 180px;
+  top: 32px;
   right: 32px;
-  z-index: 10; /* 確保在圖片上方 */
-  background: rgba(255, 255, 255, 0.8); /* 半透明背景 */
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
   width: 48px;
@@ -44,24 +75,26 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ff4d4f;
-  transition: all 0.2s;
+  color: #1d0202;
+  font-size: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .wishlist-btn:hover {
-  background: #ff4d4f;
-  color: white;
+  /* 放大 + 旋轉 + 顏色變化 */
+  // transform: scale(1.15) rotate(10deg);
+  background: linear-gradient(135deg, #ffff);
+  box-shadow: 0 8px 32px rgba(255, 77, 79, 0.4);
+  color: #D75E7E !important;
 }
-/* 已收藏狀態 */
-.wishlist-btn.filled {
-  background: rgba(255, 77, 79, 0.9);
-  color: white;
-}
-.wishlist-btn.filled:hover {
-  background: #ff4d4f;
-  box-shadow: 0 8px 25px rgba(255, 77, 79, 0.5);
-}
+
+
+
+
+
+
 
 /* 限制標題行數，避免撐開卡片 */
 .card-title {
