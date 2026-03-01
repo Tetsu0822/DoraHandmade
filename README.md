@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/02 實作商品收藏功能 By PeiYiWu
 - 2026/03/01 實作首頁產品列表的 API 串接 By PeiYiWu
 - 2026/03/01 完成 singleProduct 商品詳細頁切版 By cindy
 - 2026/02/27 完成 Products 商品列表頁切版、修改ProductCard 元件 By MidyWu

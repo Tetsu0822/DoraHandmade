@@ -1,31 +1,31 @@
+import { Link } from "react-router";
 import { Heart, ShoppingCart } from "lucide-react";
+import { HeartFill } from "./icons";
 import { useCartToastContext } from '@contexts/CartToast';
+import { useFavoriteProductsContext } from '@contexts/FavoriteProducts';
 
 function ProductCard({ product }) {
   const { handleAddToCart } = useCartToastContext();
-
-  const handleImageClick = (e) => {
-    e.preventDefault();
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
+  const { toggleFavoriteProduct, isProductFavorite } = useFavoriteProductsContext();
 
   return (
     <div className="product-card">
-      <a href="#" onClick={handleImageClick}
-      className={`position-relative d-block bg-gray-100 p-4 rounded-4 mb-4`}>
+      <div className="position-relative z-3">
+        <div className="product-card__like">
+          <button type="button" className="d-block bg-gray-50 p-4 rounded-5"
+            onClick={() => toggleFavoriteProduct(product)}
+          >
+            {isProductFavorite(product) ? <HeartFill color="#D75E7E" /> : <Heart />}
+          </button>
+        </div>
+      </div>
+      <Link to={`/product/${product.id}`}
+        className={`d-block bg-gray-100 p-4 rounded-4 mb-4`}
+      >
         <div className="overflow-hidden rounded-4">
           <img src={product.imageUrl} className="w-100 hover:zoom-in" alt={product.title} />
         </div>
-        <div className="product-card__like">
-          <button type="button" className="d-block bg-gray-50 p-4 rounded-5"
-          >
-            <Heart />
-          </button>
-        </div>
-      </a>
+      </Link>
       <div className="product-card-body">
         <div className="d-flex align-items-center justify-content-between">
           <div>
