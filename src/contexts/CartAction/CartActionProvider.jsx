@@ -1,14 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router';
+import axios from 'axios';
 // import { Toast } from 'bootstrap';
 // TODO: 考慮是否統一使用 import from 'bootstrap';
 // https://chatgpt.com/share/6995f1df-8118-800e-b0ef-78fa5ced6b15
 import { Toast } from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import CartToast from '@components/CartToast';
-import { CartToastContext } from './CartToastContext';
+import { CartActionContext } from './CartActionContext';
 
-export function CartToastProvider({ children }) {
-  const [isAdding, setIsAdding] = useState(false);
+const API_BASE = import.meta.env.VITE_API_BASE;
+const API_PATH = import.meta.env.VITE_API_PATH;
+
+export function CartActionProvider({ children }) {
+  const [addingProductId, setAddingProductId] = useState(null);
   const [showToast, setShowToast] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(true);
@@ -72,16 +76,18 @@ export function CartToastProvider({ children }) {
   }
 
   async function handleAddToCart(product) {
-    if (isAdding) return; // 防止重複點擊
-    setIsAdding(true);
+    if (addingProductId) return; // 防止重複點擊
+    setAddingProductId(product.id);
 
     try {
-      // TODO: 送出 API 請求
+      const response = await axios.post(`${API_BASE}/api/${API_PATH}/cart`, {
+        data: {
+          product_id: product.id,
+          qty: 1  // 後端會自行判斷若商品已存在在購物車，則自動累加
+        }
+      });
 
-      // 模擬 API 請求
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const response = true;
-      if (response) {
+      if (response.data.success) {
         showCartToast('商品已加入購物車！', true);
       } else {
         showCartToast("商品加入失敗，請稍後再試！", false);
@@ -89,21 +95,20 @@ export function CartToastProvider({ children }) {
     } catch (error) {
       showCartToast("商品加入失敗，請稍後再試！", false);
     } finally {
-      setIsAdding(false);
+      setAddingProductId(null);
     }
   }
 
-  const value = {
-    isAdding,
+  const value = useMemo(() => ({
+    addingProductId,
     handleAddToCart,
-    showCartToast
-  };
+  }), [addingProductId]);
 
   return (
-    <CartToastContext.Provider value={value}>
+    <CartActionContext.Provider value={value}>
       {children}
       {/* 統一在這裡渲染 UI，這樣全站只會出現這一個元件 */}
       <CartToast ref={toastRef} message={message} isSuccess={isSuccess} />
-    </CartToastContext.Provider>
+    </CartActionContext.Provider>
   );
 }

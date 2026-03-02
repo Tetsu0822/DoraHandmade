@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/03 於 CartActionContext 實作加入購物車邏輯並串接 API By PeiYiWu
 - 2026/03/02 串商品列表頁的收藏功能 By MidyWu
 - 2026/03/02 實作商品收藏功能 By PeiYiWu
 - 2026/03/01 實作首頁產品列表的 API 串接 By PeiYiWu

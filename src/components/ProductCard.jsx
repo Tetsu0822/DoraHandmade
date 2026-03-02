@@ -1,11 +1,11 @@
 import { Link } from "react-router";
 import { Heart, ShoppingCart } from "lucide-react";
 import { HeartFill } from "./icons";
-import { useCartToastContext } from '@contexts/CartToast';
+import { useCartActionContext } from '@contexts/CartAction';
 import { useFavoriteProductsContext } from '@contexts/FavoriteProducts';
 
 function ProductCard({ product }) {
-  const { handleAddToCart } = useCartToastContext();
+  const { handleAddToCart, addingProductId } = useCartActionContext();
   const { toggleFavoriteProduct, isProductFavorite } = useFavoriteProductsContext();
 
   return (
@@ -37,8 +37,15 @@ function ProductCard({ product }) {
               type="button"
               onClick={() => handleAddToCart(product)}
               className="product-card__cart d-block bg-transparent p-0"
+              disabled={addingProductId != null}
             >
-              <ShoppingCart strokeWidth={2.5} className="text-secondary-700" />
+              {addingProductId === product.id ? (
+                <div className="spinner-border text-gray-500" role="status" style={{ width: '24px', height: '24px' }}>
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              ) : (
+                <ShoppingCart strokeWidth={2.5} />
+              )}
             </button>
           </div>
         </div>
