@@ -8,6 +8,10 @@
     right: 32px;
   }
 
+  svg {
+    color: $secondary-700;
+  }
+
   &:hover svg {
     color: $primary-700;
   }
