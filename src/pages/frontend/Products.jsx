@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router';
+import axios from 'axios';
 import ProductCard from '@components/ProductCard';
-import CartToast from '@/components/CartToast.jsx';
+import CartToast from '@components/CartToast';
+import { useFavoriteProductsContext } from '@contexts/FavoriteProducts';
+import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+
+const API_BASE = import.meta.env.VITE_API_BASE;
+const API_PATH = import.meta.env.VITE_API_PATH;
 
 // 導入圖片
 import products1 from '@images/products/product-1.png';
@@ -46,6 +52,7 @@ function Products() {
   const [currentCategory, setCurrentCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [sortedProducts, setSortedProducts] = useState(productData);
+  const { toggleFavoriteProduct, isProductFavorite } = useFavoriteProductsContext();
 
   const [toastMsg, setToastMsg] = useState('');
   const [isSuccess, setIsSuccess] = useState(true);
@@ -63,22 +70,46 @@ function Products() {
     }
   };
 
+  // API 取得商品
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await axios.get(`${API_BASE}/api/${API_PATH}/products`);
+        const _products = response.data.products?.filter(p => p.is_enabled);
+        // 轉換圖片 key, title, price
+        const mapped = _products.map(p => ({
+          ...p,
+          img: p.imageUrl || p.img,
+          title: p.name || p.title,
+          price: p.origin_price || p.price,
+        }));
+        setSortedProducts(mapped);
+      } catch (err) {
+        console.error('取得商品失敗', err);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  // 排序
   const handleSortChange = (sortType) => {
     let sorted = [...productData];
     if (sortType === 'priceHigh') sorted.sort((a, b) => b.price - a.price);
     else if (sortType === 'priceLow') sorted.sort((a, b) => a.price - b.price);
-    else if (sortType === 'default') sorted = [...productData];
+    else if (sortType === 'dateNew') sorted.sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
+    else if (sortType === 'dateOld') sorted.sort((a, b) => new Date(a.published_at) - new Date(b.published_at));
     setSortedProducts(sorted);
     setCurrentPage(1);
   };
 
+   // 類別篩選
   const handleCategoryChange = (category) => {
     setCurrentCategory(category);
     setCurrentPage(1);
   };
 
-  const filteredProducts = sortedProducts.filter(
-    product => currentCategory === 'all' || product.category === currentCategory
+  const filteredProducts = (sortedProducts || []).filter(
+  product => currentCategory === 'all' || product.category === currentCategory
   );
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
