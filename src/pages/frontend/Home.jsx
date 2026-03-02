@@ -219,7 +219,7 @@ function Home() {
         </h2>
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
           {newProducts.map((product) => (
-            <li className="col list-unstyled" key={product.id ?? product.name}>
+            <li className="col list-unstyled" key={product.id || product.title}>
               <ProductCard product={product} />
             </li>
           ))}
@@ -239,7 +239,7 @@ function Home() {
           </h2>
           <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
             {bestSellers.map((product) => (
-              <li className="col list-unstyled" key={product.id ?? product.name}>
+              <li className="col list-unstyled" key={product.id || product.title}>
                 <ProductCard product={product} />
               </li>
             ))}
@@ -289,7 +289,7 @@ function Home() {
         </h2>
         <ul className="row row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
           {articleData.map((article) => (
-            <li className="col-12 list-unstyled" key={article.id ?? article.title}>
+            <li className="col-12 list-unstyled" key={article.id || article.title}>
               <ArticleCard article={article} />
             </li>
           ))}
