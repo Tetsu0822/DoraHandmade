@@ -24,6 +24,7 @@
     $primary-500,  //active-color
   );
 
+  --#{$prefix}btn-bg: #{$white};
   --#{$prefix}btn-active-bg: #{$primary-100};
 }
 
@@ -45,4 +46,5 @@
   text-decoration: underline;
   text-underline-offset: .5rem;
   padding: .75rem 1.5rem 1.25rem 1.5rem;
+  border: 0;
 }

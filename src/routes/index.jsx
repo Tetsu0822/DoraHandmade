@@ -25,6 +25,10 @@ export const routes = createHashRouter([
                 element: <Product />
             },
             {
+                path: "category/:mainCat/:subCat", 
+                element: <Product />
+            },
+            {
                 path: "product/:id",
                 element: <SingleProduct />
             },

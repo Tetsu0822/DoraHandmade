@@ -32,9 +32,31 @@ function Instagram({ color = "black", className = ""}) {
   )
 }
 
+function ClassicBow({ width = 32, height = 24, className = ""}) {
+  return (
+    <svg className={className} width={width} height={height} viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M13.76 7.52051C12.0534 12.8538 9.60002 17.6538 6.40002 21.9205L9.60002 23.5205C12.8 19.2538 15.2534 14.4538 16.96 9.12051L13.76 7.52051Z" fill="#F4C4D0"/>
+      <path d="M18.2399 7.52051C19.9466 12.8538 22.3999 17.6538 25.5999 21.9205L22.3999 23.5205C19.1999 19.2538 16.7466 14.4538 15.0399 9.12051L18.2399 7.52051Z" fill="#F4C4D0"/>
+      <path d="M16 5.9203C6.4 -3.6797 0 -0.479697 0 7.5203C0 13.9203 8 12.3203 16 9.1203V5.9203Z" fill="#F4C4D0"/>
+      <path d="M16 5.9203C25.6 -3.6797 32 -0.479697 32 7.5203C32 13.9203 24 12.3203 16 9.1203V5.9203Z" fill="#F4C4D0"/>
+      <path d="M13.7599 4.32033C13.3333 6.027 13.3333 7.627 13.7599 9.12033C15.2533 9.76033 16.7466 9.76033 18.2399 9.12033C18.6666 7.627 18.6666 6.027 18.2399 4.32033C16.7466 3.68033 15.2533 3.68033 13.7599 4.32033Z" fill="#F4C4D0"/>
+    </svg>
+  )
+}
+
+function WavyLine({ className = "", style = {}}) {
+  return (
+    <svg className={className} style={style} width="304" height="21" viewBox="0 0 304 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2.00043 11C22.0004 1 42.0004 1 62.0004 11C82.0004 21 102 21 122 11C142 1 162 -0.666667 182 6C202 12.6667 222 16 242 16C262 16 282 14.3333 302 11" stroke="#F4C4D0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}
+
 export {
   HeartFill, 
   Facebook, 
   Instagram, 
   Line, 
+  ClassicBow,
+  WavyLine,
 }

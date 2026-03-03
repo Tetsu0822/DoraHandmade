@@ -8,13 +8,31 @@
     right: 32px;
   }
 
+  svg {
+    color: $secondary-700;
+  }
+
   &:hover svg {
     color: $primary-700;
   }
 }
 
 .product-card__cart {
-  &:hover svg {
+  svg {
+    color: $secondary-700;
+    transition: color 0.15s ease;
+  }
+  
+  &:hover:not(:disabled) svg {
     color: $primary-700 !important;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    svg {
+      color: $gray-500 !important;
+    }
   }
 }
