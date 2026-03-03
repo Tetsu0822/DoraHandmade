@@ -125,7 +125,7 @@ const Header = () => {
               </li>
 
               <li className="nav-item me-lg-3 text-p-16-b">
-                <Link className="nav-link nav-link-custom" to="/custom">
+                <Link className="nav-link nav-link-custom" to="/custom-form">
                   客製化專區
                 </Link>
               </li>

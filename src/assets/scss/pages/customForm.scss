@@ -1,0 +1,312 @@
+// --- 數值變數提取 ---
+$mobile-bp: 768px;
+
+// 佈局與間距
+$container-max-width: 1000px;
+$container-padding: 16px;
+$section-margin-bottom: 32px;
+
+// Banner 相關
+$banner-width-desktop: 1296px;
+$banner-height-desktop: 580px;
+$banner-radius-desktop: 20px;
+$banner-radius-mobile: 12px;
+
+// 表單項目
+$input-padding: 12px;
+$form-group-margin: 12px;
+$form-group-margin-lg: 24px;
+$form-group-gap: 4px;
+$icon-size-base: 20px;
+
+// 通用樣式
+$border-radius-base: 4px;
+$transition-base: all 0.3s ease;
+$transition-btn: all 0.2s ease;
+
+.custom-form-page {
+
+  .mobile-br {
+    display: none;
+  }
+
+  .custom-form-container {
+    max-width: $container-max-width;
+    margin: 0 auto;
+    padding: 0 $container-padding;
+  }
+
+  // --- Banner 區塊 ---
+  .form-banner {
+    position: relative;
+    width: $banner-width-desktop;
+    height: $banner-height-desktop;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 40px;
+    border-radius: $banner-radius-desktop;
+    overflow: hidden;
+
+    @media (max-width: $mobile-bp) {
+      width: calc(100% - #{$container-padding * 2});
+      height: 460px;
+      left: 0;
+      transform: none;
+      margin: $form-group-margin-lg auto 0;
+      border-radius: $banner-radius-mobile;
+      display: block;
+
+      .mobile-br {
+        display: block;
+      }
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center 80%;
+      transform: scaleX(-1);
+    }
+
+    .banner-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      color: $secondary-600;
+      pointer-events: none;
+    }
+
+    .banner-title {
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      font-size: 48px;
+      font-weight: 700;
+      margin: 0;
+
+      @media (max-width: $mobile-bp) {
+        top: 80px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 32px;
+        padding: 0 20px;
+      }
+    }
+
+    .banner-subtitle {
+      position: absolute;
+      bottom: 60px;
+      right: 80px;
+      font-size: 28px;
+      color: $secondary-400;
+      font-weight: 700;
+      margin: 0;
+
+      @media (max-width: $mobile-bp) {
+        bottom: 40px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 18px;
+        padding: 0 20px;
+      }
+    }
+  }
+
+  // --- 表單標題 ---
+  .form-header {
+    text-align: center;
+    margin: 100px 0 48px;
+    color: $primary-700;
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    @media (max-width: $mobile-bp) {
+      margin: 40px 0 24px;
+
+      h1 {
+        font-size: 28px;
+        gap: 8px;
+        flex-direction: column;
+      }
+    }
+  }
+
+  // --- 通用區塊與間距 ---
+  section {
+    margin-bottom: $section-margin-bottom;
+
+    // 清除區塊內最後一個元素的下邊距，避免疊加
+    .form-group:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+
+  .section-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: $form-group-margin-lg;
+    color: $gray-800;
+
+    @media (max-width: $mobile-bp) {
+      font-size: 24px;
+    }
+  }
+
+  // --- 表單項目通用樣式 ---
+  .form-group {
+    margin-bottom: $form-group-margin;
+    display: flex;
+    flex-direction: column;
+    gap: $form-group-gap;
+
+    label {
+      font-size: 16px;
+      font-weight: 700;
+      color: $gray-800;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: $input-padding;
+      border: 1px solid $gray-300;
+      border-radius: $border-radius-base;
+      background-color: transparent;
+      transition: $transition-base;
+
+      &::placeholder {
+        color: $gray-400;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $primary-400;
+        box-shadow: 0 0 0 2px rgba($primary-700, 0.1);
+      }
+    }
+
+    .radio-grid {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: $container-padding; // 橫向間距
+      row-gap: $form-group-margin; // 縱向間距
+    }
+
+    .radio-option {
+      width: calc(50% - #{$form-group-margin}); // 兩欄
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+
+      input[type="radio"] {
+        width: $icon-size-base;
+        height: $icon-size-base;
+        accent-color: $primary-700;
+        margin: 0;
+      }
+    }
+  }
+
+  // --- 設計需求區塊 ---
+  .design-section {
+
+    //各表單項目加大間距
+    .form-group {
+      margin-bottom: $form-group-margin-lg;
+
+      &:has(.radio-grid) {
+        gap: $form-group-margin;
+      }
+    }
+
+    .upload-group {
+      display: flex;
+      gap: $form-group-margin;
+      align-items: flex-start;
+
+      input[type="text"] {
+        flex: 1;
+      }
+
+      .upload-btn {
+        padding: 8px 5px;
+        margin: 0 $form-group-margin-lg;
+        background-color: transparent;
+        color: $secondary-700;
+        border: none;
+        border-bottom: 2px solid $secondary-700;
+        border-radius: 0;
+        cursor: pointer;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: $transition-btn;
+
+        &:hover {
+          background-color: rgba($secondary-700, 0.05);
+        }
+      }
+    }
+  }
+
+  // --- 確認送出區塊 ---
+  .confirmation-section {
+
+    .confirm-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: $form-group-margin;
+      font-weight: 700;
+      cursor: pointer;
+
+      input {
+        width: $icon-size-base;
+        height: $icon-size-base;
+        accent-color: $primary-700;
+      }
+    }
+
+    .notice {
+      color: $gray-700;
+      font-size: 16px;
+      margin-bottom: $section-margin-bottom;
+    }
+
+    .submit-btn {
+      display: block;
+      margin: 0 auto 60px;
+      background-color: $primary-700;
+      color: white;
+      border: none;
+      padding: 16px 64px;
+      font-size: 18px;
+      border-radius: $border-radius-base;
+      cursor: pointer;
+      transition: background-color $transition-btn;
+
+      &:hover {
+        background-color: $primary-800;
+      }
+
+      &:disabled {
+        background-color: $gray-400;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
