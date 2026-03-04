@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/04 新增.env 檔及修改.gitignore By Tetsu
 - 2026/03/03 完成「客製化蝴蝶結服務」頁面開發、SCSS 結構優化與響應式調整 By Tim
 - 2026/03/03 於 CartActionContext 實作加入購物車邏輯並串接 API By PeiYiWu
 - 2026/03/02 串商品列表頁的收藏功能 By MidyWu
