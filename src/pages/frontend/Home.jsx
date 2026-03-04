@@ -306,9 +306,9 @@ function Home() {
           <div className="text-center text-lg-start">
             <h2 className="mb-2">每一個蝴蝶結，都只為你而生</h2>
             <h3 className="mb-6">Dream it, pick it, wear it-super cute guaranteed.</h3>
-            <a href="#" className="btn btn-dora-outline d-inline-flex align-items-center gap-2">
+            <Link to="/custom-form" className="btn btn-dora-outline d-inline-flex align-items-center gap-2">
               開始客製化<MoveRight strokeWidth={2.5} />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
