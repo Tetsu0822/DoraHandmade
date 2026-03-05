@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { ShoppingCart, User, ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import logoImg from "@images/logo.png";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -26,11 +27,7 @@ const Header = () => {
           {/* Logo */}
           <Link className="navbar-brand d-flex align-items-center" to="/">
             <span className="logo-font">
-              <img
-                src="/Handmade_Bow.png"
-                className="mb-2 me-1"
-                alt="愛哆啦也愛手作"
-              />
+              <img src={logoImg} className="mb-2 me-1" alt="愛哆啦也愛手作" />
               <span className="logo-text-dark">愛哆啦也愛</span>
               <span className="logo-text-brand">手作</span>
             </span>

@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Copyright } from "lucide-react";
 import { Facebook, Instagram, Line } from "../components/icons";
+import logoImg from "@images/logo.png";
 
 const Footer = () => {
   return (
@@ -11,11 +12,7 @@ const Footer = () => {
           {/* Logo & 版權 */}
           <div className="col-lg-4">
             <div className="footer-logo-container">
-              <img
-                src="/Handmade_Bow.png"
-                alt="愛哆啦也愛手作"
-                className="me-2"
-              />
+              <img src={logoImg} alt="愛哆啦也愛手作" className="me-2" />
               <span className="footer-logo-text">
                 <span className="footer-logo-dark">愛哆啦也愛</span>
                 <span className="footer-logo-brand">手作</span>
