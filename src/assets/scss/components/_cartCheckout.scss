@@ -1,3 +1,29 @@
+.cart-heading-title {
+    color: $gray-900;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+@include media-breakpoint-up(sm) {
+    .cart-heading-title {
+        font-size: 28px;
+        margin-bottom: 24px;
+        line-height: 1.2;
+    }
+
+}
+
+.mobile-card {
+    border-radius: 16px 16px 0px 0px;
+    &-header {
+        background: $secondary-50;
+        color: $gray-600;
+        border-radius: 16px 16px 0 0;
+        padding: 8px 12px;
+    }
+}
+
 .billDetails {
     border: 1px solid #D2D2D2;
     border-radius: 16px;
