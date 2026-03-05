@@ -144,13 +144,14 @@ const Header = () => {
                   </li>
                   {/* 成品 Submenu */}
                   <li
-                    className="dropdown-submenu"
+                    className="dropdown-submenu dropdown"
                     onMouseEnter={handleSubmenuEnter}
                   >
                     <a
                       className="dropdown-item d-flex justify-content-center align-items-center"
                       href="#"
                       data-bs-toggle="dropdown"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       成品
                       <ChevronRight size={16} className="ms-2" />
@@ -169,13 +170,14 @@ const Header = () => {
 
                   {/* 材料 Submenu */}
                   <li
-                    className="dropdown-submenu"
+                    className="dropdown-submenu dropdown"
                     onMouseEnter={handleSubmenuEnter}
                   >
                     <a
                       className="dropdown-item d-flex justify-content-center align-items-center"
                       href="#"
                       data-bs-toggle="dropdown"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       材料
                       <ChevronRight size={16} className="ms-2" />

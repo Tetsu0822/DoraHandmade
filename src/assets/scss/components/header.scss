@@ -86,6 +86,7 @@ body {
 
 // Dropdown
 .dropdown-custom {
+
   .dropdown-menu,
   &.dropdown-menu {
     border-color: $primary-200;
@@ -102,8 +103,8 @@ body {
     }
   }
 
-  &.show > .nav-link-custom,
-  &.show > .nav-link-custom svg {
+  &.show>.nav-link-custom,
+  &.show>.nav-link-custom svg {
     color: $primary !important;
   }
 }
@@ -135,7 +136,7 @@ body {
   position: relative;
 
   @media (min-width: 992px) {
-    > .dropdown-menu {
+    >.dropdown-menu {
       position: absolute;
       top: 0;
       left: 100%;
@@ -144,12 +145,12 @@ body {
     }
 
     // 新增：讓子選單向左展開的樣式
-    &.submenu-left > .dropdown-menu {
+    &.submenu-left>.dropdown-menu {
       left: auto;
       right: 100%;
     }
 
-    &:hover > .dropdown-menu {
+    &:hover>.dropdown-menu {
       display: block !important;
     }
   }
@@ -171,10 +172,15 @@ body {
       background-color: transparent !important;
     }
 
-    // 在 hover 時顯示子選單
-    &:hover > .dropdown-menu {
+    // 行動版點擊展開（配合 Bootstrap 的 .show 類名）
+    &.show>.dropdown-menu {
       display: block !important;
     }
+
+    // 移除原本 hover 時自動顯示子選單的設定
+    // &:hover > .dropdown-menu {
+    //   display: block !important;
+    // }
 
     .dropdown-item {
       padding-left: 2rem;
