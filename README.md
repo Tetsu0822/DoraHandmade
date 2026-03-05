@@ -4,6 +4,8 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/06 修正 Header 手機版"成品"以及"材料"子選單無法正確展開的問題 By Tim
+- 2026/03/06 修正 Header、Footer 的 logo 圖片引入方式 By Tim
 - 2026/03/04 更新購物車購買人資訊 By Tetsu
 - 2026/03/04 更新購物車部分內容 By Tetsu
 - 2026/03/04 新增.env 檔及修改.gitignore By Tetsu
@@ -13,7 +15,7 @@
 - 2026/03/02 實作商品收藏功能 By PeiYiWu
 - 2026/03/01 實作首頁產品列表的 API 串接 By PeiYiWu
 - 2026/03/01 完成 singleProduct 商品詳細頁切版 By cindy
-- 2026/02/28 修改 _products.scss，並在all.scss引入 By MidyWu
+- 2026/02/28 修改 \_products.scss，並在all.scss引入 By MidyWu
 - 2026/02/27 完成 Products 商品列表頁切版、修改 ProductCard 元件 By MidyWu
 - 2026/02/27 完成 Products 商品列表頁切版、修改ProductCard 元件 By MidyWu
 - 2026/02/22 將購物車 Toast 邏輯封裝到 Context，並提升至 FrontendLayout By PeiYiWu
@@ -25,9 +27,9 @@
 - 2026/02/13 加入Header桌機子選單自動判定向右或向左展開功能 By Tim
 - 2026/02/13 修改 FrontendLayout 的 main element class By PeiYiWu
 - 2026/02/12 新增 Header/Footer 元件 By Tim
-- 2026/02/12 修改 _base.scss a 標籤設定 By Tetsu
+- 2026/02/12 修改 \_base.scss a 標籤設定 By Tetsu
 - 2026/02/12 新增Footer2 元件，請參考 By Tetsu
-- 2026/02/12 新增_fonts.scss，如有需要可自訂class By Tetsu
+- 2026/02/12 新增\_fonts.scss，如有需要可自訂class By Tetsu
 - 2026/02/12 新增 ProductCard 元件 By PeiYiWu
 - 2026/02/11 拆分Header Footer元件結構 By Tim
 - 2026/02/11 拆分並重構 CSS 至 SCSS By Tim
