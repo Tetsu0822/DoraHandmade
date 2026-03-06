@@ -36,6 +36,13 @@ button {
       
 }
 
+/* 收藏狀態：粉紅愛心 */
+.is-favorite {
+  color: #D75E7E !important;
+  fill: #D75E7E !important; /* 填滿顏色 */
+  transition: all 0.3s ease; /* 讓變色過程平滑一點 */
+}
+
 
 /* 相關商品卡片容器 */
 .product-card-sm {

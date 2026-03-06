@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { ShoppingCart } from 'lucide-react';
 import { Heart } from 'lucide-react';
 import { Minus } from 'lucide-react';
 import { Plus } from 'lucide-react';
-import productImg from "../../assets/images/product-4_2.png";
+
+import axios from 'axios';
 
 
 // API 設定
@@ -13,16 +15,26 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 
 
 function SingleProduct() {
-  const [quantity, setQuantity] = useState(1);
+  const [qty, setQty] = useState(1);
   const {id} = useParams();
-  // --- 靜態資料 (取代 API，確保切版時有東西看) ---
-  const mainProduct = {
-    id: id || "item_001",
-    title: "暖冬毛絨小鹿蝴蝶結",
-    description: "柔軟毛絨搭配小鹿點綴，散發冬季溫暖氛圍，適合日常或節慶穿搭的可愛蝴蝶結。",
-    price: 777,
-    image: productImg
-  };
+  const [product, setProduct] = useState(null);
+  const navigate = useNavigate();
+  const [wishlistUpdated, setWishlistUpdated] = useState(false);
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/api/${API_PATH}/product/${id}`);
+        
+        setProduct(res.data.product);
+      } catch (error) {
+        console.error("取得商品失敗：", error);
+      }
+    };
+     if (id) {
+    getProduct();
+  }
+  }, [id]);
 
   const relatedProducts = [
     { id: 1, title: "銀白冬夜亮片蝴蝶結", price: 777, images: "/src/assets/images/product-1.png" },
@@ -32,21 +44,75 @@ function SingleProduct() {
   ];
 
   // --- 函式處理 (補齊你報錯的功能) ---
-  const handleQuantityChange = (delta) => {
-    setQuantity(prev => Math.max(1, Math.min(99, prev + delta)));
+  const handleQtyChange = (delta) => {
+    setQty(prev => Math.max(1, Math.min(99, prev + delta)));
+  };
+// 加入購物車功能
+  const handleAddToCart = async (productId, qty = 1) => {
+    try {
+      const cartData = {
+      data: {
+        product_id: productId,
+        qty: Number(qty) // 確保數量是數字
+      }
+    };
+      const res = await axios.post(`${API_BASE}/api/${API_PATH}/cart`, 
+        cartData
+      );
+      if (res.data.success) {
+      alert(`成功加入購物車！`);
+      }
+    } catch (error) {
+      alert("加入購物車失敗，請稍後再試", error);
+    }
   };
 
-  const handleAddToCart = (productId) => {
-    alert(`商品 ID: ${productId} 已加入購物車 (數量: ${quantity})`);
+  const handleBuyNow = async () => {
+    try {
+      const cartData = {
+      data: {
+        product_id: product.id,
+        qty: Number(qty)
+      }
+    };
+      const res = await axios.post(`${API_BASE}/api/${API_PATH}/cart`,  cartData);
+      if (res.data.success) {
+        navigate('/cart');
+      }
+    } catch (error) {
+      alert("系統忙碌中，請稍後再試", error);
+    }
   };
 
-  const handleBuyNow = () => {
-    alert(`立即購買商品！即將導向結帳頁面...`);
+  const handleAddToWishlist = (productItem) => {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const isBookmarked = wishlist.some(item => String(item.id) === String(productItem.id));
+    if (!isBookmarked) {
+    wishlist.push(productItem);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    alert('已加入收藏！');
+  } else {
+    // 如果已經收藏了，再點一次就「取消收藏」 (這功能很貼心！)
+    const newWishlist = wishlist.filter(item => String(item.id) !== String(productItem.id));
+    localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+    alert('已移除收藏！');
+  }
+  setWishlistUpdated(!wishlistUpdated);
   };
 
-  const handleAddToWishlist = () => {
-    alert('已加入收藏清單！');
-  };
+  const isFavorite = (productId) => {
+  const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  return wishlist.some(item => String(item.id) === String(productId));
+};
+
+  if (!product) {
+  return (
+    <div className="container mt-5 text-center">
+      <div className="spinner-border text-primary" role="status"></div>
+      <p className="mt-2">商品資料讀取中...</p>
+    </div>
+  );
+}
   
 
   
@@ -63,7 +129,7 @@ function SingleProduct() {
           <ol className="breadcrumb">
             <li className="breadcrumb-item"><a href="#">首頁</a></li>
             <li className="breadcrumb-item"><a href="#/product">全部商品</a></li>
-            <li className="breadcrumb-item"><a href="#">蝴蝶結</a></li>
+            <li className="breadcrumb-item"><a href="#/category/handmade/bow">蝴蝶結</a></li>
             <li className="breadcrumb-item active text-primary" aria-current="page">暖冬毛絨小鹿蝴蝶結</li>
           </ol>
         </nav>
@@ -72,35 +138,36 @@ function SingleProduct() {
       <div className="single-product container mt-4 pb-5">
         <div className="row ">
           <div className="col-md-6">
-            <img src={mainProduct.image} alt={mainProduct.title} className="img-fluid image-hover" style={{ width: '636px' }}/>
+            <img src={product.imageUrl} alt={product.title} className="img-fluid image-hover" style={{ width: '636px' }}/>
           </div>
           <div className="col-md-6">
-            <h3>{mainProduct.title}</h3>
-            <p>{mainProduct.description}</p>
+            <h3>{product.title}</h3>
+            <p>{product.description}</p>
            <div className="d-flex justify-content-between align-items-center">
               <span className="fs-3 fw-bold text-pink">
-                ${mainProduct.price}
+                ${product.price}
               </span>
               <button 
                 type="button" 
                 className="ms-auto btn p-1 border-0 bg-transparent d-block d-md-none"
                 onClick={handleAddToWishlist}
               >
-                <Heart />
+                <Heart            
+                />
               </button>
             </div>
 
             <div className="input-group" style={{ width: "192px" }}>
-              <button className="btn  btn-minus btn-sm p-3" type="button" onClick={() => handleQuantityChange(-1)}><Minus /></button>
-              <input type="number" className="form-control text-center bg-white border-0" value={quantity} readOnly />
-              <button className="btn  btn-plus btn-sm p-3" type="button" onClick={() => handleQuantityChange(+1)}><Plus /></button>
+              <button className="btn  btn-minus btn-sm p-3" type="button" onClick={() => handleQtyChange(-1)}><Minus /></button>
+              <input type="number" className="form-control text-center bg-white border-0" value={qty} readOnly />
+              <button className="btn  btn-plus btn-sm p-3" type="button" onClick={() => handleQtyChange(+1)}><Plus /></button>
             </div>
             {/* 操作按鈕 */}
               <div className="d-flex flex-row gap-3 mb-3  mt-4">
                 
                   <button 
                     className="btn btn-sm btn-outline-primary flex-grow-1 text-nowrap d-flex align-items-center justify-content-center"
-                     onClick={() => handleAddToCart(mainProduct.id)} 
+                     onClick={() => handleAddToCart(product.id,qty)} 
                   >
                    加入購物車
                   </button>
@@ -119,9 +186,9 @@ function SingleProduct() {
 
                   <button 
                     className="btn btn-sm  flex-grow-1 text-nowrap d-flex align-items-center justify-content-center d-none d-md-block btn-add-cart"
-                    onClick={handleAddToWishlist}>
+                    onClick={() => handleAddToWishlist(product)}>
                   
-                    <span className='mr-2 '><Heart /></span>
+                    <span className='mr-2 '><Heart className={isFavorite(product.id) ? "is-favorite" : ""} /></span>
                     <span>加入收藏</span>
                   </button>
                 
@@ -188,18 +255,18 @@ function SingleProduct() {
         <div className="container">
           <h6 className='fw-bold mb-4'>相關商品</h6>
           <div className="row">
-            {relatedProducts.map(item => (
+            {relatedProducts?.map(item => (
             <div className="col-md-3 col-12 mb-4" key={item.id}>
               {/* 卡片容器：必須要有 position-relative */}
               <div className="card w-100 h-100 border-0 shadow-sm position-relative">
                 
                 {/* 1. 愛心收藏按鈕 (絕對定位在圖片右上角) */}
                 <button 
-                  className="btn btn-light shadow-sm rounded-circle position-absolute wishlist-btn  "
+                  className="btn btn-light shadow-sm rounded-circle position-absolute wishlist-btn "
                   style={{ top: '30px', right: '30px', zIndex: 10, padding: '12px 12px' }}
-                  onClick={handleAddToWishlist}
+                  onClick={() => handleAddToWishlist(item)}
                 >
-                  <Heart  />
+                  <Heart className={isFavorite(item.id) ? "is-favorite" : ""} />
                 </button>
 
                 <img src={item.images} className="card-img-top image-hover p-4" alt={item.title} style={{ objectFit: 'cover' }} />
@@ -207,12 +274,12 @@ function SingleProduct() {
                 <div className="card-body p-2 d-flex flex-column px-4">
                   <p className="card-title text-truncate small mb-2 fw-bold text-gray-600">{item.title}</p>
                   
-                  {/* 2. 金額與購物車 (使用 justify-content-between 推向兩端) */}
+                  {/* 2. 金額與購物車 */}
                   <div className="d-flex justify-content-between align-items-center mt-auto">
                     <span className=" fw-bold">NT${item.price}</span>
                     <button 
                       className="btn btn-sm  p-1 btn-add-cart-icon" 
-                      onClick={() => handleAddToCart(item.id)}
+                      onClick={() => handleAddToCart(item.id,1)}
                     >
                       <ShoppingCart />
                     </button>
