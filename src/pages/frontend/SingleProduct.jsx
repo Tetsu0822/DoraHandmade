@@ -202,30 +202,41 @@ function SingleProduct() {
         </div>
       </div>
       <main>
-        <div className="mb-5 border-bottom border-primary-200 pb-4 border-bottom border-primary-200 pb-4">
+        <div className="mb-5 border-bottom border-primary-200 pb-4 border-bottom border-primary-200 pb-4 ">
           <h6 className="fw-bold mb-3">商品介紹</h6>
-          <p className="mb-1">在寒冷的季節裡，讓一個小小的蝴蝶結替你帶來溫暖。</p>
-          <p className="mb-1">《暖冬毛絨小鹿蝴蝶結》選用細緻柔軟的毛絨布料，搭配可愛的小鹿元素點綴，呈現冬日專屬的溫馨氣息。</p>
-          <p className="mb-0">不論是日常穿搭、聖誕節交換禮物，或是冬季拍照造型，都能為整體造型增添溫柔亮點。</p>
+          {product.content?.split('\n').map((line, index) => (
+            
+            line.trim() && <p key={index} className="mb-2">{line}</p>
+          ))}
+          
         </div>
         <div className="mb-5 border-bottom border-primary-200 pb-4" >
            <h6 className="fw-bold mb-3">商品特色</h6>
             <ul className="mb-0">
-              <li>柔軟毛絨質地，觸感舒適</li>
-              <li>小鹿造型點綴，充滿冬季與節慶感</li>
-              <li>手工製作，每一個蝴蝶結略有不同</li>
-              <li>輕巧不厚重，長時間配戴也舒適</li>
-              <li>適合送禮、自用皆宜</li>
+              {product.features?.split('\n').map((feature, index) => (
+                feature.trim() && <li key={index} className="mb-2">{feature}</li>
+              ))}
+                           
             </ul>
         </div>
         <div className="mb-5 border-bottom border-primary-200 pb-4 ">
           <h6 className="fw-bold mb-3">商品規格</h6>
-          
+          {product.specifications?.split('\n').map((line, index) => {
+            // 1. 拆分標題與內容 (以第一個冒號為準)
+            const [label, ...valueParts] = line.split('：');
+            const value = valueParts.join('：');
 
-          <p className='mb-2 lh-sm'><span className="fw-bold">商品​名​稱：</span><span>​ 暖​冬毛絨​小鹿蝴蝶結</span></p>
-          <p className='mb-2 lh-sm'><span className="fw-bold">尺寸：</span><span>​ 約​ 寬 8 cm × ​高 5 cm​（手工製​作略​有​誤差）​</span></p>
-          <p className='mb-2 lh-sm'><span className="fw-bold">材質：</span><span>毛​絨布、​緞帶、​金屬​配件​</span></p>
-          <p><span className="fw-bold">顏色：</span><span>​ 奶​油白​／​暖​棕色系​（依實​際出貨​為準）</span></p>
+            return (
+              line.trim() && (
+                <p key={index} className="mb-2 lh-sm">
+                  {/* 標題：粗體 (fw-bold) */}
+                  <span className="fw-bold">{label}：</span>
+                  {/* 內容：細體 (預設或 fw-normal) */}
+                  <span className="fw-normal">{value}</span>
+                </p>
+              )
+            );
+          })}    
           
 
         </div>
