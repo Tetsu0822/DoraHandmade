@@ -60,7 +60,8 @@ function SingleProduct() {
         cartData
       );
       if (res.data.success) {
-      alert(`成功加入購物車！`);
+        alert("已加入購物車！");
+        navigate('/category/:mainCat/:subCat');
       }
     } catch (error) {
       alert("加入購物車失敗，請稍後再試", error);
@@ -129,8 +130,8 @@ function SingleProduct() {
           <ol className="breadcrumb">
             <li className="breadcrumb-item"><a href="#">首頁</a></li>
             <li className="breadcrumb-item"><a href="#/product">全部商品</a></li>
-            <li className="breadcrumb-item"><a href="#/category/handmade/bow">蝴蝶結</a></li>
-            <li className="breadcrumb-item active text-primary" aria-current="page">暖冬毛絨小鹿蝴蝶結</li>
+            <li className="breadcrumb-item"><a href="#/category/handmade/bow">{product.category}</a></li>
+            <li className="breadcrumb-item active text-primary" aria-current="page">{product.title}</li>
           </ol>
         </nav>
       </div>
