@@ -1,19 +1,121 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { currency } from "../../utils/filter";
 import { emailValidation, twPhoneValidation } from "../../utils/validation";
+import * as bootstrap from "bootstrap";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 function Cart() {
-  const [ cartData, setCartData ] = useState([]);
-  const [ updatingId, setUpdatingId ] = useState(null);
-  // 優惠券、運費等狀態可在此新增
-  const [ couponCode, setCouponCode ] = useState("");
-  const [ couponStatus, setCouponStatus ] = useState("");
-  // 折扣後的金額
-  const [finalTotal, setFinalTotal] = useState(null);
+    const [ cartData, setCartData ] = useState([]);
+    const [ updatingId, setUpdatingId ] = useState(null);
+    // 優惠券、運費等狀態可在此新增
+    const [ couponCode, setCouponCode ] = useState("");
+    const [ couponStatus, setCouponStatus ] = useState("");
+    // 折扣後的金額
+    const [finalTotal, setFinalTotal] = useState(null);
+    // useForm 表單驗證
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isValid },
+        reset,
+    } = useForm({
+        mode: "onChange"
+    });
+
+    // 收件人選擇：true=同購買人，false=指定其他收件人
+    const [isSameAsBuyer, setIsSameAsBuyer] = useState(true);
+    // 購買人資訊用 state 儲存
+    const [buyerInfo, setBuyerInfo] = useState({
+        name: "林小明",
+        tel: "0910552225",
+        email: "ming.lin@gmail.com",
+        address: "",
+    });
+
+    // 其他收件人資訊
+    const [recipientInfo, setRecipientInfo] = useState({
+        name: "",
+        tel: "",
+        email: "",
+        address: ""
+    });
+
+    // 設定常用收件人資訊，這裡先寫死三筆資料
+    const [commonRecipients, setCommonRecipients] = useState([
+        {
+            id: 1,
+            name: "林小魚",
+            tel: "0910552225",
+            email: "fish.lin@gmail.com",
+            address: "台北市信義區信義路五段7號"
+        },
+        {
+            id: 2,
+            name: "林鮭魚",
+            tel: "0921628826",
+            email: "xiaohua.li@gmail.com",
+            address: "台北市大安區和平東路三段12號"
+        },
+        {
+            id: 3,
+            name: "林葦辰",
+            tel: "0919104401",
+            email: "weicheng.lin@gmail.com",
+            address: "台北市中正區忠孝東路一段1號"
+        }
+    ]);
+    // 更新指定收件人資訊
+    const updateRecipientData = (e) => {
+        const { name, value } = e.target;
+        setRecipientInfo(prev => ({ ...prev, [name]: value }));
+        console.log("recipientInfo:", recipientInfo);
+    };
+    const updateBuyerData = (e) => {
+        const { name, value } = e.target;
+        setBuyerInfo(prev => ({ ...prev, [name]: value }));
+    }
+    // Modal/Offcanvas ref
+    const recipientModalRef = useRef(null);
+    const recipientOffcanvasRef = useRef(null);
+
+    // 自動切換 Modal/Offcanvas
+    const openRecipientSelector = () => {
+        if (window.innerWidth < 768) {
+            // 手機版用 Offcanvas
+            if (!recipientOffcanvasRef.current) {
+                recipientOffcanvasRef.current = new bootstrap.Offcanvas('#recipientOffcanvas');
+            }
+            recipientOffcanvasRef.current.show();
+        } else {
+            // 電腦版用 Modal
+            if (!recipientModalRef.current) {
+                recipientModalRef.current = new bootstrap.Modal('#recipientModal', { keyboard: false });
+            }
+            recipientModalRef.current.show();
+        }
+    };
+    const closeRecipientModal = () => {
+        if (recipientModalRef.current) recipientModalRef.current.hide();
+    };
+    const closeRecipientOffcanvas = () => {
+        if (recipientOffcanvasRef.current) recipientOffcanvasRef.current.hide();
+    };
+
+    const handleSelectCommonRecipient = (recipient) => {
+        setRecipientInfo({
+            name: recipient.name,
+            tel: recipient.tel,
+            email: recipient.email,
+            address: recipient.address
+        });
+        console.log("選擇的常用收件人資訊:", recipient);
+    };
+    console.log("recipientInfo:", recipientInfo);
+
+    const [showAddRecipientForm, setShowAddRecipientForm] = useState(false);
 
 
 
@@ -77,93 +179,58 @@ function Cart() {
     // 計算折扣金額
     const subtotal = cartData.reduce((sum, item) => sum + item.total, 0);
 
-    // useForm 表單驗證
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isValid },
-        reset,
-    } = useForm({
-        mode: "onChange"
-    });
-
-    // 收件人選擇：true=同購買人，false=指定其他收件人
-    const [isSameAsBuyer, setIsSameAsBuyer] = useState(true);
-    // 其他收件人資訊
-    const [recipientInfo, setRecipientInfo] = useState({
-        name: "",
-        phone: "",
-        email: ""
-    });
-    const updateRecipientData = (e) => {
-        const { name, value } = e.target;
-        setRecipientInfo(prev => ({ ...prev, [name]: value }));
-    };
-
-    // 購買人資訊用 state 儲存
-    const [buyerInfo, setBuyerInfo] = useState({
-        name: "林小明",
-        phone: "0910552225",
-        email: "ming.lin@gmail.com"
-    });
-
-    const updateBuyerData = (e) => {
-        const { name, value } = e.target;
-        setBuyerInfo(prev => ({ ...prev, [name]: value }));
+    // 取得表單資料並送出訂單
+    const onSubmit = async (formData) => {
+        try {
+            const data = {
+                data: {
+                    user: formData,
+                    message: "",
+                }
+            }
+            console.log("送出訂單資料:", data);
+            const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/order`, data);
+            console.log("訂單送出成功:", response.data);
+            // 更新購物車列表
+            const responses2 = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
+            setCartData(responses2.data.data.carts || []);
+            alert("訂單送出成功: " + response?.data?.message);
+            reset();
+        } catch (error) {
+            console.error("送出訂單失敗:", error);
+        }
     }
 
-    // 更新指定收件人資訊
-    // const updateRecipientData = (e) => {
-    //     const { name, value } = e.target;
-    //     setRecipientInfo(prev => ({ ...prev, [name]: value }));
-    // };
-
-    // 驗證購物車資料是否正確
-    const [buyerErrors, setBuyerErrors] = useState({});
-
-    // const validateBuyerInfo = () => {
-    // const errors = {};
-    // if (!buyerInfo.name || buyerInfo.name.length < 2) {
-    //     errors.name = "購買人姓名至少需要 2 個字";
-    // }
-    // if (!buyerInfo.phone || !/^[0-9]{10}$/.test(buyerInfo.phone)) {
-    //     errors.phone = "請輸入正確的手機號碼";
-    // }
-    // if (!buyerInfo.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyerInfo.email)) {
-    //     errors.email = "請輸入正確的 Email";
-    // }
-    // setBuyerErrors(errors);
-    // return Object.keys(errors).length === 0;
-    // };
-
-    // 送出表單時
-    // const onSubmit = () => {
-    //     if (!validateBuyerInfo()) {
-    //         return;
-    //     }
-    //     // 這裡可以呼叫 API 送出訂單資料
-    //     alert("訂單已送出！");
-    //     // 送出後可以清空購物車和表單
-    //     setCartData([]);
-    //     reset();
-    // }
 
 
   // API 取得購物車資料顯示在此
   useEffect(() => {
-      const fetchCartData = async () => {
-          try {
+    recipientModalRef.current = new bootstrap.Modal('#recipientModal', {
+            keyboard: false
+        });
+
+        // Modal 關閉時移除焦點
+        document
+        .querySelector("#recipientModal")
+        .addEventListener("hide.bs.modal", () => {
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+        });
+
+    const fetchCartData = async () => {
+        try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
-          } catch (error) {
+        } catch (error) {
             console.log("Error fetching cart data:", error);
-          }
+        }
       }
       fetchCartData();
   }, []);
   return (
     <>
-        <div className="container">
+    <div className="container">
         <div className="row">
             <div className="col-sm-12 col-md-9">
                 <div className="mt-6 mb-6 mt-md-15 mb-md-15">
@@ -255,22 +322,23 @@ function Cart() {
                     {couponStatus && <p className="mt-2">{couponStatus}</p>}
                 </div>
                 {/* 付款與取貨方式 */}
+
                 <h2 className="cart-heading-title">付款與取貨方式</h2>
                 {/* 付款方式：信用卡、超商取貨付款 */}
-                <h3 className="text-p-20-b text-gray-600">付款方式</h3>
+                <h3 className="text-p-20-b text-gray-600 mb-3">付款方式</h3>
                 <div className="d-flex flex-column mb-6 mb-md-8">
                     <div className="form-check mb-2">
-                        <input type="radio" id="creditCard" name="paymentMethod" value="creditCard" className="form-check-input" {...register("paymentMethod", { required: "請選擇付款方式" })} defaultChecked />
+                        <input type="radio" id="creditCard" name="paymentMethod" value="creditCard" className="form-check-input" />
                         <label htmlFor="creditCard" className="form-check-label text-p-16-b">信用卡</label>
                     </div>
                     <div className="form-check mb-2">
-                        <input type="radio" id="storePickup" name="paymentMethod" value="storePickup" className="form-check-input" {...register("paymentMethod", { required: "請選擇付款方式" })} />
+                        <input type="radio" id="storePickup" name="paymentMethod" value="storePickup" className="form-check-input" />
                         <label htmlFor="storePickup" className="form-check-label text-p-16-b">超商取貨付款</label>
                     </div>
-                    {errors.paymentMethod && <p className="text-danger">{errors.paymentMethod.message}</p>}
                 </div>
+
                 <hr className="border text-gray-100 mb-6 mb-md-8" />
-                <h3 className="text-p-20-b text-gray-600">購買人資訊</h3>
+                <h3 className="text-p-20-b text-gray-600 mb-3">購買人資訊</h3>
                 <div className="mb-3">
                 <label htmlFor="buyerName" className="form-label text-p-16-b">
                     購買人姓名
@@ -281,10 +349,16 @@ function Cart() {
                     type="text"
                     className="form-control"
                     placeholder="請輸入購買人姓名"
-                    value={buyerInfo.name}
+                    {...register("name", {
+                        required: "請輸入購買人姓名",
+                        minLength: {
+                            value: 2,
+                            message: "購買人姓名至少需要 2 個字",
+                        },
+                    })}
                     onChange={updateBuyerData}
                 />
-                {buyerErrors.name && <p className="text-danger">{buyerErrors.name}</p>}
+                {errors.name && <p className="text-danger">{errors.name.message}</p>}
                 </div>
                 <div className="mb-3">
                 <label htmlFor="tel" className="form-label text-p-16-b">
@@ -292,15 +366,16 @@ function Cart() {
                 </label>
                 <input
                     id="tel"
-                    name="phone"
+                    name="tel"
                     type="tel"
                     className="form-control"
                     placeholder="請輸入聯絡電話"
-                    value={buyerInfo.phone}
+                    {...register("tel", {
+                        required: "請輸入聯絡電話",twPhoneValidation
+                    })}
                     onChange={updateBuyerData}
-                    // {...register("tel", twPhoneValidation)}
                 />
-                {buyerErrors.phone && <p className="text-danger">{buyerErrors.phone}</p>}
+                {errors.tel && <p className="text-danger">{errors.tel.message}</p>}
                 </div>
                 <div className="mb-6 mb-md-8">
                 <label htmlFor="email" className="form-label text-p-16-b">
@@ -312,87 +387,275 @@ function Cart() {
                     type="email"
                     className="form-control"
                     placeholder="請輸入 Email"
-                    value={buyerInfo.email}
+                    {...register("email", {
+                        required: "請輸入 Email",emailValidation
+                    })}
                     onChange={updateBuyerData}
                 />
-                {buyerErrors.email && <p className="text-danger">{buyerErrors.email}</p>}
+                {errors.email && <p className="text-danger">{errors.email.message}</p>}
+                </div>
+                <div className="mb-6 mb-md-8">
+                <label htmlFor="address" className="form-label text-p-16-b">
+                    收件人地址
+                </label>
+                <input
+                    id="address"
+                    name="address"
+                    type="text"
+                    className="form-control"
+                    placeholder="請輸入地址"
+                    {...register("address", {
+                        required: "請輸入地址",
+                    })}
+                    onChange={updateBuyerData}
+                />
+                {errors.address && <p className="text-danger">{errors.address.message}</p>}
                 </div>
                 <hr className="border text-gray-100 mb-6 mb-md-8" />
-                <h3 className="text-p-20-b text-gray-600">收件人資訊</h3>
+                <h3 className="text-p-20-b text-gray-600 mb-3">收件人資訊</h3>
                 <div className="d-flex flex-column mb-3">
                     <div className="form-check mb-2">
                         <input
                             type="radio"
                             id="sameAsBuyer"
                             name="recipientType"
+                            className="form-check-input me-2"
                             checked={isSameAsBuyer}
                             onChange={() => setIsSameAsBuyer(true)}
-                            className="form-check-input"
                         />
                         <label htmlFor="sameAsBuyer" className="form-check-label text-p-16-b">同購買人</label>
                     </div>
-                    <div className="form-check">
+                    {isSameAsBuyer && (
+                        <div className="border-0 rounded-4 p-5 mb-4" style={{backgroundColor: "#EFEFEF"}}>
+                            <p className="text-p-16-r mb-2">姓名: {buyerInfo.name}</p>
+                            <p className="text-p-16-r mb-2">電話: {buyerInfo.tel}</p>
+                            <p className="text-p-16-r mb-2">Email: {buyerInfo.email}</p>
+                            <p className="text-p-16-r mb-2">地址: {buyerInfo.address}</p>
+                        </div>
+                    )}
+                    <div className="form-check d-flex align-items-center">
                         <input
                             type="radio"
                             id="otherRecipient"
                             name="recipientType"
-                            checked={!isSameAsBuyer}
+                            className="form-check-input me-2"
                             onChange={() => setIsSameAsBuyer(false)}
-                            className="form-check-input"
                         />
                         <label htmlFor="otherRecipient" className="form-check-label text-p-16-b">指定其他收件人</label>
+                        {/* 新增選擇常用收件人按鈕，按鈕在最右邊 */}
+                        {!isSameAsBuyer && (
+                            <button
+                                className="btn border-0 ms-auto"
+                                type="button"
+                                style={{ padding: "12px 24px 12px 24px", gap: "8px" }}
+                                onClick={openRecipientSelector}
+                            >
+                                <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>選擇常用收件人</span>
+                            </button>
+                        )}
+                    </div>
+                    {!isSameAsBuyer && (
+                        <div style={{ background: "#f3f3f3", borderRadius: 16, padding: 20, marginTop: 16, marginBottom: 32 }}>
+                            <div className="row mb-2">
+                                <div className="col-6">
+                                    <label className="fw-bold mb-1">收件人</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        className="form-control"
+                                        value={recipientInfo.name || ""}
+                                        onChange={updateRecipientData}
+                                        placeholder="收件人姓名"
+                                    />
+                                </div>
+                                <div className="col-6">
+                                    <label className="fw-bold mb-1">聯絡電話</label>
+                                    <input
+                                        type="text"
+                                        name="tel"
+                                        className="form-control"
+                                        value={recipientInfo.tel || ""}
+                                        onChange={updateRecipientData}
+                                        placeholder="收件人電話"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="fw-bold mb-1">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className="form-control"
+                                    value={recipientInfo.email || ""}
+                                    onChange={updateRecipientData}
+                                    placeholder="收件人 Email"
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {/* 電腦版 Modal */}
+                <div className="modal" tabIndex="-1" id="recipientModal">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <div className="d-flex">
+                                    <h2 className="h6 flex-grow-1">選擇常用收件人</h2>
+                                    <button
+                                    className="btn border-0 ms-auto"
+                                    type="button"
+                                    // 點擊後顯示新增收件人表單
+                                    onClick={() => setShowAddRecipientForm(true)}
+                                    style={{ padding: "12px 24px 12px 24px", gap: "8px" }}
+                                    //onClick={openRecipientSelector}
+                                >
+                                    <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>新增常用收件人</span>
+                                </button>
+                                </div>
+                                {/* 這裡可放常用收件人列表與選擇按鈕 */}
+                                {
+                                    commonRecipients.map(recipient => (
+                                        <div key={recipient.id} className="form-check mb-3">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="commonRecipient"
+                                                id={`recipient-${recipient.id}`}
+                                                onChange={() => handleSelectCommonRecipient(recipient)}
+                                            />
+                                            <label className="form-check-label" htmlFor={`recipient-${recipient.id}`}>
+                                                {recipient.name} {recipient.tel}
+                                            </label>
+                                        </div>
+                                    ))
+                                }
+                                {showAddRecipientForm && (
+                                <div style={{ background: "#f3f3f3", borderRadius: 16, padding: 20, marginTop: 16, marginBottom: 32 }}>
+                                    <div className="row mb-2">
+                                    <div className="col-6">
+                                        <label className="fw-bold mb-1">收件人</label>
+                                        <input
+                                        type="text"
+                                        name="name"
+                                        className="form-control"
+                                        value={recipientInfo.name || ""}
+                                        onChange={updateRecipientData}
+                                        placeholder="收件人姓名"
+                                        />
+                                    </div>
+                                    <div className="col-6">
+                                        <label className="fw-bold mb-1">聯絡電話</label>
+                                        <input
+                                        type="text"
+                                        name="tel"
+                                        className="form-control"
+                                        value={recipientInfo.tel || ""}
+                                        onChange={updateRecipientData}
+                                        placeholder="收件人電話"
+                                        />
+                                    </div>
+                                    </div>
+                                    <div>
+                                    <label className="fw-bold mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        className="form-control"
+                                        value={recipientInfo.email || ""}
+                                        onChange={updateRecipientData}
+                                        placeholder="收件人 Email"
+                                    />
+                                    </div>
+                                </div>
+                                )}
+                            </div>
+                            <div className="modal-footer d-flex flex-row gap-2">
+                                <button type="button" className="btn btn-outline-primary flex-fill" data-bs-dismiss="modal" onClick={closeRecipientModal}>取消</button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary flex-fill text-white"
+                                    onClick={() => {closeRecipientModal(); closeRecipientOffcanvas();}}
+                                >
+                                    確定
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                {isSameAsBuyer ? (
-                    <div style={{ background: "#f3f3f3", borderRadius: 16, padding: 20, marginTop: 10 }}>
-                        <div>姓名：{buyerInfo.name}</div>
-                        <div>聯絡電話：{buyerInfo.phone}</div>
-                        <div>Email：{buyerInfo.email}</div>
-                    </div>
-                ) : (
-                    <div style={{ background: "#f3f3f3", borderRadius: 16, padding: 20, marginTop: 10 }}>
-                        <div className="row mb-2">
-                            <div className="col-6">
-                                <label className="fw-bold mb-1">收件人</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    className="form-control"
-                                    value={recipientInfo.name}
-                                    onChange={updateRecipientData}
-                                    placeholder="收件人姓名"
-                                />
+                {/* 手機版 Offcanvas */}
+                <div className="offcanvas offcanvas-bottom custom-offcanvas-80" tabIndex="-1" id="recipientOffcanvas">
+                    <div className="offcanvas-body">
+                        <div className="d-flex">
+                                <h2 className="text-p-24 flex-grow-1">選擇常用收件人</h2>
+                                <button
+                                className="btn border-0 ms-auto"
+                                type="button"
+                                style={{ padding: "12px", gap: "10px" }}
+                                //onClick={openRecipientSelector}
+                            >
+                                <span className="text-p-16-b" style={{color: "#493B3F"}}><Plus size={24} /></span>
+                            </button>
                             </div>
-                            <div className="col-6">
-                                <label className="fw-bold mb-1">聯絡電話</label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    className="form-control"
-                                    value={recipientInfo.phone}
-                                    onChange={updateRecipientData}
-                                    placeholder="收件人電話"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="fw-bold mb-1">Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                className="form-control"
-                                value={recipientInfo.email}
-                                onChange={updateRecipientData}
-                                placeholder="收件人 Email"
-                            />
-                        </div>
+                            {/* 這裡可放常用收件人列表與選擇按鈕 */}
+                            {
+                                commonRecipients.map(recipient => (
+                                    <div key={recipient.id} className="form-check mb-3">
+                                        <input
+                                            className="form-check-input"
+                                            type="radio"
+                                            name="commonRecipient"
+                                            id={`recipient-${recipient.id}`}
+                                            onChange={() => handleSelectCommonRecipient(recipient)}
+                                        />
+                                        <label className="form-check-label" htmlFor={`recipient-${recipient.id}`}>
+                                            {recipient.name} {recipient.tel}
+                                        </label>
+                                    </div>
+                                ))
+                            }
                     </div>
-                )}
-
+                    <div className="offcanvas-footer d-flex justify-content-between p-3">
+                        <button type="button" className="btn btn-outline-primary w-50 me-2" onClick={closeRecipientOffcanvas}>取消</button>
+                        <button type="button" className="btn btn-primary w-50 text-white" onClick={() => {closeRecipientModal(); closeRecipientOffcanvas();}}>確定</button>
+                    </div>
+                </div>
+                <hr className="border text-gray-100 mb-6 mb-md-8" />
+                {/* 取貨方式 */}
+                <h3 className="text-p-20-b text-gray-600 mb-3">取貨方式</h3>
+                <div className="d-flex flex-column mb-6 mb-md-8">
+                    <div className="form-check d-flex align-items-center  mb-2">
+                        <input type="radio" id="familyMart" name="deliveryMethod" value="familyMart" className="form-check-input me-1" defaultChecked />
+                        <label htmlFor="familyMart" className="form-check-label text-p-16-b me-2">全家超商取貨</label>
+                        <button
+                            className="btn border-0"
+                            type="button"
+                            style={{
+                                padding: "12px 24px 12px 24px",
+                                gap: "8px",
+                            }}
+                        >
+                            <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>搜尋門市</span>
+                        </button>
+                    </div>
+                    <div className="form-check d-flex align-items-center mb-2">
+                        <input type="radio" id="uniMart" name="deliveryMethod" value="uniMart" className="form-check-input me-1" />
+                        <label htmlFor="uniMart" className="form-check-label text-p-16-b me-2">711 超商取貨</label>
+                        <button
+                            className="btn border-0"
+                            type="button"
+                            style={{
+                                padding: "12px 24px 12px 24px",
+                                gap: "8px",
+                            }}
+                        >
+                            <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>搜尋門市</span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div className="col-sm-12 col-md-3">
                 <div className="mt-6 mb-6 mt-md-15 mb-md-15">
+                <form onSubmit={handleSubmit(onSubmit)}>
                 <h2 className="cart-heading-title">結帳明細</h2>
                 <div className="billDetails w-100">
                     <div className="d-flex">
@@ -417,7 +680,7 @@ function Cart() {
                         <div className="p-2">
                             {
                                 // 商品小計為 0 時免運費，反之則+$100
-                                cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? "免運費" : currency(100)
+                                cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? "--" : currency(100)
                             }
                         </div>
                     </div>
@@ -434,14 +697,14 @@ function Cart() {
                 <button
                     className="checkoutBtn btn btn-primary w-100 text-white"
                     disabled={cartData.length === 0 || !isValid}
-                    // onClick={onsubmit}
                 >
                     立即結帳
                 </button>
+                </form>
                 </div>
             </div>
         </div>
-        </div>
+    </div>
     </>
   );
 }

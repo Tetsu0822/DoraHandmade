@@ -24,6 +24,14 @@
     }
 }
 
+.custom-offcanvas-80 {
+  height: 80vh !important;
+  max-height: 80vh !important;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 24px 16px 40px 16px;
+}
+
 .billDetails {
     border: 1px solid #D2D2D2;
     border-radius: 16px;
