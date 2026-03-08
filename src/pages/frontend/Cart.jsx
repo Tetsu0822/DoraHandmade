@@ -25,7 +25,7 @@ function Cart() {
         mode: "onChange"
     });
 
-    // 收件人選擇：true=同購買人，false=指定其他收件人
+    // 收件人選擇
     const [isSameAsBuyer, setIsSameAsBuyer] = useState(true);
     // 購買人資訊用 state 儲存
     const [buyerInfo, setBuyerInfo] = useState({
@@ -111,13 +111,13 @@ function Cart() {
             email: recipient.email,
             address: recipient.address
         });
-        console.log("選擇的常用收件人資訊:", recipient);
     };
-    console.log("recipientInfo:", recipientInfo);
 
     const [showAddRecipientForm, setShowAddRecipientForm] = useState(false);
 
-
+    const deleteCommonRecipient = (id) => {
+        setCommonRecipients(prev => prev.filter(recipient => recipient.id !== id));
+    }
 
   // 更新購物車數量
     const updateCartQty = async (item, newQty) => {
@@ -512,10 +512,10 @@ function Cart() {
                                     <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>新增常用收件人</span>
                                 </button>
                                 </div>
-                                {/* 這裡可放常用收件人列表與選擇按鈕 */}
-                                {
+                                {/* 這裡可放常用收件人列表與選擇按鈕，若有資料才顯示 */}
+                                {commonRecipients.length > 0 ? (
                                     commonRecipients.map(recipient => (
-                                        <div key={recipient.id} className="form-check mb-3">
+                                        <div key={recipient.id} className="form-check d-flex align-items-center mb-3">
                                             <input
                                                 className="form-check-input"
                                                 type="radio"
@@ -523,12 +523,21 @@ function Cart() {
                                                 id={`recipient-${recipient.id}`}
                                                 onChange={() => handleSelectCommonRecipient(recipient)}
                                             />
-                                            <label className="form-check-label" htmlFor={`recipient-${recipient.id}`}>
+                                            <label className="form-check-label me-2" htmlFor={`recipient-${recipient.id}`}>
                                                 {recipient.name} {recipient.tel}
                                             </label>
+                                            <button
+                                                type="button"
+                                                className="btn btn-link p-0"
+                                                onClick={() => deleteCommonRecipient(recipient.id)}
+                                            >
+                                                刪除
+                                            </button>
                                         </div>
                                     ))
-                                }
+                                ) : (
+                                    <p>尚無常用收件人</p>
+                                )}
                                 {showAddRecipientForm && (
                                 <div style={{ background: "#f3f3f3", borderRadius: 16, padding: 20, marginTop: 16, marginBottom: 32 }}>
                                     <div className="row mb-2">
@@ -574,7 +583,13 @@ function Cart() {
                                 <button
                                     type="button"
                                     className="btn btn-primary flex-fill text-white"
-                                    onClick={() => {closeRecipientModal(); closeRecipientOffcanvas();}}
+                                    onClick={() => {
+                                        // 表單有填資料才新增到常用收件人
+                                        if (recipientInfo.name || recipientInfo.tel || recipientInfo.email) {
+                                            setCommonRecipients(prev => [...prev, { id: prev.length + 1, ...recipientInfo }]);
+                                        }
+                                        setShowAddRecipientForm(false);
+                                        closeRecipientModal(); closeRecipientOffcanvas();}}
                                 >
                                     確定
                                 </button>
@@ -586,37 +601,90 @@ function Cart() {
                 <div className="offcanvas offcanvas-bottom custom-offcanvas-80" tabIndex="-1" id="recipientOffcanvas">
                     <div className="offcanvas-body">
                         <div className="d-flex">
-                                <h2 className="text-p-24 flex-grow-1">選擇常用收件人</h2>
-                                <button
+                            <h2 className="text-p-24 flex-grow-1">選擇常用收件人</h2>
+                            <button
                                 className="btn border-0 ms-auto"
                                 type="button"
                                 style={{ padding: "12px", gap: "10px" }}
-                                //onClick={openRecipientSelector}
+                                onClick={() => setShowAddRecipientForm(true)}
                             >
                                 <span className="text-p-16-b" style={{color: "#493B3F"}}><Plus size={24} /></span>
                             </button>
+                        </div>
+                        {/* 這裡可放常用收件人列表與選擇按鈕 */}
+                        {commonRecipients.length > 0 ? (
+                            commonRecipients.map(recipient => (
+                                <div key={recipient.id} className="form-check d-flex align-items-center mb-3">
+                                    <input
+                                        className="form-check-input"
+                                        type="radio"
+                                        name="commonRecipient"
+                                        id={`recipient-${recipient.id}`}
+                                        onChange={() => handleSelectCommonRecipient(recipient)}
+                                    />
+                                    <label className="form-check-label me-2" htmlFor={`recipient-${recipient.id}`}>
+                                        {recipient.name} {recipient.tel}
+                                    </label>
+                                    <button
+                                        type="button"
+                                        className="btn btn-link p-0"
+                                        onClick={() => deleteCommonRecipient(recipient.id)}
+                                    >
+                                        刪除
+                                    </button>
+                                </div>
+                            ))
+                        ) : (
+                            <p>尚無常用收件人</p>
+                        )}
+                        {showAddRecipientForm && (
+                        <div style={{ background: "#f3f3f3", borderRadius: 16, padding: 20, marginTop: 16, marginBottom: 32 }}>
+                            <div className="row mb-2">
+                            <div className="col-6">
+                                <label className="fw-bold mb-1">收件人</label>
+                                <input
+                                type="text"
+                                name="name"
+                                className="form-control"
+                                value={recipientInfo.name || ""}
+                                onChange={updateRecipientData}
+                                placeholder="收件人姓名"
+                                />
                             </div>
-                            {/* 這裡可放常用收件人列表與選擇按鈕 */}
-                            {
-                                commonRecipients.map(recipient => (
-                                    <div key={recipient.id} className="form-check mb-3">
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="commonRecipient"
-                                            id={`recipient-${recipient.id}`}
-                                            onChange={() => handleSelectCommonRecipient(recipient)}
-                                        />
-                                        <label className="form-check-label" htmlFor={`recipient-${recipient.id}`}>
-                                            {recipient.name} {recipient.tel}
-                                        </label>
-                                    </div>
-                                ))
-                            }
+                            <div className="col-6">
+                                <label className="fw-bold mb-1">聯絡電話</label>
+                                <input
+                                type="text"
+                                name="tel"
+                                className="form-control"
+                                value={recipientInfo.tel || ""}
+                                onChange={updateRecipientData}
+                                placeholder="收件人電話"
+                                />
+                            </div>
+                            </div>
+                            <div>
+                            <label className="fw-bold mb-1">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                className="form-control"
+                                value={recipientInfo.email || ""}
+                                onChange={updateRecipientData}
+                                placeholder="收件人 Email"
+                            />
+                            </div>
+                        </div>
+                        )}
                     </div>
                     <div className="offcanvas-footer d-flex justify-content-between p-3">
                         <button type="button" className="btn btn-outline-primary w-50 me-2" onClick={closeRecipientOffcanvas}>取消</button>
-                        <button type="button" className="btn btn-primary w-50 text-white" onClick={() => {closeRecipientModal(); closeRecipientOffcanvas();}}>確定</button>
+                        <button type="button" className="btn btn-primary w-50 text-white" onClick={() => {
+                            if (recipientInfo.name || recipientInfo.tel || recipientInfo.email) {
+                                setCommonRecipients(prev => [...prev, { id: prev.length + 1, ...recipientInfo }]);
+                            }
+                            setShowAddRecipientForm(false);
+                            closeRecipientModal(); closeRecipientOffcanvas();}}>確定</button>
                     </div>
                 </div>
                 <hr className="border text-gray-100 mb-6 mb-md-8" />
