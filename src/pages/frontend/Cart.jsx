@@ -21,6 +21,7 @@ function Cart() {
         handleSubmit,
         formState: { errors, isValid },
         reset,
+        watch,
     } = useForm({
         mode: "onChange"
     });
@@ -73,10 +74,23 @@ function Cart() {
         setRecipientInfo(prev => ({ ...prev, [name]: value }));
         console.log("recipientInfo:", recipientInfo);
     };
-    const updateBuyerData = (e) => {
-        const { name, value } = e.target;
-        setBuyerInfo(prev => ({ ...prev, [name]: value }));
-    }
+    // const updateBuyerData = (e) => {
+    //     const { name, value } = e.target;
+    //     setBuyerInfo(prev => ({ ...prev, [name]: value }));
+    // };
+    const buyerName = watch("name");
+    const buyerTel = watch("tel");
+    const buyerEmail = watch("email");
+    const buyerAddress = watch("address");
+
+    useEffect(() => {
+    setBuyerInfo({
+        name: buyerName || "",
+        tel: buyerTel || "",
+        email: buyerEmail || "",
+        address: buyerAddress || "",
+    });
+    }, [buyerName, buyerTel, buyerEmail, buyerAddress]);
     // Modal/Offcanvas ref
     const recipientModalRef = useRef(null);
     const recipientOffcanvasRef = useRef(null);
@@ -182,10 +196,37 @@ function Cart() {
     // 取得表單資料並送出訂單
     const onSubmit = async (formData) => {
         try {
+            const recipient = isSameAsBuyer ? {
+                name: formData.name,
+                email: formData.email,
+                tel: formData.tel,
+                address: formData.address,
+            } : {
+                name: recipientInfo.name,
+                email: recipientInfo.email,
+                tel: recipientInfo.tel,
+                address: recipientInfo.address,
+            };
             const data = {
                 data: {
-                    user: formData,
-                    message: "",
+                    user: {
+                        name: formData.name,
+                        email: formData.email,
+                        tel: formData.tel,
+                        address: formData.address,
+                    },
+                    message: `付款方式:${formData.paymentMethod}，收件人:${recipient.name}，電話:${recipient.tel}，Email:${recipient.email}，地址:${recipient.address}`,
+                    recipient: isSameAsBuyer ? {
+                        name: formData.name,
+                        email: formData.email,
+                        tel: formData.tel,
+                        address: formData.address,
+                    } : {
+                        name: recipientInfo.name,
+                        email: recipientInfo.email,
+                        tel: recipientInfo.tel,
+                        address: recipientInfo.address,
+                    },
                 }
             }
             console.log("送出訂單資料:", data);
@@ -328,11 +369,15 @@ function Cart() {
                 <h3 className="text-p-20-b text-gray-600 mb-3">付款方式</h3>
                 <div className="d-flex flex-column mb-6 mb-md-8">
                     <div className="form-check mb-2">
-                        <input type="radio" id="creditCard" name="paymentMethod" value="creditCard" className="form-check-input" />
+                        <input type="radio" id="creditCard" name="paymentMethod" value="creditCard" className="form-check-input"
+                        {...register("paymentMethod", { required: "請選擇付款方式" }) }
+                        />
                         <label htmlFor="creditCard" className="form-check-label text-p-16-b">信用卡</label>
                     </div>
                     <div className="form-check mb-2">
-                        <input type="radio" id="storePickup" name="paymentMethod" value="storePickup" className="form-check-input" />
+                        <input type="radio" id="storePickup" name="paymentMethod" value="storePickup" className="form-check-input"
+                        {...register("paymentMethod", { required: "請選擇付款方式" }) }
+                        />
                         <label htmlFor="storePickup" className="form-check-label text-p-16-b">超商取貨付款</label>
                     </div>
                 </div>
@@ -356,7 +401,7 @@ function Cart() {
                             message: "購買人姓名至少需要 2 個字",
                         },
                     })}
-                    onChange={updateBuyerData}
+                    //onChange={updateBuyerData}
                 />
                 {errors.name && <p className="text-danger">{errors.name.message}</p>}
                 </div>
@@ -373,7 +418,7 @@ function Cart() {
                     {...register("tel", {
                         required: "請輸入聯絡電話",twPhoneValidation
                     })}
-                    onChange={updateBuyerData}
+                    //onChange={updateBuyerData}
                 />
                 {errors.tel && <p className="text-danger">{errors.tel.message}</p>}
                 </div>
@@ -390,7 +435,7 @@ function Cart() {
                     {...register("email", {
                         required: "請輸入 Email",emailValidation
                     })}
-                    onChange={updateBuyerData}
+                    //onChange={updateBuyerData}
                 />
                 {errors.email && <p className="text-danger">{errors.email.message}</p>}
                 </div>
@@ -407,7 +452,7 @@ function Cart() {
                     {...register("address", {
                         required: "請輸入地址",
                     })}
-                    onChange={updateBuyerData}
+                    //onChange={updateBuyerData}
                 />
                 {errors.address && <p className="text-danger">{errors.address.message}</p>}
                 </div>
@@ -495,7 +540,7 @@ function Cart() {
                     )}
                 </div>
                 {/* 電腦版 Modal */}
-                <div className="modal" tabIndex="-1" id="recipientModal">
+                <div className="modal" id="recipientModal">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content">
                             <div className="modal-body">
@@ -603,7 +648,7 @@ function Cart() {
                     </div>
                 </div>
                 {/* 手機版 Offcanvas */}
-                <div className="offcanvas offcanvas-bottom custom-offcanvas-80" tabIndex="-1" id="recipientOffcanvas">
+                <div className="offcanvas offcanvas-bottom custom-offcanvas-80" id="recipientOffcanvas">
                     <div className="offcanvas-body">
                         <div className="d-flex">
                             <h2 className="text-p-24 flex-grow-1">選擇常用收件人</h2>
