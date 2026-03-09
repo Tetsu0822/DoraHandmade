@@ -96,6 +96,7 @@ function Cart() {
     const recipientModalRef = useRef(null);
     const recipientOffcanvasRef = useRef(null);
     const toastRef = useRef(null);
+    const [ orderId, setOrderId ] = useState(null);
     // 顯示 Toast
     const showToast = () => {
         const toast = new bootstrap.Toast(toastRef.current);
@@ -237,12 +238,14 @@ function Cart() {
                 }
             }
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/order`, data);
+            console.log("訂單送出成功:", response.data);
+            setOrderId(response.data.orderId);
+            console.log("訂單 ID:", response.data.orderId);
             // 更新購物車列表
             const responses2 = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(responses2.data.data.carts || []);
-            // alert("訂單送出成功: " + response?.data?.message);
-            showToast();
             reset();
+            showToast();
         } catch (error) {
             console.error("送出訂單失敗:", error);
         }
@@ -447,7 +450,7 @@ function Cart() {
                 </div>
                 <div className="mb-6 mb-md-8">
                 <label htmlFor="address" className="form-label text-p-16-b">
-                    收件人地址
+                    購買人地址
                 </label>
                 <input
                     id="address"
@@ -835,7 +838,7 @@ function Cart() {
             </div>
         </div>
     </div>
-    <OrderToast ref={toastRef} message="訂單已成立！" isSuccess={true} />
+    <OrderToast ref={toastRef} message="訂單已成立！" isSuccess={true} orderId={orderId} />
     </>
   );
 }

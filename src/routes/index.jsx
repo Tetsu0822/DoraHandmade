@@ -6,6 +6,7 @@ import SingleProduct from "../pages/frontend/SingleProduct.jsx";
 import Cart from "../pages/frontend/Cart.jsx";
 import CustomForm from "../pages/frontend/CustomForm.jsx";
 import Orders from "../pages/frontend/Orders.jsx";
+import SingleOrder from "../pages/frontend/SingleOrder.jsx";
 import NotFound from "../pages/frontend/NotFound.jsx";
 import AdminProducts from "../pages/backend/AdminProducts.jsx";
 import BackendLayout from "../layout/BackendLayout.jsx";
@@ -43,6 +44,10 @@ export const routes = createHashRouter([
             {
                 path: "order",
                 element: <Orders />
+            },
+            {
+                path: "order/:id",
+                element: <SingleOrder />
             },
             {
                 path: "*",
