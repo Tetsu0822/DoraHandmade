@@ -5,7 +5,7 @@ import Product from "../pages/frontend/Products.jsx";
 import SingleProduct from "../pages/frontend/SingleProduct.jsx";
 import Cart from "../pages/frontend/Cart.jsx";
 import CustomForm from "../pages/frontend/CustomForm.jsx";
-import Utils from "../pages/frontend/Utils.jsx";
+import Orders from "../pages/frontend/Orders.jsx";
 import NotFound from "../pages/frontend/NotFound.jsx";
 import AdminProducts from "../pages/backend/AdminProducts.jsx";
 import BackendLayout from "../layout/BackendLayout.jsx";
@@ -25,7 +25,7 @@ export const routes = createHashRouter([
                 element: <Product />
             },
             {
-                path: "category/:mainCat/:subCat", 
+                path: "category/:mainCat/:subCat",
                 element: <Product />
             },
             {
@@ -41,8 +41,8 @@ export const routes = createHashRouter([
                 element: <CustomForm />
             },
             {
-                path: "utils",
-                element: <Utils />
+                path: "order",
+                element: <Orders />
             },
             {
                 path: "*",

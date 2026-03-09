@@ -1,4 +1,5 @@
 import axios from "axios";
+import OrderToast from "@components/OrderToast";
 import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Minus, Plus, Trash2 } from "lucide-react";
@@ -94,6 +95,12 @@ function Cart() {
     // Modal/Offcanvas ref
     const recipientModalRef = useRef(null);
     const recipientOffcanvasRef = useRef(null);
+    const toastRef = useRef(null);
+    // 顯示 Toast
+    const showToast = () => {
+        const toast = new bootstrap.Toast(toastRef.current);
+        toast.show();
+    };
 
     // 自動切換 Modal/Offcanvas
     const openRecipientSelector = () => {
@@ -229,13 +236,12 @@ function Cart() {
                     },
                 }
             }
-            console.log("送出訂單資料:", data);
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/order`, data);
-            console.log("訂單送出成功:", response.data);
             // 更新購物車列表
             const responses2 = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(responses2.data.data.carts || []);
-            alert("訂單送出成功: " + response?.data?.message);
+            // alert("訂單送出成功: " + response?.data?.message);
+            showToast();
             reset();
         } catch (error) {
             console.error("送出訂單失敗:", error);
@@ -829,6 +835,7 @@ function Cart() {
             </div>
         </div>
     </div>
+    <OrderToast ref={toastRef} message="訂單已成立！" isSuccess={true} />
     </>
   );
 }
