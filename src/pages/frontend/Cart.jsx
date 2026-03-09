@@ -575,6 +575,15 @@ function Cart() {
                                         placeholder="收件人 Email"
                                     />
                                     </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary mt-2 w-100"
+                                        onClick={() => {
+                                            if (recipientInfo.name && recipientInfo.tel && recipientInfo.email) {
+                                        setCommonRecipients(prev => [...prev, { id: prev.length + 1, ...recipientInfo }]);
+                                    }
+                                        }}
+                                    >新增常用收件人</button>
                                 </div>
                                 )}
                             </div>
@@ -584,10 +593,6 @@ function Cart() {
                                     type="button"
                                     className="btn btn-primary flex-fill text-white"
                                     onClick={() => {
-                                        // 表單有填資料才新增到常用收件人
-                                        if (recipientInfo.name || recipientInfo.tel || recipientInfo.email) {
-                                            setCommonRecipients(prev => [...prev, { id: prev.length + 1, ...recipientInfo }]);
-                                        }
                                         setShowAddRecipientForm(false);
                                         closeRecipientModal(); closeRecipientOffcanvas();}}
                                 >
@@ -640,28 +645,28 @@ function Cart() {
                         {showAddRecipientForm && (
                         <div style={{ background: "#f3f3f3", borderRadius: 16, padding: 20, marginTop: 16, marginBottom: 32 }}>
                             <div className="row mb-2">
-                            <div className="col-6">
-                                <label className="fw-bold mb-1">收件人</label>
-                                <input
-                                type="text"
-                                name="name"
-                                className="form-control"
-                                value={recipientInfo.name || ""}
-                                onChange={updateRecipientData}
-                                placeholder="收件人姓名"
-                                />
-                            </div>
-                            <div className="col-6">
-                                <label className="fw-bold mb-1">聯絡電話</label>
-                                <input
-                                type="text"
-                                name="tel"
-                                className="form-control"
-                                value={recipientInfo.tel || ""}
-                                onChange={updateRecipientData}
-                                placeholder="收件人電話"
-                                />
-                            </div>
+                                <div className="col-6">
+                                    <label className="fw-bold mb-1">收件人</label>
+                                    <input
+                                    type="text"
+                                    name="name"
+                                    className="form-control"
+                                    value={recipientInfo.name || ""}
+                                    onChange={updateRecipientData}
+                                    placeholder="收件人姓名"
+                                    />
+                                </div>
+                                <div className="col-6">
+                                    <label className="fw-bold mb-1">聯絡電話</label>
+                                    <input
+                                    type="text"
+                                    name="tel"
+                                    className="form-control"
+                                    value={recipientInfo.tel || ""}
+                                    onChange={updateRecipientData}
+                                    placeholder="收件人電話"
+                                    />
+                                </div>
                             </div>
                             <div>
                             <label className="fw-bold mb-1">Email</label>
@@ -674,15 +679,21 @@ function Cart() {
                                 placeholder="收件人 Email"
                             />
                             </div>
+                            <button
+                                type="button"
+                                className="btn btn-secondary mt-2 w-100"
+                                onClick={() => {
+                                    if (recipientInfo.name && recipientInfo.tel && recipientInfo.email) {
+                                setCommonRecipients(prev => [...prev, { id: prev.length + 1, ...recipientInfo }]);
+                            }
+                                }}
+                            >新增常用收件人</button>
                         </div>
                         )}
                     </div>
                     <div className="offcanvas-footer d-flex justify-content-between p-3">
                         <button type="button" className="btn btn-outline-primary w-50 me-2" onClick={closeRecipientOffcanvas}>取消</button>
                         <button type="button" className="btn btn-primary w-50 text-white" onClick={() => {
-                            if (recipientInfo.name || recipientInfo.tel || recipientInfo.email) {
-                                setCommonRecipients(prev => [...prev, { id: prev.length + 1, ...recipientInfo }]);
-                            }
                             setShowAddRecipientForm(false);
                             closeRecipientModal(); closeRecipientOffcanvas();}}>確定</button>
                     </div>
