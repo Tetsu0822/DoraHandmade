@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { currency } from "../../utils/filter";
-import { emailValidation, twPhoneValidation } from "../../utils/validation";
 import * as bootstrap from "bootstrap";
+import { emailValidation, twPhoneValidation } from "../../utils/validation";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 function Cart() {
@@ -98,26 +98,44 @@ function Cart() {
     const toastRef = useRef(null);
     const [ orderId, setOrderId ] = useState(null);
     // 顯示 Toast
-    const showToast = () => {
-        const toast = new bootstrap.Toast(toastRef.current);
-        toast.show();
-    };
+    // const showToast = () => {
+    //     const toast = new bootstrap.Toast(toastRef.current);
+    //     toast.show();
+    // };
 
     // 自動切換 Modal/Offcanvas
+    // const openRecipientSelector = () => {
+    //     if (window.innerWidth < 768) {
+    //         // 手機版用 Offcanvas
+    //         if (!recipientOffcanvasRef.current) {
+    //             recipientOffcanvasRef.current = new bootstrap.Offcanvas('#recipientOffcanvas');
+    //         }
+    //         recipientOffcanvasRef.current.show();
+    //     } else {
+    //         // 電腦版用 Modal
+    //         if (!recipientModalRef.current) {
+    //             recipientModalRef.current = new bootstrap.Modal('#recipientModal', { keyboard: false });
+    //         }
+    //         recipientModalRef.current.show();
+    //     }
+    // };
     const openRecipientSelector = () => {
-        if (window.innerWidth < 768) {
-            // 手機版用 Offcanvas
-            if (!recipientOffcanvasRef.current) {
-                recipientOffcanvasRef.current = new bootstrap.Offcanvas('#recipientOffcanvas');
-            }
-            recipientOffcanvasRef.current.show();
-        } else {
-            // 電腦版用 Modal
-            if (!recipientModalRef.current) {
-                recipientModalRef.current = new bootstrap.Modal('#recipientModal', { keyboard: false });
-            }
-            recipientModalRef.current.show();
+    if (window.innerWidth < 768) {
+        if (!recipientOffcanvasRef.current) {
+        recipientOffcanvasRef.current = new bootstrap.Offcanvas('#recipientOffcanvas');
         }
+        recipientOffcanvasRef.current.show();
+    } else {
+        if (!recipientModalRef.current) {
+        recipientModalRef.current = new bootstrap.Modal('#recipientModal', { keyboard: false });
+        }
+        recipientModalRef.current.show();
+    }
+    };
+
+    const showToast = () => {
+    const toast = new bootstrap.Toast(toastRef.current);
+    toast.show();
     };
     const closeRecipientModal = () => {
         if (recipientModalRef.current) recipientModalRef.current.hide();
