@@ -8,6 +8,7 @@ import * as bootstrap from "bootstrap";
 import { emailValidation, twPhoneValidation } from "../../utils/validation";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
+
 function Cart() {
     const [ cartData, setCartData ] = useState([]);
     const [ updatingId, setUpdatingId ] = useState(null);
@@ -75,10 +76,7 @@ function Cart() {
         setRecipientInfo(prev => ({ ...prev, [name]: value }));
         console.log("recipientInfo:", recipientInfo);
     };
-    // const updateBuyerData = (e) => {
-    //     const { name, value } = e.target;
-    //     setBuyerInfo(prev => ({ ...prev, [name]: value }));
-    // };
+
     const buyerName = watch("name");
     const buyerTel = watch("tel");
     const buyerEmail = watch("email");
@@ -97,28 +95,7 @@ function Cart() {
     const recipientOffcanvasRef = useRef(null);
     const toastRef = useRef(null);
     const [ orderId, setOrderId ] = useState(null);
-    // 顯示 Toast
-    // const showToast = () => {
-    //     const toast = new bootstrap.Toast(toastRef.current);
-    //     toast.show();
-    // };
-
-    // 自動切換 Modal/Offcanvas
-    // const openRecipientSelector = () => {
-    //     if (window.innerWidth < 768) {
-    //         // 手機版用 Offcanvas
-    //         if (!recipientOffcanvasRef.current) {
-    //             recipientOffcanvasRef.current = new bootstrap.Offcanvas('#recipientOffcanvas');
-    //         }
-    //         recipientOffcanvasRef.current.show();
-    //     } else {
-    //         // 電腦版用 Modal
-    //         if (!recipientModalRef.current) {
-    //             recipientModalRef.current = new bootstrap.Modal('#recipientModal', { keyboard: false });
-    //         }
-    //         recipientModalRef.current.show();
-    //     }
-    // };
+    // 開啟收件人選單
     const openRecipientSelector = () => {
     if (window.innerWidth < 768) {
         if (!recipientOffcanvasRef.current) {
@@ -256,9 +233,7 @@ function Cart() {
                 }
             }
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/order`, data);
-            console.log("訂單送出成功:", response.data);
             setOrderId(response.data.orderId);
-            console.log("訂單 ID:", response.data.orderId);
             // 更新購物車列表
             const responses2 = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(responses2.data.data.carts || []);
@@ -303,6 +278,7 @@ function Cart() {
             <div className="col-sm-12 col-md-9">
                 <div className="mt-6 mb-6 mt-md-15 mb-md-15">
                     <h2 className="cart-heading-title">購物車</h2>
+                    {/* 電腦版購物車顯示 */}
                     <div className="d-none d-md-block">
                     <div className="card">
                         <div className="table-responsive">
@@ -390,7 +366,6 @@ function Cart() {
                     {couponStatus && <p className="mt-2">{couponStatus}</p>}
                 </div>
                 {/* 付款與取貨方式 */}
-
                 <h2 className="cart-heading-title">付款與取貨方式</h2>
                 {/* 付款方式：信用卡、超商取貨付款 */}
                 <h3 className="text-p-20-b text-gray-600 mb-3">付款方式</h3>
@@ -428,7 +403,6 @@ function Cart() {
                             message: "購買人姓名至少需要 2 個字",
                         },
                     })}
-                    //onChange={updateBuyerData}
                 />
                 {errors.name && <p className="text-danger">{errors.name.message}</p>}
                 </div>
@@ -445,7 +419,6 @@ function Cart() {
                     {...register("tel", {
                         required: "請輸入聯絡電話",twPhoneValidation
                     })}
-                    //onChange={updateBuyerData}
                 />
                 {errors.tel && <p className="text-danger">{errors.tel.message}</p>}
                 </div>
@@ -479,7 +452,6 @@ function Cart() {
                     {...register("address", {
                         required: "請輸入地址",
                     })}
-                    //onChange={updateBuyerData}
                 />
                 {errors.address && <p className="text-danger">{errors.address.message}</p>}
                 </div>
@@ -660,10 +632,10 @@ function Cart() {
                                 )}
                             </div>
                             <div className="modal-footer d-flex flex-row gap-2">
-                                <button type="button" className="btn btn-outline-primary flex-fill" data-bs-dismiss="modal" onClick={closeRecipientModal}>取消</button>
+                                <button type="button" className="recipientBtn flex-fill" data-bs-dismiss="modal" onClick={closeRecipientModal}>取消</button>
                                 <button
                                     type="button"
-                                    className="btn btn-primary flex-fill text-white"
+                                    className="checkoutBtn flex-fill"
                                     onClick={() => {
                                         setShowAddRecipientForm(false);
                                         closeRecipientModal(); closeRecipientOffcanvas();}}
@@ -764,8 +736,8 @@ function Cart() {
                         )}
                     </div>
                     <div className="offcanvas-footer d-flex justify-content-between p-3">
-                        <button type="button" className="btn btn-outline-primary w-50 me-2" onClick={closeRecipientOffcanvas}>取消</button>
-                        <button type="button" className="btn btn-primary w-50 text-white" onClick={() => {
+                        <button type="button" className="recipientBtn w-50 me-2" onClick={closeRecipientOffcanvas}>取消</button>
+                        <button type="button" className="checkoutBtn w-50" onClick={() => {
                             setShowAddRecipientForm(false);
                             closeRecipientModal(); closeRecipientOffcanvas();}}>確定</button>
                     </div>
@@ -783,6 +755,9 @@ function Cart() {
                             style={{
                                 padding: "12px 24px 12px 24px",
                                 gap: "8px",
+                            }}
+                            onClick={() => {
+                                window.open("cvs-map?cvs=UNIMART&IsCollection=N", "", "width=800,height=800");
                             }}
                         >
                             <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>搜尋門市</span>
@@ -846,7 +821,7 @@ function Cart() {
                     </div>
                 </div>
                 <button
-                    className="checkoutBtn btn btn-primary w-100 text-white"
+                    className="checkoutBtn w-100"
                     disabled={cartData.length === 0 || !isValid}
                 >
                     立即結帳
