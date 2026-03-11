@@ -40,7 +40,30 @@
 }
 
 .checkoutBtn {
+    background: $primary-700;
+    color: #fff;
     border-radius: 0px;
     padding-top: 18px;
     padding-bottom: 18px;
+    &:hover {
+        background: $primary-900;
+        color: #fff;
+    }
+    &:disabled {
+        color: #fff;
+        opacity: 0.5;
+    }
+}
+
+.recipientBtn {
+    background: #fff;
+    color: $primary-500;
+    border: 2.5px solid $primary-500;
+    border-radius: 0px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    &:hover {
+        background: $primary-50;
+        color: $primary-500;
+    }
 }
