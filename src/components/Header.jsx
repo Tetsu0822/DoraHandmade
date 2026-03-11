@@ -7,6 +7,20 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [userName, setUserName] = useState("愛哆啦");
 
+  // 自動判斷右側主選單（如使用者選單）展開方向
+  const handleUserMenuEnter = (e) => {
+    const button = e.currentTarget;
+    const rect = button.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const container = button.parentElement;
+
+    if (windowWidth - rect.right < 160) {
+      container.classList.add("user-menu-left");
+    } else {
+      container.classList.remove("user-menu-left");
+    }
+  };
+
   // 自動判斷子選單展開方向
   const handleSubmenuEnter = (e) => {
     const item = e.currentTarget;
@@ -43,7 +57,9 @@ const Header = () => {
               <button
                 className="btn-icon"
                 data-bs-toggle="dropdown"
+                data-bs-display="static"
                 aria-expanded="false"
+                onClick={handleUserMenuEnter}
               >
                 <User size={20} />
               </button>
@@ -223,6 +239,8 @@ const Header = () => {
                   className="nav-link nav-link-custom"
                   href="#"
                   data-bs-toggle="dropdown"
+                  data-bs-display="static"
+                  onClick={handleUserMenuEnter}
                 >
                   <User size={20} />
                 </a>
