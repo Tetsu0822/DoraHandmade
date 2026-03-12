@@ -31,6 +31,45 @@ const CustomForm = () => {
     { id: "patterned", label: "造型裝飾蝴蝶結" },
   ];
 
+  // 驗證單個欄位的邏輯
+  const validateField = (name, value) => {
+    switch (name) {
+      case "name": {
+        if (!value.trim()) return "請填寫姓名";
+        if (value.trim().length < 2) return "姓名長度不足";
+        // 僅允許中文、英文、數字及空格，禁止特殊符號
+        const nameRegex = /^[a-zA-Z0-9\u4e00-\u9fa5\s]+$/;
+        if (!nameRegex.test(value)) return "姓名不可包含特殊符號";
+        return "";
+      }
+      case "phone": {
+        if (!value.trim()) return "請填寫電話";
+        // 支援手機 (09xx-xxx-xxx) 與市話 (0x-xxxxxxx)
+        const phoneRegex = /^09\d{8}$|^0\d{1,3}-?\d{6,8}$/;
+        if (!phoneRegex.test(value.replace(/[\s-]/g, ""))) return "電話格式不正確 (需為手機或市話)";
+        return "";
+      }
+      case "email": {
+        if (!value.trim()) return "請填寫 Email";
+        // 嚴謹的 Email 正則，確保域名後綴 (TLD) 至少兩位且格式正確
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(value)) return "Email 格式不正確 (例如: example@mail.com)";
+        return "";
+      }
+      case "selectedColor":
+        if (!value) return "請選擇顏色";
+        return "";
+      case "selectedPattern":
+        if (!value) return "請選擇花色";
+        return "";
+      case "isConfirmed":
+        if (!value) return "請確認內容正確";
+        return "";
+      default:
+        return "";
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     const inputValue = type === "checkbox" ? checked : value;
@@ -40,22 +79,18 @@ const CustomForm = () => {
       [name]: inputValue,
     }));
 
-    // 實時驗證
-    if (errors[name]) {
-      let isErrorCleared = false;
-      if (type === "checkbox") {
-        if (inputValue === true) isErrorCleared = true;
-      } else {
-        if (String(inputValue).trim() !== "") isErrorCleared = true;
-      }
-
-      if (isErrorCleared) {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
+    // 即時驗證輸入欄位
+    const error = validateField(name, inputValue);
+    if (error || errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        if (error) {
+          newErrors[name] = error;
+        } else {
           delete newErrors[name];
-          return newErrors;
-        });
-      }
+        }
+        return newErrors;
+      });
     }
   };
 
@@ -65,12 +100,12 @@ const CustomForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name) newErrors.name = "請填寫姓名";
-    if (!formData.phone) newErrors.phone = "請填寫電話";
-    if (!formData.email) newErrors.email = "請填寫 Email";
-    if (!formData.selectedColor) newErrors.selectedColor = "必填";
-    if (!formData.selectedPattern) newErrors.selectedPattern = "必填";
-    if (!formData.isConfirmed) newErrors.isConfirmed = "請確認內容正確";
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+      }
+    });
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

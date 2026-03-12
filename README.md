@@ -4,7 +4,11 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/13 優化客製化表單驗證邏輯 By Tim
 - 2026/03/12 修正Cart.jsx,Login.jsx,vite.config.js ESLint 錯誤 By Tetsu
+- 2026/03/12 新增客製化表單提交驗證及 onChange 即時錯誤檢查功能 By Tim
+- 2026/03/12 優化手機版導覽列子選單展開邏輯與樣式 By Tim
+- 2026/03/11 優化導覽列使用者選單展開邏輯，防止超出螢幕範圍 By Tim
 - 2026/03/11 新增註冊(完成)/登入(完成)/登出功能(Account 編寫中) By Tetsu
 - 2026/03/11 新增API(signup/login/logout/user_check) By Tetsu
 - 2026/03/10 在main.jsx 加入對選單的修正 By Tetsu
