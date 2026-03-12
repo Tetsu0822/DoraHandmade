@@ -33,10 +33,30 @@ const CustomForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const inputValue = type === "checkbox" ? checked : value;
+    
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: inputValue,
     }));
+
+    // 實時驗證
+    if (errors[name]) {
+      let isErrorCleared = false;
+      if (type === "checkbox") {
+        if (inputValue === true) isErrorCleared = true;
+      } else {
+        if (String(inputValue).trim() !== "") isErrorCleared = true;
+      }
+
+      if (isErrorCleared) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[name];
+          return newErrors;
+        });
+      }
+    }
   };
 
   const handleFileUpload = () => {
@@ -99,9 +119,11 @@ const CustomForm = () => {
                 id="name"
                 name="name"
                 placeholder="請輸入購買人姓名"
+                className={errors.name ? "is-invalid" : ""}
                 value={formData.name}
                 onChange={handleInputChange}
               />
+              {errors.name && <span className="error-message">{errors.name}</span>}
             </div>
             <div className="form-group">
               <label htmlFor="phone">聯絡電話</label>
@@ -110,9 +132,11 @@ const CustomForm = () => {
                 id="phone"
                 name="phone"
                 placeholder="請輸入聯絡電話"
+                className={errors.phone ? "is-invalid" : ""}
                 value={formData.phone}
                 onChange={handleInputChange}
               />
+              {errors.phone && <span className="error-message">{errors.phone}</span>}
             </div>
             <div className="form-group">
               <label htmlFor="email">Email</label>
@@ -121,9 +145,11 @@ const CustomForm = () => {
                 id="email"
                 name="email"
                 placeholder="請輸入購買人 Email"
+                className={errors.email ? "is-invalid" : ""}
                 value={formData.email}
                 onChange={handleInputChange}
               />
+              {errors.email && <span className="error-message">{errors.email}</span>}
             </div>
           </section>
 
@@ -133,7 +159,7 @@ const CustomForm = () => {
 
             <div className="form-group">
               <label>選擇顏色 (必填)</label>
-              <div className="radio-grid">
+              <div className={`radio-grid ${errors.selectedColor ? "is-invalid" : ""}`}>
                 {colorOptions.map((option) => (
                   <label key={option.id} className="radio-option">
                     <input
@@ -147,11 +173,12 @@ const CustomForm = () => {
                   </label>
                 ))}
               </div>
+              {errors.selectedColor && <span className="error-message">{errors.selectedColor}</span>}
             </div>
 
             <div className="form-group">
               <label>選擇花色 (必填)</label>
-              <div className="radio-grid">
+              <div className={`radio-grid ${errors.selectedPattern ? "is-invalid" : ""}`}>
                 {patternOptions.map((option) => (
                   <label key={option.id} className="radio-option">
                     <input
@@ -165,6 +192,7 @@ const CustomForm = () => {
                   </label>
                 ))}
               </div>
+              {errors.selectedPattern && <span className="error-message">{errors.selectedPattern}</span>}
             </div>
 
             <div className="form-group">
@@ -173,7 +201,7 @@ const CustomForm = () => {
                 id="requestDescription"
                 name="requestDescription"
                 rows="4"
-                placeholder="選填，可描述想要的風格、尺寸或使用場合，幫助我們更貼近您的需求。"
+                placeholder="選填，可描述想要的風格、尺寸 or 使用場合，幫助我們更貼近您的需求。"
                 value={formData.requestDescription}
                 onChange={handleInputChange}
               ></textarea>
@@ -203,7 +231,7 @@ const CustomForm = () => {
           {/* Section 3: 確認送出 */}
           <section className="confirmation-section">
             <h2 className="section-title">3. 確認送出</h2>
-            <label className="confirm-checkbox">
+            <label className={`confirm-checkbox ${errors.isConfirmed ? "is-invalid-text" : ""}`}>
               <input
                 type="checkbox"
                 name="isConfirmed"
@@ -212,6 +240,7 @@ const CustomForm = () => {
               />
               我已確認填寫內容正確
             </label>
+            {errors.isConfirmed && <div className="error-message">{errors.isConfirmed}</div>}
             <p className="notice">
               *送出後我們將以 Email 與您聯繫確認細節並進行報價
             </p>
