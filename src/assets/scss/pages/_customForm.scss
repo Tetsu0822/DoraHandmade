@@ -18,6 +18,7 @@ $form-group-margin: 12px;
 $form-group-margin-lg: 24px;
 $form-group-gap: 4px;
 $icon-size-base: 20px;
+$error-red: #dc3545;
 
 // 通用樣式
 $border-radius-base: 4px;
@@ -197,6 +198,20 @@ $transition-btn: all 0.2s ease;
         border-color: $primary-400;
         box-shadow: 0 0 0 2px rgba($primary-700, 0.1);
       }
+
+      &.is-invalid {
+        border-color: $error-red;
+        &:focus {
+          box-shadow: 0 0 0 2px rgba($error-red, 0.1);
+        }
+      }
+    }
+
+    .error-message {
+      color: $error-red;
+      font-size: 14px;
+      margin-top: 4px;
+      font-weight: 500;
     }
 
     .radio-grid {
@@ -204,6 +219,14 @@ $transition-btn: all 0.2s ease;
       flex-wrap: wrap;
       column-gap: $container-padding; // 橫向間距
       row-gap: $form-group-margin; // 縱向間距
+      padding: 8px;
+      border-radius: $border-radius-base;
+      transition: $transition-base;
+
+      &.is-invalid {
+        background-color: rgba($error-red, 0.05);
+        border: 1px solid rgba($error-red, 0.2);
+      }
     }
 
     .radio-option {
@@ -278,6 +301,10 @@ $transition-btn: all 0.2s ease;
         width: $icon-size-base;
         height: $icon-size-base;
         accent-color: $primary-700;
+      }
+
+      &.is-invalid-text {
+        color: $error-red;
       }
     }
 
