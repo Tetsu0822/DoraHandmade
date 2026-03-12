@@ -4,11 +4,24 @@ body {
 
 .header {
   background-color: $primary-50;
+  z-index: 1050;
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
 }
 
 .navbar-custom {
   background-color: $white;
   border-bottom: 1px solid $primary-200;
+  position: relative;
+  z-index: 1050;
 }
 
 // Logo
@@ -132,6 +145,17 @@ body {
   }
 }
 
+// 動態調整選單向左展開（針對靠右邊緣的元素，如使用者選單）
+.user-menu-left {
+  >.dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+    top: 100% !important;
+    transform: none !important;
+    margin-top: 0.5rem;
+  }
+}
+
 .dropdown-submenu {
   position: relative;
 
@@ -144,7 +168,7 @@ body {
       display: none;
     }
 
-    // 新增：讓子選單向左展開的樣式
+    // 讓子選單向左展開的樣式
     &.submenu-left>.dropdown-menu {
       left: auto;
       right: 100%;
