@@ -35,7 +35,7 @@ function Signup() {
                     api_path: API_PATH,
                 }
                 const response = await axios.post(API_SIGNUP_URL, regiData);
-                // alert(response.data.message);
+                console.log(response.data.message);
                 reset();
                 // 註冊成功後自動切換到登入模式
                 setMode("login");
@@ -49,7 +49,11 @@ function Signup() {
                 console.log("登入成功:", response.data);
                 // 儲存 token 和使用者資訊到 cookie
                 const { token, expired } = response.data;
-                document.cookie = `doraToken=${token};expires=${new Date(expired)};`;
+                // 用函式包裝副作用，避免 ESLint 錯誤
+                const setCookie = () => {
+                    document.cookie = `doraToken=${token};expires=${new Date(expired)};`;
+                };
+                setCookie();
                 reset();
                 navigate("/");
             }

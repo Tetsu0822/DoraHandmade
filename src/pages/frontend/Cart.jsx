@@ -151,7 +151,7 @@ function Cart() {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
         } catch (error) {
-            console.log("Error updating cart:", error);
+            console.log("更新購物車數量失敗:", error);
         }
         setUpdatingId(null);
     };
@@ -165,7 +165,7 @@ function Cart() {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
         } catch (error) {
-            console.log("Error removing cart item:", error);
+            console.log("刪除購物車項目失敗:", error);
         }
         setUpdatingId(null);
     };
@@ -188,6 +188,7 @@ function Cart() {
             const cartRes = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(cartRes.data.data.carts);
         } catch (error) {
+            console.log("套用優惠券失敗:", error);
             setCouponStatus("優惠券無效或已使用。");
             setFinalTotal(null);
         }
@@ -219,19 +220,9 @@ function Cart() {
                         address: formData.address,
                     },
                     message: `付款方式:${formData.paymentMethod}，收件人:${recipient.name}，電話:${recipient.tel}，Email:${recipient.email}，地址:${recipient.address}`,
-                    recipient: isSameAsBuyer ? {
-                        name: formData.name,
-                        email: formData.email,
-                        tel: formData.tel,
-                        address: formData.address,
-                    } : {
-                        name: recipientInfo.name,
-                        email: recipientInfo.email,
-                        tel: recipientInfo.tel,
-                        address: recipientInfo.address,
-                    },
+                    recipient,
                 }
-            }
+            };
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/order`, data);
             setOrderId(response.data.orderId);
             // 更新購物車列表
@@ -266,7 +257,7 @@ function Cart() {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
         } catch (error) {
-            console.log("Error fetching cart data:", error);
+            console.log("取得購物車資料失敗:", error);
         }
       }
       fetchCartData();
