@@ -64,14 +64,14 @@ function Signup() {
         // 取得 token
         const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
         if (token) {
+            const tokenData = {
+                token: token,
+            }
             const checkUser = async () => {
                 try {
-                    const response = await axios.get(API_USER_CHECK_URL, {
-                        headers: {
-                            Authorization: token,
-                        },
-                    });
+                    const response = await axios.post(API_USER_CHECK_URL, tokenData);
                     if (response.data.success) {
+                        console.log("使用者已登入:", response.data.user);
                         navigate("/");
                         alert("您已經登入過了，將自動導向首頁");
                     } else {
@@ -80,7 +80,8 @@ function Signup() {
                     }
                 } catch (error) {
                     // 403 或其他錯誤，清除 cookie
-                    document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    console.error("user_check 失敗:", error);
+    document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                 }
             };
             checkUser();

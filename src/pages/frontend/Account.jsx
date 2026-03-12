@@ -14,16 +14,16 @@ function Account() {
                         Authorization: token,
                     },
                 });
+                // 清除 cookie 並導向登入頁面
+                document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                setTimeout(() => {
+                    alert("您已成功登出，將自動導向登入頁面");
+                    navigate("/login");
+                }, 500);
             } catch (error) {
                 console.error("登出失敗:", error);
             }
         }
-        // 清除 cookie 並導向登入頁面
-        document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        setTimeout(() => {
-            alert("您已成功登出，將自動導向登入頁面");
-            navigate("/login");
-        }, 500);
 
     }
     return (
