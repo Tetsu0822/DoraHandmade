@@ -36,7 +36,7 @@ document.addEventListener("click", (e) => {
 }, true);
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <App />
-  </StrictMode>,
+  // </StrictMode>
 );
