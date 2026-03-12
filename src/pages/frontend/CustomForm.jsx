@@ -1,8 +1,30 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import * as bootstrap from "bootstrap";
+import { Link } from "react-router";
 import { WandSparkles } from "lucide-react";
 import customFormBanner from "@images/custom_form_banner.png";
+import axios from "axios";
+
+const VITE_API_BASE = import.meta.env.VITE_API_BASE;
+const VITE_API_PATH = import.meta.env.VITE_API_PATH;
+
 
 const CustomForm = () => {
+  const toastRef = useRef(null);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastIsSuccess, setToastIsSuccess] = useState(true);
+  const [toastOrderId, setToastOrderId] = useState("");
+
+  const showToast = (msg, isSuccess = true, orderId = "") => {
+    setToastMessage(msg);
+    setToastIsSuccess(isSuccess);
+    setToastOrderId(orderId);
+    if (toastRef.current) {
+      const toast = new bootstrap.Toast(toastRef.current);
+      toast.show();
+    }
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -31,13 +53,13 @@ const CustomForm = () => {
     { id: "patterned", label: "造型裝飾蝴蝶結" },
   ];
 
-  // 驗證單個欄位的邏輯
+  // 驗證單一欄位
   const validateField = (name, value) => {
     switch (name) {
       case "name": {
         if (!value.trim()) return "請填寫姓名";
         if (value.trim().length < 2) return "姓名長度不足";
-        // 僅允許中文、英文、數字及空格，禁止特殊符號
+        // 只允許中文、英文、數字及空格，禁止特殊符號
         const nameRegex = /^[a-zA-Z0-9\u4e00-\u9fa5\s]+$/;
         if (!nameRegex.test(value)) return "姓名不可包含特殊符號";
         return "";
@@ -51,7 +73,7 @@ const CustomForm = () => {
       }
       case "email": {
         if (!value.trim()) return "請填寫 Email";
-        // 嚴謹的 Email 正則，確保域名後綴 (TLD) 至少兩位且格式正確
+        // 確保後綴至少兩位且格式正確
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(value)) return "Email 格式不正確 (例如: example@mail.com)";
         return "";
@@ -111,11 +133,54 @@ const CustomForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      console.log("Form Submit Data:", formData);
-      alert("需求已送出！我們會再以 Email 與您聯繫。");
+      try {
+        // 先檢查購物車是否為空，避免 API 直接回傳 404
+        const cartRes = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
+        const carts = cartRes.data?.data?.carts;
+        
+        if (!carts || carts.length === 0) {
+          showToast("貼心提醒：由於系統限制，送出客製化需求前，請確保購物車內至少有一項商品（可隨意加入一件現貨）。");
+          return;
+        }
+
+        const payload = {
+          data: {
+            user: {
+              name: formData.name,
+              email: formData.email,
+              tel: formData.phone,
+              address: "客製化需求預約 (自取/待詳談)", // 預填地址，以防爆錯
+            },
+            message: `【客製化蝴蝶結需求】\n顏色: ${formData.selectedColor}\n花色: ${formData.selectedPattern}\n需求說明: ${formData.requestDescription || "無"}`
+          }
+        };
+        const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/order`, payload);
+        
+        if (response.data.success) {
+          showToast(`您的客製化需求已成功送出！\n訂單編號：${response.data.orderId}`, true, response.data.orderId);
+          
+          // 成功後重設表單
+          setFormData({
+            name: "",
+            phone: "",
+            email: "",
+            selectedColor: "",
+            selectedPattern: "",
+            requestDescription: "",
+            fileReference: "",
+            isConfirmed: false,
+          });
+          setErrors({});
+        }
+      } catch (error) {
+        const errorMsg = error.response?.data?.message || error.message;
+        showToast(`送出失敗，請稍後再試：\n${Array.isArray(errorMsg) ? errorMsg.join('\n') : errorMsg}`);
+      }
+    } else {
+      showToast("表單有部分內容填寫不完整或格式錯誤，請檢查紅字提示喔！");
     }
   };
 
@@ -288,6 +353,23 @@ const CustomForm = () => {
             </button>
           </section>
         </form>
+      </div>
+
+      <div className="toast-container position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1055 }}>
+        <div ref={toastRef} className="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+          <div className="toast-header bg-primary text-white">
+            <strong className="me-auto">系統通知</strong>
+            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div className="toast-body" style={{ whiteSpace: "pre-line", fontSize: "16px" }}>
+            {toastMessage}
+            {toastIsSuccess && toastOrderId && (
+              <div className="mt-3">
+                <Link to={`/order/${toastOrderId}`} className="btn btn-sm btn-outline-primary w-100">查看訂單詳情</Link>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
