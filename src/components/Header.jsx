@@ -5,8 +5,25 @@ import logoImg from "@images/logo.png";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [userName, setUserName] = useState("愛哆啦");
+  const [userName] = useState("愛哆啦");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const closeMobileMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleMobileSubmenuToggle = (e) => {
+    if (window.innerWidth < 992) {
+      e.preventDefault();
+      e.stopPropagation();
+      const submenuItem = e.currentTarget.parentElement;
+      submenuItem.classList.toggle("show");
+    }
+  };
   // 自動判斷右側主選單（如使用者選單）展開方向
   const handleUserMenuEnter = (e) => {
     const button = e.currentTarget;
@@ -35,7 +52,11 @@ const Header = () => {
   };
 
   return (
-    <header className="header">
+    <header className="header sticky-top">
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="menu-overlay d-lg-none" onClick={closeMobileMenu}></div>
+      )}
       <nav className="navbar navbar-expand-lg navbar-custom">
         <div className="container">
           {/* Logo */}
@@ -121,15 +142,17 @@ const Header = () => {
             <button
               className="navbar-toggler navbar-toggler-custom"
               type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarContent"
+              onClick={toggleMobileMenu}
             >
               <span className="navbar-toggler-icon"></span>
             </button>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="collapse navbar-collapse" id="navbarContent">
+          <div
+            className={`collapse navbar-collapse ${isMenuOpen ? "show" : ""}`}
+            id="navbarContent"
+          >
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
               <li className="nav-item me-lg-3 text-p-16-b">
                 <Link className="nav-link nav-link-custom " to="/workshop">
@@ -166,8 +189,7 @@ const Header = () => {
                     <a
                       className="dropdown-item d-flex justify-content-center align-items-center"
                       href="#"
-                      data-bs-toggle="dropdown"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={handleMobileSubmenuToggle}
                     >
                       成品
                       <ChevronRight size={16} className="ms-2" />
@@ -192,8 +214,7 @@ const Header = () => {
                     <a
                       className="dropdown-item d-flex justify-content-center align-items-center"
                       href="#"
-                      data-bs-toggle="dropdown"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={handleMobileSubmenuToggle}
                     >
                       材料
                       <ChevronRight size={16} className="ms-2" />
