@@ -9,12 +9,12 @@ const __dirname = path.dirname(__filename);
 
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: process.env.NODE_ENV === "production" ? "/DoraHandmade/" : "/",
+export default defineConfig(({ command }) => ({
+  base: command === "build" ? "/DoraHandmade/" : "/",
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"), // 設定 @ 指向 src 目錄
+      "@": path.resolve(__dirname, "./src"),
       "@components": path.resolve(__dirname, "./src/components"),
       "@hooks": path.resolve(__dirname, "./src/hooks"),
       "@contexts": path.resolve(__dirname, "./src/contexts"),
@@ -33,4 +33,4 @@ export default defineConfig({
       },
     },
   },
-});
+}));
