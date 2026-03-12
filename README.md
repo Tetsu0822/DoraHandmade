@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/12 修正axios.header 設定 By Tetsu
 - 2026/03/11 新增註冊(完成)/登入(完成)/登出功能(Account 編寫中) By Tetsu
 - 2026/03/11 新增API(signup/login/logout/user_check) By Tetsu
 - 2026/03/10 在main.jsx 加入對選單的修正 By Tetsu

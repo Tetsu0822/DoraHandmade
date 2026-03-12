@@ -1,5 +1,4 @@
 import axios from "axios";
-axios.defaults.withCredentials = true;
 import { useNavigate } from "react-router";
 const API_LOGOUT_URL = import.meta.env.VITE_API_LOGOUT_URL;
 function Account() {

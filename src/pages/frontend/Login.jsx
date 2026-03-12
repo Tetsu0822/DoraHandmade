@@ -49,7 +49,8 @@ function Signup() {
                 console.log("登入成功:", response.data);
                 // 儲存 token 和使用者資訊到 cookie
                 const { token, expired } = response.data;
-                document.cookie = `doraToken=${token};expires=${new Date(expired)};path=/;`;
+                document.cookie = `doraToken=${token};expires=${new Date(expired)};`;
+                reset();
                 navigate("/");
             }
         } catch (error) {
