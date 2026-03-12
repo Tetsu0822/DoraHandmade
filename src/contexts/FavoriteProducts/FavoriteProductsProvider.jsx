@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { FavoriteProductsContext } from './FavoriteProductsContext';
 
 export function FavoriteProductsProvider({ children }) {
@@ -29,11 +29,11 @@ export function FavoriteProductsProvider({ children }) {
 
   const isProductFavorite = (product) => favoriteProductIds.includes(product.id);
 
-  const value = useMemo(() => ({
+  const value = {
     favoriteProductIds,
     toggleFavoriteProduct,
     isProductFavorite
-  }), [favoriteProductIds]);
+  };
 
   return (
     <FavoriteProductsContext.Provider value={value}>

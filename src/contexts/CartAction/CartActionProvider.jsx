@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import axios from 'axios';
 // import { Toast } from 'bootstrap';
@@ -93,16 +93,17 @@ export function CartActionProvider({ children }) {
         showCartToast("商品加入失敗，請稍後再試！", false);
       }
     } catch (error) {
+      console.log(error);
       showCartToast("商品加入失敗，請稍後再試！", false);
     } finally {
       setAddingProductId(null);
     }
   }
 
-  const value = useMemo(() => ({
+  const value = {
     addingProductId,
-    handleAddToCart,
-  }), [addingProductId]);
+    handleAddToCart
+  };
 
   return (
     <CartActionContext.Provider value={value}>

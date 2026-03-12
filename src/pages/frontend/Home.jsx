@@ -8,116 +8,11 @@ import { ClassicBow, WavyLine } from '@components/icons';
 import ProductCard from '@components/ProductCard';
 import ArticleCard from '@components/ArticleCard';
 import SwiperNavButtons from '@components/SwiperNavButtons';
-import productImage1 from '@images/product-1.png';
-import productImage2 from '@images/product-2.png';
-import productImage3 from '@images/product-3.png';
-import productImage4 from '@images/product-4.png';
-import productImage5 from '@images/product-5.png';
-import productImage6 from '@images/product-6.png';
-import productImage7 from '@images/product-7.png';
-import productImage8 from '@images/product-8.png';
-import productImage9 from '@images/product-9.png';
-import materialImage1 from '@images/material-1.png';
-import materialImage2 from '@images/material-2.png';
-import materialImage3 from '@images/material-3.png';
 import articleImage1 from '@images/article-1.png';
 import articleImage2 from '@images/article-2.png';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
-
-const productData = {
-  '新品上架': [
-    {
-      id: '1',
-      title: '聖誕雪花點點蝴蝶結',
-      price: 777,
-      imageUrl: productImage1,
-      bgClass: 'bg-gray-100'
-    },
-    {
-      id: '2',
-      title: '聖誕紅緞帶雙層蝴蝶結',
-      price: 777,
-      imageUrl: productImage2,
-      bgClass: 'bg-gray-100'
-    },
-    {
-      id: '-OmXJ9VMvg_vf8k2Otut',
-      title: '暖冬毛絨小鹿蝴蝶結',
-      price: 777,
-      imageUrl: productImage3,
-      bgClass: 'bg-gray-100'
-    },
-    {
-      id: '-OmXJapyvdgyrHWL-t5y',
-      title: '銀白冬夜亮片蝴蝶結',
-      price: 777,
-      imageUrl: productImage4,
-      bgClass: 'bg-gray-100'
-    },
-    {
-      id: '-OmXJz4tzso3-Y__bDDB',
-      title: '秋野麥色復古蝴蝶結',
-      price: 777,
-      imageUrl: productImage5,
-      bgClass: 'bg-gray-100'
-    },
-    {
-      id: '-OmXKPPfsZOFjm3zGOye',
-      title: '天鵝絨質感蝴蝶結',
-      price: 777,
-      imageUrl: productImage6,
-      bgClass: 'bg-gray-100'
-    },
-  ],
-  '熱銷 TOP': [
-    {
-      id: '-OmXKpr9WRXYbQMaK6yL',
-      title: '晨光霧面緞帶蝴蝶結',
-      price: 777,
-      imageUrl: productImage7,
-      bgClass: 'bg-secondary-100'
-    },
-    {
-      id: '-OmXLBHYDeSQyR_TRpwU',
-      title: '柔霧奶茶雙層蝴蝶結',
-      price: 777,
-      imageUrl: productImage8,
-      bgClass: 'bg-gray-100'
-    },
-    {
-      id: '-OmXLSqQrwLpV0J6QjvX',
-      title: '夢幻粉雙層蕾絲蝴蝶結',
-      price: 777,
-      imageUrl: productImage9,
-      bgClass: 'bg-gray-100'
-    },
-  ],
-  '材料新上架': [
-    {
-      id: '-OmXNI6CHUcS_PqnOXmY',
-      title: '霧面緞帶（奶霜白 25mm）',
-      price: 777,
-      imageUrl: materialImage1,
-      bgClass: 'bg-secondary-100'
-    },
-    {
-      id: '-OmXMxaGNtxlAorxufcM',
-      title: '毛邊紗帶 (墨綠色 38mm)',
-      price: 777,
-      imageUrl: materialImage2,
-      bgClass: 'bg-gray-100'
-    },
-    {
-      id: '-OmXMV2t6OCRaBAb_Tqy',
-      title: '金邊緞帶（焦糖棕 25mm）',
-      price: 777,
-      imageUrl: materialImage3,
-      bgClass: 'bg-gray-100'
-    },
-  ]
-};
 
 const articleData = [
   {
@@ -138,38 +33,32 @@ const articleData = [
   }
 ];
 
-// const newProducts = productData['新品上架'];
-// const bestSellers = productData['熱銷 TOP'];
-// const newMaterials = productData['材料新上架'];
-
 function Home() {
-  const [products, setProducts] = useState([]);
   const [newProducts, setNewProducts] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
   const [newMaterials, setNewMaterials] = useState([]);
 
   useEffect(() => {
+    async function getProducts() {
+      try {
+        const response = await axios.get(`${API_BASE}/api/${API_PATH}/products`);
+        const _products = response.data.products?.filter(product => product.is_enabled);
+
+        const _newProducts = _products.filter(product => product.is_new && product.parentCategory === '成品');
+        setNewProducts(_newProducts);
+
+        const _bestSellers = _products.filter(product => product.is_hot);
+        setBestSellers(_bestSellers);
+
+        const _newMaterials = _products.filter(product => product.is_new && product.parentCategory === '材料');
+        setNewMaterials(_newMaterials);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
     getProducts();
   }, []);
-
-  async function getProducts() {
-    try {
-      const response = await axios.get(`${API_BASE}/api/${API_PATH}/products`);
-      const _products = response.data.products?.filter(product => product.is_enabled);
-      setProducts(_products);
-
-      const _newProducts = _products.filter(product => product.is_new && product.parentCategory === '成品');
-      setNewProducts(_newProducts);
-
-      const _bestSellers = _products.filter(product => product.is_hot);
-      setBestSellers(_bestSellers);
-
-      const _newMaterials = _products.filter(product => product.is_new && product.parentCategory === '材料');
-      setNewMaterials(_newMaterials);
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   return (
     <div className="home">
