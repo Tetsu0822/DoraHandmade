@@ -86,10 +86,6 @@ function Signup() {
                     const response = await axios.post(API_USER_CHECK_URL, tokenData);
                     if (response.data.success) {
                         console.log("使用者已登入:", response.data);
-                        setUser({
-                            name: response.data.name,
-                            email: response.data.email,
-                        });
                         navigate("/");
                     } else {
                         // token 無效，清除 cookie
