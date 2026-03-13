@@ -1,7 +1,7 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useContext } from "react";
 import UserContext from "@contexts/UserContext";
 const API_USER_CHECK_URL = import.meta.env.VITE_API_USER_CHECK_URL;
@@ -74,6 +74,16 @@ function Signup() {
         }
     };
 
+    const location = useLocation();
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const modeParam = params.get("mode");
+        if (modeParam === "register" && mode !== "register") {
+            // 使用 setTimeout 避免同步 setState 警告
+            setTimeout(() => setMode("register"), 0);
+        }
+    }, [location, mode]);
+
     useEffect(() => {
         // 取得 token
         const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
@@ -102,6 +112,9 @@ function Signup() {
             checkUser();
         }
     }, [navigate, setUser]);
+
+    // 根據網址參數切換表單模式，避免 ESLint 警告
+    // ...existing code...
 
 
     return (
