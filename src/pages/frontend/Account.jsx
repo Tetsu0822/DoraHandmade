@@ -19,13 +19,9 @@ function Account() {
             try {
                 const response = await axios.post(API_LOGOUT_URL, tokenData);
                 // 清除 cookie 並導向登入頁面
-                if (response.data.success) {
-                    document.cookie = "doraToken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    setIsLoggedIn(false);
-                    navigate("/login");
-                } else {
-                    console.error("登出失敗:", response.data.message);
-                }
+                document.cookie = "doraToken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                setIsLoggedIn(false);
+                navigate("/login");
             } catch (error) {
                 console.error("登出失敗:", error);
             }
