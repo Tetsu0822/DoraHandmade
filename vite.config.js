@@ -9,8 +9,8 @@ const __dirname = path.dirname(__filename);
 
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/DoraHandmade/" : "/",
+export default defineConfig(({ mode }) => ({
+  base: mode === "production" ? "/DoraHandmade/" : "/",
   plugins: [react()],
   resolve: {
     alias: {
