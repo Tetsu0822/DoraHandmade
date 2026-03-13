@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/13 整合 UserContext 至 Header 元件並實作登出功能 By Tim
 - 2026/03/13 1.取消結帳金額中的運費，/order 訂單列表只顯示使用者的訂單 By Tetsu
 - 2026/03/13 新增UserContext By Tetsu
 - 2026/03/13 完成客製化表單 order API 串接 By Tim

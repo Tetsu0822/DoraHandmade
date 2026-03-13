@@ -1,12 +1,22 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ShoppingCart, User, ChevronDown, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import UserContext from "@contexts/UserContext";
 import logoImg from "@images/logo.png";
 
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [userName] = useState("愛哆啦");
+  const { user, setUser } = useContext(UserContext);
+  const isLoggedIn = !!user;
+  const userName = user?.name || "使用者";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    setUser(null);
+    document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    navigate("/login");
+  };
 
   const closeMobileMenu = () => {
     setIsMenuOpen(false);
@@ -88,7 +98,7 @@ const Header = () => {
                 {!isLoggedIn ? (
                   <>
                     <li>
-                      <Link className="dropdown-item" to="/register">
+                      <Link className="dropdown-item" to="/login?mode=register">
                         會員註冊
                       </Link>
                     </li>
@@ -129,7 +139,7 @@ const Header = () => {
                       <a
                         className="dropdown-item"
                         href="#"
-                        onClick={() => setIsLoggedIn(false)}
+                        onClick={handleLogout}
                       >
                         登出
                       </a>
@@ -269,7 +279,7 @@ const Header = () => {
                   {!isLoggedIn ? (
                     <>
                       <li>
-                        <Link className="dropdown-item" to="/register">
+                        <Link className="dropdown-item" to="/login?mode=register">
                           會員註冊
                         </Link>
                       </li>
@@ -310,7 +320,7 @@ const Header = () => {
                         <a
                           className="dropdown-item"
                           href="#"
-                          onClick={() => setIsLoggedIn(false)}
+                          onClick={handleLogout}
                         >
                           登出
                         </a>
