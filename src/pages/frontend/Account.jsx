@@ -14,9 +14,9 @@ function Account() {
         // 清除 token 並導向登入頁面
         const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
         if (token) {
-            //
+            const domain = "tetsu0822.github.io";
             document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
+            document.cookie = `doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;
             console.log("登出成功:", token);
             setIsLoggedIn(false);
             setUser(null);
