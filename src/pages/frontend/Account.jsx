@@ -15,11 +15,12 @@ function Account() {
         const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
         if (token) {
             //
-        document.cookie = "doraToken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                console.log("登出成功:", token);
-                setIsLoggedIn(false);
-                setUser(null);
-                navigate("/login");
+            document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
+            console.log("登出成功:", token);
+            setIsLoggedIn(false);
+            setUser(null);
+            navigate("/login");
         }
     }
 
