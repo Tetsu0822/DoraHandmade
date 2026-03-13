@@ -14,20 +14,12 @@ function Account() {
         // 清除 token 並導向登入頁面
         const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
         if (token) {
-            const tokenData = {
-                token: token,
-            }
-            try {
-                const response = await axios.post(API_LOGOUT_URL, tokenData);
-                // 清除 cookie 並導向登入頁面
-                document.cookie = "doraToken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                console.log("登出成功:", response.data);
+            //
+        document.cookie = "doraToken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                console.log("登出成功:", token);
                 setIsLoggedIn(false);
                 setUser(null);
                 navigate("/login");
-            } catch (error) {
-                console.error("登出失敗:", error);
-            }
         }
     }
 
