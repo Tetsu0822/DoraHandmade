@@ -2,6 +2,8 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
+import { useContext } from "react";
+import UserContext from "@contexts/UserContext";
 const API_USER_CHECK_URL = import.meta.env.VITE_API_USER_CHECK_URL;
 const API_SIGNUP_URL = import.meta.env.VITE_API_SIGNUP_URL;
 const API_PATH = import.meta.env.VITE_API_PATH;
@@ -23,9 +25,10 @@ function Signup() {
         mode: "onChange"
     });
 
+    const { setUser } = useContext(UserContext);
+
     const onSubmit = async (formData) => {
         // 登入或註冊 API 呼叫
-        console.log("表單資料:", formData);
         try {
             if (mode === "register") {
                 const regiData = {
@@ -46,22 +49,29 @@ function Signup() {
                     api_path: API_PATH,
                 }
                 const response = await axios.post(API_LOGIN_URL, loginData);
-                console.log("登入成功:", response.data);
-                // 儲存 token 和使用者資訊到 cookie
-                const { token, expired } = response.data;
-                // 用函式包裝副作用，避免 ESLint 錯誤
-                const setCookie = () => {
-                    document.cookie = `doraToken=${token};expires=${new Date(expired)};`;
-                };
-                setCookie();
-                reset();
-                navigate("/");
+                if (response.data.success === true) {
+                    const { token, expired } = response.data;
+                    // 用函式包裝副作用，避免 ESLint 錯誤
+                    const setCookie = () => {
+                        document.cookie = `doraToken=${token};expires=${new Date(expired)};`;
+                    };
+                    setCookie();
+                    reset();
+                    setUser({
+                        name: response.data.name,
+                        email: response.data.email,
+                    });
+                    navigate("/");
+                } else {
+                    alert("登入失敗，請檢查帳號密碼");
+                    navigate("/login");
+                }
+
             }
         } catch (error) {
             console.error("API 呼叫失敗:", error);
             alert("登入或註冊失敗，請稍後再試");
         }
-
     };
 
     useEffect(() => {
@@ -75,25 +85,25 @@ function Signup() {
                 try {
                     const response = await axios.post(API_USER_CHECK_URL, tokenData);
                     if (response.data.success) {
-                        console.log("使用者已登入:", response.data.user);
+                        console.log("使用者已登入:", response.data);
                         navigate("/");
-                        alert("您已經登入過了，將自動導向首頁");
                     } else {
                         // token 無效，清除 cookie
                         document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        navigate("/login");
                     }
                 } catch (error) {
                     // 403 或其他錯誤，清除 cookie
                     console.error("user_check 失敗:", error);
-    document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    navigate("/login");
                 }
             };
             checkUser();
-
-        } else {
-            navigate("/login");
         }
-    }, [navigate]);
+    }, [navigate, setUser]);
+
+
     return (
         <>
         <div className="auth-wrapper d-flex align-items-center justify-content-center">
