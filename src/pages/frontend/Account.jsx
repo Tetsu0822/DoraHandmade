@@ -11,17 +11,11 @@ function Account() {
     const { user, setUser } = useContext(UserContext);
 
     const LogOut = async () => {
-        // 清除 token 並導向登入頁面
-        const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
-        if (token) {
-            // const domain = "tetsu0822.github.io";
-            document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/DoraHandmade; domain=tetsu0822.github.io";
-            console.log("登出成功:", token);
-            setIsLoggedIn(false);
-            setUser(null);
-            navigate("/login");
-        }
+        document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/DoraHandmade; domain=tetsu0822.github.io";
+        setIsLoggedIn(false);
+        setUser(null);
+        navigate("/login");
     }
 
     function maskString(str) {
