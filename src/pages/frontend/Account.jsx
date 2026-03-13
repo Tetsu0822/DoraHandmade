@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useContext } from "react";
 import UserContext from "@contexts/UserContext";
 import { useNavigate } from "react-router";
+import { UserCircle } from "lucide-react";
 const API_LOGOUT_URL = import.meta.env.VITE_API_LOGOUT_URL;
 function Account() {
     const navigate = useNavigate();
@@ -48,7 +49,7 @@ function Account() {
     useEffect(() => {
         // 取得 token
         const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
-        if (!token) {
+        if (!token && !user) {
             navigate("/login");
         } else {
             const tokenData = {
@@ -57,64 +58,42 @@ function Account() {
             const checkUser = async () => {
                 try {
                     const response = await axios.post(import.meta.env.VITE_API_USER_CHECK_URL, tokenData);
-                    if (response.data.success) {
+                    if (response.data.success === true) {
                         setIsLoggedIn(true);
-                        setUser({
-                            name: response.data.name,
-                            email: response.data.email,
-                        });
                     } else {
-                        // token 無效，清除 cookie
-                        document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                        navigate("/login");
                         setIsLoggedIn(false);
+                        navigate("/login");
                     }
                 } catch (error) {
-                    // 403 或其他錯誤，清除 cookie
-                    console.error("user_check 失敗:", error);
-                    document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    navigate("/login");
+                    console.error("使用者驗證失敗:", error);
                     setIsLoggedIn(false);
+                    navigate("/login");
                 }
             };
             checkUser();
+
         }
-    }, [navigate]);
+    }, [navigate, user]);
 
 
     return (
         <>
-        <div className="container py-15">
-            {isLoggedIn ? (
-                <>
-                <h1>帳戶資訊</h1>
-            <p>這裡是帳戶資訊頁面，請在此顯示使用者的相關資訊。</p>
-            {user && (
-                <div className="card mb-3" style={{ maxWidth: "540px" }}>
-                    <div className="row g-0">
-                        <div className="col-md-8">
-                            <div className="card-body">
-                                <h5 className="card-title">使用者資訊</h5>
-                                <p className="card-text">姓名: {maskString(user.name)}</p>
-                                <p className="card-text">Email: {maskEmail(user.email)}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* 顯示登出按鈕 */}
-            <button className="btn btn-secondary" onClick={() => LogOut()}>登出</button>
-            </>
-            ) : (
-                <>
-                <div className="alert alert-primary" role="alert">
-                    您尚未登入，請先登入以查看帳戶資訊。
-                </div>
-                </>
-            )}
-
-        </div>
+        {isLoggedIn && user ? (
+            <div className="container my-5">
+                <h2 className="account-heading-title mb-4">帳戶資訊</h2>
+                {user.name ? (
+                    <p className="account-info"><UserCircle className="me-2" />{maskString(user.name)}</p>
+                ) : null}
+                {user.email ? (
+                    <p className="account-info"><UserCircle className="me-2" />{maskEmail(user.email)}</p>
+                ) : null}
+                <button className="btn btn-secondary mt-3" onClick={LogOut}>登出</button>
+            </div>
+        ) : (
+            <div className="container my-5">
+                <div className="alert alert-primary">請先登入以查看帳戶資訊</div>
+            </div>
+        )}
         </>
     );
 }
