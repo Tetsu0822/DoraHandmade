@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router";
+import UserContext from "../../../src/contexts/UserContext.jsx";
 import axios from 'axios';
 import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
+
 function Orders() {
     const [ orders, setOrders] = useState([]);
     const navigate = useNavigate();
@@ -18,6 +20,7 @@ function Orders() {
     const handleViewMoreOrder = (orderId) => {
         navigate(`/order/${orderId}`);
     }
+    const { user } = useContext(UserContext);
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -30,6 +33,9 @@ function Orders() {
         };
         fetchOrders();
     }, [currentPage]);
+
+    // 根據 user.email 過濾訂單
+    const filteredOrders = user ? orders.filter(order => order.user?.email === user.email) : [];
     return (
         <div className="container my-5">
             <h2 className="order-heading-title mb-4">訂單列表</h2>
@@ -46,31 +52,44 @@ function Orders() {
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map((order) => (
-                            <tr key={order.id}>
-                                <td>{order.id}</td>
-                                <td>{order.create_at ? new Date(order.create_at * 1000).toLocaleString("zh-TW", {
-                                    year: "numeric",
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    second: "2-digit",
-                                    hour12: false,
-                                    timeZone: "Asia/Taipei"
-                                }) : ""}</td>
-                                <td>{order.user?.name}</td>
-                                <td>{order.is_paid ? "已付款" : "未付款"}</td>
-                                <td>{order.total}</td>
-                                <td>
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-primary btn-sm"
-                                        onClick={() =>handleViewMoreOrder(order.id)}
-                                    >查看</button>
-                                </td>
+                        {/* 如果有使用者登入，則顯示訂單列表；如果沒有使用者登入，則顯示提示訊息 */}
+                        {user ? (
+                            filteredOrders.length > 0 ? (
+                                filteredOrders.map((order) => (
+                                    <tr key={order.id}>
+                                        <td>{order.id}</td>
+                                        <td>{order.create_at ? new Date(order.create_at * 1000).toLocaleString("zh-TW", {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                            hour12: false,
+                                            timeZone: "Asia/Taipei"
+                                        }) : ""}</td>
+                                        <td>{order.user?.name}</td>
+                                        <td>{order.is_paid ? "已付款" : "未付款"}</td>
+                                        <td>{order.total}</td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-primary btn-sm"
+                                                onClick={() =>handleViewMoreOrder(order.id)}
+                                            >查看</button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="6" className="text-center">沒有符合的訂單。</td>
+                                </tr>
+                            )
+                        ) : (
+                            <tr>
+                                <td colSpan="6" className="text-center">請先登入以查看訂單列表。</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

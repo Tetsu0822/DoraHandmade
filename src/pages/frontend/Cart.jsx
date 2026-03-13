@@ -778,7 +778,6 @@ function Cart() {
                     <div className="d-flex">
                         <div className="p-2 flex-grow-1">商品小計</div>
                         <div className="p-2">
-                            {/* 商品小計金額 */}
                             {currency(cartData.reduce((sum, item) => sum + item.total, 0))}
                         </div>
                     </div>
@@ -793,21 +792,9 @@ function Cart() {
                         )}
                     </div>
                     <div className="d-flex">
-                        <div className="p-2 flex-grow-1">運費</div>
-                        <div className="p-2">
-                            {
-                                // 商品小計為 0 時免運費，反之則+$100
-                                cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? "--" : currency(100)
-                            }
-                        </div>
-                    </div>
-                    <div className="d-flex">
                         <div className="p-2 flex-grow-1">結帳金額</div>
                         <div className="p-2">
-                            {
-                                // 商品小計為 0 時結帳金額為 0，反之則為商品小計+新會員折扣+運費
-                                cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? 0 : currency(finalTotal !== null ? Math.floor(finalTotal) + 100 : subtotal + 100)
-                            }
+                            {cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? 0 : currency(finalTotal !== null ? Math.floor(finalTotal) : subtotal)}
                         </div>
                     </div>
                 </div>
