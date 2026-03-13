@@ -59,6 +59,10 @@ function Account() {
                     const response = await axios.post(import.meta.env.VITE_API_USER_CHECK_URL, tokenData);
                     if (response.data.success) {
                         setIsLoggedIn(true);
+                        setUser({
+                            name: response.data.name,
+                            email: response.data.email,
+                        });
                     } else {
                         // token 無效，清除 cookie
                         document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
