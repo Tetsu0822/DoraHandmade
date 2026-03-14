@@ -47,21 +47,17 @@ const Header = () => {
   };
 
   const toggleHandmade = (e) => {
-    if (window.innerWidth < 992) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation();
-      setOpenHandmade(!openHandmade);
-    }
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation();
+    setOpenHandmade(!openHandmade);
   };
 
   const toggleMaterial = (e) => {
-    if (window.innerWidth < 992) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation();
-      setOpenMaterial(!openMaterial);
-    }
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation();
+    setOpenMaterial(!openMaterial);
   };
   // 自動判斷右側主選單（如使用者選單）展開方向
   const handleUserMenuEnter = (e) => {
@@ -343,7 +339,7 @@ const Header = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/orders">
+                        <Link className="dropdown-item" to="/order">
                           訂單查詢
                         </Link>
                       </li>
