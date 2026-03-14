@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 // import { useDispatch } from "react-redux";
-// import useMessage from "../hooks/useMessage";
+import useMessage from "@hooks/useMessage";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
@@ -14,7 +14,7 @@ function ProductModal({
     closeProductModal,
 }) {
     const [templateData, setTemplateData] = useState(templateProduct);
-    // const { showMessage, showError } = useMessage();
+    const { showError, showSuccess } = useMessage();
     // 同步 templateProduct 到 templateData
     useEffect(() => {
         setTemplateData(templateProduct);
@@ -114,12 +114,11 @@ function ProductModal({
         const response = await axios[method](url, productData);
         // alert("產品更新成功");
         // dispatch(createAsyncMessage(response.data));
-        //showMessage(response.data.message);
+        showSuccess(response.data.message);
         getProducts(currentPage || 1);
         closeProductModal();
         } catch (error) {
-        alert("產品更新失敗: " + (error.response?.data?.message || error.message));
-        //showError(error.response.data.message);
+        showError("產品更新失敗: " + (error.response?.data?.message || error.message));
         }
     };
 
@@ -128,10 +127,11 @@ function ProductModal({
         try {
         const response = await axios.delete(`${VITE_API_BASE}/api/${VITE_API_PATH}/admin/product/${id}`);
         //showMessage(response.data.message);
+        showSuccess(response.data.message);
         getProducts(currentPage || 1);
         closeProductModal();
         } catch (error) {
-        alert("產品刪除失敗: " + (error.response?.data?.message || error.message));
+        showError("產品刪除失敗: " + (error.response?.data?.message || error.message));
         }
     };
 
@@ -149,7 +149,7 @@ function ProductModal({
             imageUrl: response.data.imageUrl,
         }))
         } catch (error) {
-        alert("圖片上傳失敗: " + (error.response?.data?.message || error.message));
+        showError("圖片上傳失敗: " + (error.response?.data?.message || error.message));
         }
     };
 
@@ -476,7 +476,7 @@ function ProductModal({
                     <>
                         <button
                         type="button"
-                        className="btn btn-outline-secondary"
+                        className="btn btn-outline-primary cancelBtn"
                         data-bs-dismiss="modal"
                         onClick={() => closeProductModal()}
                         >
@@ -484,7 +484,7 @@ function ProductModal({
                         </button>
                         <button
                         type="button"
-                        className="btn btn-primary"
+                        className="btn btn-primary text-white"
                         onClick={() => updateProduct(templateData.id)}>
                             確認
                         </button>

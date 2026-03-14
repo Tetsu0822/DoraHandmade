@@ -1,0 +1,21 @@
+.editBtn {
+    border: 1px solid $blue-500;
+    color: $blue-500;
+}
+
+.delBtn {
+    border: 1px solid $danger;
+}
+
+.cancelBtn {
+    background: #fff;
+    color: $primary-500;
+    border: 2.5px solid $primary-500;
+    border-radius: 0px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    &:hover {
+        background: $primary-50;
+        color: $primary-500;
+    }
+}
