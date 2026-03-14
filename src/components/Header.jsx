@@ -19,6 +19,9 @@ const Header = () => {
     setUser(null);
     document.cookie =
       "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // 為了確保 cookie 被正確刪除，指定 path 為 /DoraHandmade
+    const expiredDate = "Thu, 01 Jan 1970 00:00:00 UTC";
+    document.cookie = `doraToken=; expires=${expiredDate}; path=/DoraHandmade;`;
     navigate("/login");
   };
 

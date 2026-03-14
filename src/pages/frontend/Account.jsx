@@ -12,6 +12,9 @@ function Account() {
 
     const LogOut = () => {
         const expiredDate = "Thu, 01 Jan 1970 00:00:00 UTC";
+        // 清除 cookie，指定 path 為 /
+        document.cookie = `doraToken=; expires=${expiredDate}; path=/;`;
+        // 清除 cookie，指定 path 為 /DoraHandmade
         document.cookie = `doraToken=; expires=${expiredDate}; path=/DoraHandmade;`;
 
         setIsLoggedIn(false);

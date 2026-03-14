@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router";
 import { useContext } from "react";
@@ -50,10 +50,14 @@ function Signup() {
                 }
                 const response = await axios.post(API_LOGIN_URL, loginData);
                 if (response.data.success === true) {
+                    const COOKIE_PATH = "/DoraHandmade";
                     const { token, expired } = response.data;
                     // 用函式包裝副作用，避免 ESLint 錯誤
                     const setCookie = () => {
-                        document.cookie = `doraToken=${token};expires=${new Date(expired)};`;
+                        // 設定 cookie，指定 path 為 /
+                        document.cookie = `doraToken=${token};expires=${new Date(expired)}; path=/;`;
+                        // 設定 cookie，指定 path 為 /DoraHandmade
+                        document.cookie = `doraToken=${token};expires=${new Date(expired)}; path=${COOKIE_PATH};`;
                     };
                     setCookie();
                     reset();
@@ -98,14 +102,19 @@ function Signup() {
                         console.log("使用者已登入:", response.data);
                         navigate("/");
                     } else {
-                        // token 無效，清除 cookie
+                        // 本機端 token 無效，清除 cookie
                         document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                        // token 無效，清除 cookie with GitHub
+                        const COOKIE_PATH = "/DoraHandmade";
+                        document.cookie = `doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${COOKIE_PATH};`;
                         navigate("/login");
                     }
                 } catch (error) {
                     // 403 或其他錯誤，清除 cookie
                     console.error("user_check 失敗:", error);
                     document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    const COOKIE_PATH = "/DoraHandmade";
+                    document.cookie = `doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${COOKIE_PATH};`;
                     navigate("/login");
                 }
             };
