@@ -150,7 +150,7 @@ const Header = () => {
                       </Link>
                     </li>
                     <li>
-                      <Link className="dropdown-item" to="/orders">
+                      <Link className="dropdown-item" to="/order">
                         訂單查詢
                       </Link>
                     </li>

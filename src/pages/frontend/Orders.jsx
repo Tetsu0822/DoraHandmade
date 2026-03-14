@@ -1,44 +1,73 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router";
-import UserContext from "../../../src/contexts/UserContext.jsx";
+import UserContext from "@contexts/UserContext";
 import axios from 'axios';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+// import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
 function Orders() {
     const [ orders, setOrders] = useState([]);
     const navigate = useNavigate();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [pagination, setPagination] = useState({
-        total_pages: 1,
-        current_page: 1,
-        has_pre: false,
-        has_next: false,
-        category: ""
-    });
+    // const [ currentPage ] = useState(1);
+    // const [pagination, setPagination] = useState({
+    //     total_pages: 1,
+    //     current_page: 1,
+    //     has_pre: false,
+    //     has_next: false,
+    //     category: ""
+    // });
+
+    const getOrders = async () => {
+        try {
+            const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders`);
+            setOrders(response.data.orders);
+        } catch (error) {
+            console.error("獲取訂單列表失敗:", error);
+        }
+    };
+
+
     const handleViewMoreOrder = (orderId) => {
         navigate(`/order/${orderId}`);
     }
+
+    const handlePayment = async (orderId) => {
+        try {
+            const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${orderId}`);
+            if (response.data.success) {
+                alert("付款成功！");
+                getOrders(); // 重新獲取訂單列表以更新狀態
+                // navigate(`/order/${orderId}`);
+            } else {
+                alert("付款失敗，請稍後再試。");
+            }
+        } catch (e) {
+            console.error("付款失敗:", e);
+            alert("付款失敗，請稍後再試。");
+        }
+    }
+
     const { user } = useContext(UserContext);
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders?page=${currentPage}`);
+                const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders`);
+                // const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders?page=${currentPage}`);
                 setOrders(response.data.orders);
-                setPagination(response.data.pagination);
+                // setPagination(response.data.pagination);
             } catch (error) {
                 console.error("獲取訂單列表失敗:", error);
             }
         };
         fetchOrders();
-    }, [currentPage]);
+    }, []);
 
     // 根據 user.email 過濾訂單
     const filteredOrders = user ? orders.filter(order => order.user?.email === user.email) : [];
     return (
         <div className="container my-5">
-            <h2 className="order-heading-title mb-4">訂單列表</h2>
+            <h2 className="order-heading-title mb-4">{user.name} 訂單列表</h2>
             <div className="table-responsive">
                 <table className="table table-bordered">
                     <thead>
@@ -77,6 +106,17 @@ function Orders() {
                                                 className="btn btn-outline-primary btn-sm"
                                                 onClick={() =>handleViewMoreOrder(order.id)}
                                             >查看</button>
+                                            {
+                                                // 顯示付款按鈕（如果訂單未付款）
+                                                !order.is_paid && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-outline-success btn-sm ms-2"
+                                                        onClick={() => handlePayment(order.id)}
+                                                    >付款</button>
+                                                )
+
+                                            }
                                         </td>
                                     </tr>
                                 ))
@@ -94,7 +134,7 @@ function Orders() {
                 </table>
             </div>
             {/* 分頁控制 */}
-            {
+            {/* {
                 pagination.total_pages > 1 && (
                     <nav className="mt-5">
                         <ul className="pagination justify-content-center align-items-center">
@@ -118,7 +158,7 @@ function Orders() {
                         </ul>
                     </nav>
                 )
-            }
+            } */}
         </div>
     );
 }

@@ -4,6 +4,8 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/14 新增付款功能 By Tetsu
+- 2026/03/14 修正GitHub Cookie 清除問題 By Tetsu
 - 2026/03/13 修正Header選單展開邏輯 By Tim
 - 2026/03/13 整合 UserContext 至 Header 元件並實作登出功能 By Tim
 - 2026/03/13 1.取消結帳金額中的運費，/order 訂單列表只顯示使用者的訂單 By Tetsu

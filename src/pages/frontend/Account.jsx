@@ -4,7 +4,7 @@ import { useContext } from "react";
 import UserContext from "@contexts/UserContext";
 import { useNavigate } from "react-router";
 import { UserCircle } from "lucide-react";
-const API_LOGOUT_URL = import.meta.env.VITE_API_LOGOUT_URL;
+
 function Account() {
     const navigate = useNavigate();
     const [ isLoggedIn, setIsLoggedIn ] = useState(false);
