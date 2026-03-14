@@ -10,13 +10,14 @@ function Account() {
     const [ isLoggedIn, setIsLoggedIn ] = useState(false);
     const { user, setUser } = useContext(UserContext);
 
-    const LogOut = async () => {
-        document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/DoraHandmade; domain=tetsu0822.github.io";
+    const LogOut = () => {
+        const expiredDate = "Thu, 01 Jan 1970 00:00:00 UTC";
+        document.cookie = `doraToken=; expires=${expiredDate}; path=/DoraHandmade;`;
+
         setIsLoggedIn(false);
         setUser(null);
         navigate("/login");
-    }
+    };
 
     function maskString(str) {
         if (!str) return "";
