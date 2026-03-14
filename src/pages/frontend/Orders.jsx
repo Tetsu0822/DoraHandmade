@@ -1,164 +1,223 @@
-import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router";
+import { useEffect, useState, useContext, useCallback } from "react";
+import { useNavigate, Link } from "react-router";
 import UserContext from "@contexts/UserContext";
+import useMessage from "@hooks/useMessage.jsx";
 import axios from 'axios';
-// import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
 function Orders() {
-    const [ orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
-    // const [ currentPage ] = useState(1);
-    // const [pagination, setPagination] = useState({
-    //     total_pages: 1,
-    //     current_page: 1,
-    //     has_pre: false,
-    //     has_next: false,
-    //     category: ""
-    // });
+    const { showError, showSuccess } = useMessage();
+    const { user } = useContext(UserContext);
 
-    const getOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders`);
             setOrders(response.data.orders);
         } catch (error) {
             console.error("獲取訂單列表失敗:", error);
+            showError("獲取訂單列表失敗");
         }
-    };
+    }, [showError]);
 
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchOrders();
+    }, [fetchOrders]);
 
     const handleViewMoreOrder = (orderId) => {
         navigate(`/order/${orderId}`);
-    }
+    };
 
     const handlePayment = async (orderId) => {
         try {
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${orderId}`);
             if (response.data.success) {
-                alert("付款成功！");
-                getOrders(); // 重新獲取訂單列表以更新狀態
-                // navigate(`/order/${orderId}`);
+                showSuccess("付款成功！");
+                fetchOrders();
             } else {
-                alert("付款失敗，請稍後再試。");
+                showError("付款失敗，請稍後再試。");
             }
         } catch (e) {
             console.error("付款失敗:", e);
-            alert("付款失敗，請稍後再試。");
+            showError("付款失敗，請稍後再試。");
         }
-    }
+    };
 
-    const { user } = useContext(UserContext);
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders`);
-                // const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders?page=${currentPage}`);
-                setOrders(response.data.orders);
-                // setPagination(response.data.pagination);
-            } catch (error) {
-                console.error("獲取訂單列表失敗:", error);
-            }
-        };
-        fetchOrders();
-    }, []);
+    const formatDate = (timestamp) => {
+        if (!timestamp) return "";
+        return new Date(timestamp * 1000).toLocaleString("zh-TW", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZone: "Asia/Taipei",
+        });
+    };
 
-    // 根據 user.email 過濾訂單
-    const filteredOrders = user ? orders.filter(order => order.user?.email === user.email) : [];
+    const filteredOrders = user
+        ? orders.filter((order) => order.user?.email === user.email)
+        : [];
+
     return (
         <div className="container my-5">
-            <h2 className="order-heading-title mb-4">{user.name} 訂單列表</h2>
-            <div className="table-responsive">
+            {/* 麵包屑 */}
+            <nav aria-label="breadcrumb" className="mb-3">
+                <ol className="breadcrumb">
+                    <li className="breadcrumb-item">
+                        <Link to="/">首頁</Link>
+                    </li>
+                    <li className="breadcrumb-item active" aria-current="page">
+                        訂單列表
+                    </li>
+                </ol>
+            </nav>
+            <h2 className="order-heading-title mb-4">
+                {user?.name} 訂單列表
+            </h2>
+
+            {/* 電腦版 */}
+            <div className="table-responsive d-none d-md-block">
                 <table className="table table-bordered">
                     <thead>
                         <tr>
-                            <th style={{background: "#EAE1E3"}} scope="col">訂單編號</th>
-                            <th style={{background: "#EAE1E3"}} scope="col">訂單日期</th>
-                            <th style={{background: "#EAE1E3"}} scope="col">購買人</th>
-                            <th style={{background: "#EAE1E3"}} scope="col">訂單狀態</th>
-                            <th style={{background: "#EAE1E3"}} scope="col">訂單金額</th>
-                            <th style={{background: "#EAE1E3"}} scope="col">操作</th>
+                            <th style={{ background: "#EAE1E3" }} scope="col">訂單編號</th>
+                            <th style={{ background: "#EAE1E3" }} scope="col">訂單日期</th>
+                            <th style={{ background: "#EAE1E3" }} scope="col">購買人</th>
+                            <th style={{ background: "#EAE1E3" }} scope="col">訂單狀態</th>
+                            <th style={{ background: "#EAE1E3" }} scope="col">訂單金額</th>
+                            <th style={{ background: "#EAE1E3" }} scope="col">操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {/* 如果有使用者登入，則顯示訂單列表；如果沒有使用者登入，則顯示提示訊息 */}
                         {user ? (
                             filteredOrders.length > 0 ? (
                                 filteredOrders.map((order) => (
                                     <tr key={order.id}>
-                                        <td>{order.id}</td>
-                                        <td>{order.create_at ? new Date(order.create_at * 1000).toLocaleString("zh-TW", {
-                                            year: "numeric",
-                                            month: "2-digit",
-                                            day: "2-digit",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            second: "2-digit",
-                                            hour12: false,
-                                            timeZone: "Asia/Taipei"
-                                        }) : ""}</td>
+                                        <td className="text-break" style={{ maxWidth: "160px", fontSize: "0.85rem" }}>
+                                            {order.id}
+                                        </td>
+                                        <td>{formatDate(order.create_at)}</td>
                                         <td>{order.user?.name}</td>
-                                        <td>{order.is_paid ? "已付款" : "未付款"}</td>
-                                        <td>{order.total}</td>
                                         <td>
-                                            <button
-                                                type="button"
-                                                className="btn btn-outline-primary btn-sm"
-                                                onClick={() =>handleViewMoreOrder(order.id)}
-                                            >查看</button>
-                                            {
-                                                // 顯示付款按鈕（如果訂單未付款）
-                                                !order.is_paid && (
+                                            <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
+                                                {order.is_paid ? "已付款" : "未付款"}
+                                            </span>
+                                        </td>
+                                        <td>NT$ {order.total?.toLocaleString()}</td>
+                                        <td>
+                                            <div className="btn-group btn-group-sm">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-primary"
+                                                    onClick={() => handleViewMoreOrder(order.id)}
+                                                >查看</button>
+                                                {!order.is_paid && (
                                                     <button
                                                         type="button"
-                                                        className="btn btn-outline-success btn-sm ms-2"
+                                                        className="btn btn-outline-success"
                                                         onClick={() => handlePayment(order.id)}
                                                     >付款</button>
-                                                )
-
-                                            }
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center">沒有符合的訂單。</td>
+                                    <td colSpan="6" className="text-center py-4 text-muted">
+                                        沒有符合的訂單。
+                                    </td>
                                 </tr>
                             )
                         ) : (
                             <tr>
-                                <td colSpan="6" className="text-center">請先登入以查看訂單列表。</td>
+                                <td colSpan="6" className="text-center py-4 text-muted">
+                                    請先登入以查看訂單列表。
+                                </td>
                             </tr>
                         )}
                     </tbody>
                 </table>
             </div>
-            {/* 分頁控制 */}
-            {/* {
-                pagination.total_pages > 1 && (
-                    <nav className="mt-5">
-                        <ul className="pagination justify-content-center align-items-center">
-                            {pagination.has_pre && (
-                                <li className="page-item">
-                                    <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}><ChevronLeft size={20} className="text-secondary-700" strokeWidth={2} /></button>
-                                </li>
-                            )}
-                            {
-                                [...Array(pagination.total_pages)].map((_, idx) => (
-                                    <li key={idx + 1} className={`page-item ${currentPage === idx + 1 ? "active" : ""}`}>
-                                        <button className="page-link" onClick={() => setCurrentPage(idx + 1)}>{idx + 1}</button>
-                                    </li>
-                                ))
-                            }
-                            {pagination.has_next && (
-                                <li className="page-item">
-                                    <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}><ChevronRight size={20} className="text-secondary-700" strokeWidth={2} /></button>
-                                </li>
-                            )}
-                        </ul>
-                    </nav>
-                )
-            } */}
+
+            {/* 手機版卡片 */}
+            <div className="d-md-none">
+                {user ? (
+                    filteredOrders.length > 0 ? (
+                        filteredOrders.map((order) => (
+                            <div key={order.id} className="card mb-3 shadow-sm">
+                                <div className="card-body">
+
+                                    {/* 訂單編號 + 狀態 */}
+                                    <div className="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <small className="text-muted">訂單編號</small>
+                                            <p className="mb-0 text-break"
+                                               style={{ fontSize: "0.8rem", maxWidth: "200px" }}>
+                                                {order.id}
+                                            </p>
+                                        </div>
+                                        <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
+                                            {order.is_paid ? "已付款" : "未付款"}
+                                        </span>
+                                    </div>
+
+                                    <hr className="my-2" />
+
+                                    {/* 訂單資訊 */}
+                                    <div className="row g-2 mb-2">
+                                        <div className="col-6">
+                                            <small className="text-muted d-block">購買人</small>
+                                            <span>{order.user?.name}</span>
+                                        </div>
+                                        <div className="col-6">
+                                            <small className="text-muted d-block">訂單金額</small>
+                                            <span className="fw-bold">NT$ {order.total?.toLocaleString()}</span>
+                                        </div>
+                                        <div className="col-12">
+                                            <small className="text-muted d-block">訂單日期</small>
+                                            <span style={{ fontSize: "0.875rem" }}>
+                                                {formatDate(order.create_at)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* 操作按鈕 */}
+                                    <div className="d-flex gap-2 mt-2">
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-primary btn-sm flex-fill"
+                                            onClick={() => handleViewMoreOrder(order.id)}
+                                        >查看訂單</button>
+                                        {!order.is_paid && (
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-success btn-sm flex-fill"
+                                                onClick={() => handlePayment(order.id)}
+                                            >立即付款</button>
+                                        )}
+                                    </div>
+
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-5 text-muted">
+                            <p>沒有符合的訂單。</p>
+                        </div>
+                    )
+                ) : (
+                    <div className="text-center py-5 text-muted">
+                        <p>請先登入以查看訂單列表。</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
