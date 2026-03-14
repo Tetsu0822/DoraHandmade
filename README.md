@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/14 修正Products.jsx 錯誤、下拉選單調整 By MidyWu
 - 2026/03/14 新增付款功能 By Tetsu
 - 2026/03/14 修正GitHub Cookie 清除問題 By Tetsu
 - 2026/03/13 修正Header選單展開邏輯 By Tim
