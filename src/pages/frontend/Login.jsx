@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
+import useMessage from "@hooks/useMessage.jsx";
 import { useForm } from "react-hook-form";
 import { useNavigate, useLocation } from "react-router";
-import { useContext } from "react";
 import UserContext from "@contexts/UserContext";
 const API_USER_CHECK_URL = import.meta.env.VITE_API_USER_CHECK_URL;
 const API_SIGNUP_URL = import.meta.env.VITE_API_SIGNUP_URL;
@@ -12,6 +12,7 @@ const API_LOGIN_URL = import.meta.env.VITE_API_LOGIN_URL;
 function Signup() {
     const navigate = useNavigate();
     const [mode, setMode] = useState("login");
+    const { showError, showSuccess } = useMessage();
     const switchMode = () => {
         setMode(mode === "login" ? "register" : "login");
     };
@@ -27,7 +28,7 @@ function Signup() {
 
     const { setUser } = useContext(UserContext);
 
-    const onSubmit = async (formData) => {
+    const onSubmit = useCallback(async (formData) => {
         // 登入或註冊 API 呼叫
         try {
             if (mode === "register") {
@@ -65,18 +66,19 @@ function Signup() {
                         name: response.data.name,
                         email: response.data.email,
                     });
+                    showSuccess("登入成功！");
                     navigate("/");
                 } else {
-                    alert("登入失敗，請檢查帳號密碼");
+                    showError("登入失敗，請檢查帳號密碼");
                     navigate("/login");
                 }
 
             }
         } catch (error) {
             console.error("API 呼叫失敗:", error);
-            alert("登入或註冊失敗，請稍後再試");
+            showError("登入或註冊失敗，請稍後再試");
         }
-    };
+    }, [mode, reset, setUser, navigate, showError, showSuccess]);
 
     const location = useLocation();
     useEffect(() => {
@@ -120,11 +122,7 @@ function Signup() {
             };
             checkUser();
         }
-    }, [navigate, setUser]);
-
-    // 根據網址參數切換表單模式，避免 ESLint 警告
-    // ...existing code...
-
+    }, [navigate, setUser, showError]);
 
     return (
         <>

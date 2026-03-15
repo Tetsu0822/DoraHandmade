@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
+import useMessage from "@hooks/useMessage.jsx";
 import axios from 'axios';
 import UserContext from "@contexts/UserContext";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
@@ -10,28 +11,32 @@ function SingleOrder() {
     const [order, setOrder] = useState(null);
     const { user } = useContext(UserContext);
     const [isOwner, setIsOwner] = useState(false);
+    const { showError, showSuccess } = useMessage();
+
+    const fetchOrder = useCallback(async () => {
+        try {
+            const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/order/${id}`);
+            const fetchedOrder = response.data.order;
+            console.log("Fetched order:", fetchedOrder);
+            console.log("Current user:", user);
+            setOrder(fetchedOrder);
+
+            // 取得 order 資料後才判斷是否為本人
+            if (fetchedOrder && user) {
+                setIsOwner(
+                    fetchedOrder.user?.email === user.email
+                );
+            }
+        } catch (error) {
+            console.error("Error fetching order:", error);
+            showError("訂單資料讀取失敗，請稍後再試。");
+        }
+    }, [id, user, showError]);
 
     useEffect(() => {
-        const fetchOrder = async () => {
-            try {
-                const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/order/${id}`);
-                const fetchedOrder = response.data.order;
-                console.log("Fetched order:", fetchedOrder);
-                console.log("Current user:", user);
-                setOrder(fetchedOrder);
-
-                // 取得 order 資料後才判斷是否為本人
-                if (fetchedOrder && user) {
-                    setIsOwner(
-                        fetchedOrder.user?.email === user.email
-                    );
-                }
-            } catch (error) {
-                console.error("Error fetching order:", error);
-            }
-        };
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchOrder();
-    }, [id, user]);
+    }, [fetchOrder]);
 
     const formatDate = (timestamp) => {
         if (!timestamp) return "";
@@ -45,6 +50,21 @@ function SingleOrder() {
             hour12: false,
             timeZone: "Asia/Taipei",
         });
+    };
+
+    const handlePayment = async (orderId) => {
+        try {
+            const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${orderId}`);
+            if (response.data.success) {
+                showSuccess("付款成功！");
+                fetchOrder();
+            } else {
+                showError("付款失敗，請稍後再試。");
+            }
+        } catch (e) {
+            console.error("付款失敗:", e);
+            showError("付款失敗，請稍後再試。");
+        }
     };
 
     const parseMessage = (message) => {
@@ -123,6 +143,16 @@ function SingleOrder() {
                                                 NT$ {order.total?.toLocaleString()}
                                             </p>
                                         </div>
+                                        {/* 若未付款，顯示付款按鈕 */}
+                                        {!order.is_paid && (
+                                            <div className="col-6 col-md-4">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-success btn-sm mt-2"
+                                                    onClick={() => handlePayment(order.id)}
+                                                >立即付款</button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

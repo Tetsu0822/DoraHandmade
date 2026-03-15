@@ -1,16 +1,18 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useContext } from "react";
 import UserContext from "@contexts/UserContext";
 import { useNavigate } from "react-router";
 import { UserCircle } from "lucide-react";
+import useMessage from "@hooks/useMessage.jsx";
 
 function Account() {
     const navigate = useNavigate();
     const [ isLoggedIn, setIsLoggedIn ] = useState(false);
     const { user, setUser } = useContext(UserContext);
+    const { showSuccess, showError } = useMessage();
 
-    const LogOut = () => {
+    const LogOut = useCallback(() => {
         const expiredDate = "Thu, 01 Jan 1970 00:00:00 UTC";
         // 清除 cookie，指定 path 為 /
         document.cookie = `doraToken=; expires=${expiredDate}; path=/;`;
@@ -19,8 +21,9 @@ function Account() {
 
         setIsLoggedIn(false);
         setUser(null);
+        showSuccess("已登出");
         navigate("/login");
-    };
+    }, [setUser, showSuccess, navigate]);
 
     function maskString(str) {
         if (!str) return "";
@@ -53,18 +56,20 @@ function Account() {
                         setIsLoggedIn(true);
                     } else {
                         setIsLoggedIn(false);
+                        showError("使用者驗證失敗，請重新登入");
                         navigate("/login");
                     }
                 } catch (error) {
                     console.error("使用者驗證失敗:", error);
                     setIsLoggedIn(false);
+                    showError("使用者驗證失敗，請重新登入");
                     navigate("/login");
                 }
             };
             checkUser();
 
         }
-    }, [navigate, user]);
+    }, [navigate, user, showError]);
 
 
     return (

@@ -14,10 +14,10 @@ export const messageSlice = createSlice({
     reducers: {
         createMessage(state, action) {
             state.push({
-                id: action.payload.id,
-                type: action.payload.success ? "success" : "danger",
-                title: action.payload.success ? "成功" : "失敗",
-                text: action.payload.message,
+              id: action.payload.id,
+              type: action.payload.success ? "primary" : "orange",
+              title: action.payload.success ? "成功" : "失敗",
+              text: action.payload.message,
             });
         },
         removeMessage(state, action) {
