@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '@components/ProductCard';
 import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
@@ -7,27 +8,29 @@ const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
 function Products() {
+  const { child } = useParams(); // 取得路由參數
   const itemsPerPage = 9;
 
   const [products, setProducts] = useState([]);
   const [sortedProducts, setSortedProducts] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState('all');
+
+  // 初始化分類
+  const [currentCategory, setCurrentCategory] = useState(() => child || 'all');
+
+  // 分頁
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 排序相關
+  // 排序與下拉
   const [sortLabel, setSortLabel] = useState('預設排序');
   const [sortOpen, setSortOpen] = useState(false);
-
-  // 左側材料下拉
   const [materialOpen, setMaterialOpen] = useState(false);
 
   // API 取得商品
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await axios.get(`${API_BASE}/api/${API_PATH}/products`);
+        const res = await axios.get(`${API_BASE}/api/${API_PATH}/products/all`);
         const enabledProducts = res.data.products?.filter(p => p.is_enabled);
-
         setProducts(enabledProducts);
         setSortedProducts(enabledProducts);
       } catch (err) {
@@ -37,10 +40,11 @@ function Products() {
     fetchProducts();
   }, []);
 
+  const effectivePage = child ? 1 : currentPage;
+
   // 排序
   const handleSortChange = (type, label) => {
     let sorted = [...products];
-
     if (type === 'default') sorted = [...products];
     if (type === 'priceHigh') sorted.sort((a, b) => b.price - a.price);
     if (type === 'priceLow') sorted.sort((a, b) => a.price - b.price);
@@ -54,11 +58,11 @@ function Products() {
     setSortOpen(false);
   };
 
-  // 類別篩選
+  // 分類
   const handleCategoryChange = (category) => {
     setCurrentCategory(category);
     setCurrentPage(1);
-    setMaterialOpen(false); // 選擇後自動收起
+    setMaterialOpen(false);
   };
 
   const filteredProducts = sortedProducts.filter(product => {
@@ -68,14 +72,16 @@ function Products() {
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
+  // 分頁
   const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    (effectivePage - 1) * itemsPerPage,
+    effectivePage * itemsPerPage
   );
 
+  // 分頁切換時滾動到頂部
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [currentPage]);
+  }, [effectivePage]);
 
   return (
     <div className="container pt-5">
@@ -104,7 +110,6 @@ function Products() {
                 </ul>
               )}
             </div>
-
           </div>
         </nav>
 
@@ -159,22 +164,22 @@ function Products() {
           {totalPages > 1 && (
             <nav className="mt-5">
               <ul className="pagination justify-content-center align-items-center">
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}>
+                <li className={`page-item ${effectivePage === 1 ? 'disabled' : ''}`}>
+                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (effectivePage > 1) setCurrentPage(effectivePage - 1); }}>
                     <ChevronLeft size={20} className="text-secondary-700" />
                   </a>
                 </li>
 
                 {[...Array(totalPages).keys()].map(pageNum => (
-                  <li className={`page-item ${pageNum + 1 === currentPage ? 'active' : ''}`} key={pageNum}>
+                  <li className={`page-item ${pageNum + 1 === effectivePage ? 'active' : ''}`} key={pageNum}>
                     <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(pageNum + 1); }}>
                       {pageNum + 1}
                     </a>
                   </li>
                 ))}
 
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}>
+                <li className={`page-item ${effectivePage === totalPages ? 'disabled' : ''}`}>
+                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (effectivePage < totalPages) setCurrentPage(effectivePage + 1); }}>
                     <ChevronRight size={20} className="text-secondary-700" />
                   </a>
                 </li>
