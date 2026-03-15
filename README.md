@@ -4,6 +4,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/15 新增後台優惠券管理、SweetAleart2 元件 By Tetsu
 - 2026/03/15 新增後台訂單管理功能 By Tetsu
 - 2026/03/15 修正Products.jsx api資料抓取 By MidyWu
 - 2026/03/15 更新訂單及單一訂單頁面 By Tetsu

@@ -34,7 +34,7 @@ function AdminProducts() {
     const [ pagination, setPagination ] = useState({});
     const [currentPage, setCurrentPage] = useState(1);// 目前頁碼
     const productModalRef = useRef(null);
-    const { showError, showSuccess } = useMessage();
+    const { showError } = useMessage();
 
     // 取得產品列表的 API 呼叫
     const fetchProducts = useCallback(async (page = 1) => {
@@ -53,12 +53,12 @@ function AdminProducts() {
             setProducts(response.data.products);
             setPagination(response.data.pagination);
             setCurrentPage(page);
-            showSuccess("產品列表取得成功");
+            // showSuccess("產品列表取得成功");
         } catch (error) {
             console.error("取得產品列表失敗:", error);
             showError("取得產品列表失敗");
         }
-    }, [showError, showSuccess]);
+    }, [showError]);
 
     const openProductModal = (type, product) => {
         setModalType(type);
@@ -124,11 +124,9 @@ function AdminProducts() {
                     <td className="text-end">{item.origin_price}</td>
                     <td className="text-end">{item.price}</td>
                     <td>
-                    {item.is_enabled ? (
-                        <span className="text-success">啟用</span>
-                    ) : (
-                        <span>未啟用</span>
-                    )}
+                        <span className={`badge ${item.is_enabled ? "bg-success" : "bg-secondary"}`}>
+                            {item.is_enabled ? "已啟用" : "未啟用"}
+                        </span>
                     </td>
                     <td>{new Date(item.published_at).toLocaleDateString()}</td>
                     <td>

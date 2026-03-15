@@ -14,6 +14,7 @@ import AdminProducts from "../pages/backend/AdminProducts.jsx";
 import BackendLayout from "../layout/BackendLayout.jsx";
 import AdminOrders from "../pages/backend/AdminOrders.jsx";
 import Dashboard from "../pages/backend/Dashboard.jsx";
+import AdminCoupons from "../pages/backend/AdminCoupons.jsx";
 
 export const routes = createHashRouter([
     {
@@ -82,6 +83,10 @@ export const routes = createHashRouter([
             {
                 path: "order",
                 element: <AdminOrders />
+            },
+            {
+                path: "coupon",
+                element: <AdminCoupons />
             }
         ]
     }

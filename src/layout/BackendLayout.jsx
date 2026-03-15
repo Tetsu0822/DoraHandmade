@@ -77,6 +77,9 @@ const BackendLayout = () => {
                         <Link className="nav-link" to="/admin/order">訂單管理</Link>
                     </li>
                     <li className="nav-item">
+                        <Link className="nav-link" to="/admin/coupon">優惠券管理</Link>
+                    </li>
+                    <li className="nav-item">
                         <button className="btn btn-link nav-link" onClick={() => {
                             setIsLogin(false);
                             localStorage.removeItem("adminLogin");
