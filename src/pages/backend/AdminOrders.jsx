@@ -25,23 +25,19 @@ function AdminOrders() {
                 "$1"
             );
             axios.defaults.headers.common.Authorization = token;
-            const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders`, {
-                params: { page }
-            }, {
-                headers: {
-                    Authorization: token,
-                }
+            // ✅ 修正：後台路由應為 /admin/orders
+            const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/admin/orders`, {
+                params: { page },
+                headers: { Authorization: token },
             });
-            console.log("訂單列表:", response.data.orders);
             setOrders(response.data.orders);
             setPagination(response.data.pagination);
             setCurrentPage(page);
-            // showSuccess("訂單列表取得成功");
         } catch (error) {
             console.error("Error fetching orders:", error);
             showError("取得訂單列表失敗");
         }
-    }, [setCurrentPage, showError]);
+    }, [showError]);
 
     const formatDate = (timestamp) => {
         if (!timestamp) return "";
@@ -60,31 +56,33 @@ function AdminOrders() {
     const openOrderModal = (type, order) => {
         setTemplateOrder(order);
         setModalType(type);
-        orderModalRef.current.show();
     };
 
     const closeOrderModal = () => {
-        if (orderModalRef.current) {
-            orderModalRef.current.hide();
-        }
+        orderModalRef.current?.hide();
     };
 
-
+    // Modal 初始化：只有當 templateOrder.id 和 modalType 有值時才初始化 Modal
     useEffect(() => {
-        orderModalRef.current = new bootstrap.Modal('#orderModal', {
-            keyboard: false
-        });
-        document
-            .querySelector("#orderModal")
-            .addEventListener("hidden.bs.modal", () => {
-                // Modal 關閉時移除焦點
-                if (document.activeElement instanceof HTMLElement) {
-                    document.activeElement.blur();
-                }
-            });
+        if (templateOrder?.id && modalType) {
+            const modalEl = document.querySelector("#orderModal");
+            if (modalEl) {
+                orderModalRef.current = new bootstrap.Modal(modalEl, { keyboard: false });
+                modalEl.addEventListener("hidden.bs.modal", () => {
+                    if (document.activeElement instanceof HTMLElement) {
+                        document.activeElement.blur();
+                    }
+                });
+                orderModalRef.current.show();
+            }
+        }
+    }, [templateOrder, modalType]);
+
+    // 資料 fetch
+    useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        fetchOrders(currentPage);
-    }, [fetchOrders, currentPage]);
+        fetchOrders(1);
+    }, [fetchOrders]);
 
 
     return (
@@ -139,7 +137,7 @@ function AdminOrders() {
             <Pagination pagination={pagination} onPageChange={fetchOrders} />
         </div>
         <OrderModal
-            key={templateOrder?.id + modalType}
+            key={`${templateOrder?.id ?? "new"}-${modalType}`}
             modalType={modalType}
             templateOrder={templateOrder}
             getOrders={fetchOrders}

@@ -12,11 +12,13 @@ function OrderModal({
     closeOrderModal,
 }) {
     const { showSuccess, showError } = useMessage();
+    // Debug log: 檢查收到的 props
+    console.log("OrderModal props", { modalType, templateOrder, getOrders, currentPage, closeOrderModal });
 
-    // ✅ 直接從 props 衍生，不需要任何 state / effect
-    const [isPaid, setIsPaid] = useState(templateOrder?.is_paid || false);
+    const [isPaid, setIsPaid] = useState(templateOrder.is_paid || false);
 
-    // templateOrder 切換時（開新 modal）由 key prop 控制重置，見父層說明
+    // 沒有資料時不渲染 Modal
+    if (!templateOrder?.id || !modalType) return null;
 
     const formatDate = (timestamp) => {
         if (!timestamp) return "—";
@@ -89,6 +91,7 @@ function OrderModal({
     const products = Object.values(templateOrder?.products || {});
 
     return (
+        <>
         <div
             className="modal fade"
             id="orderModal"
@@ -306,6 +309,7 @@ function OrderModal({
                 </div>
             </div>
         </div>
+        </>
     );
 }
 
