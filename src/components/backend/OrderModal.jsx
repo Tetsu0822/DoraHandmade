@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import useMessage from "@hooks/useMessage.jsx";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
@@ -13,17 +13,10 @@ function OrderModal({
 }) {
     const { showSuccess, showError } = useMessage();
 
-    // 表單資料（只編輯 is_paid）
-    const [formData, setFormData] = useState({
-        is_paid: false,
-    });
+    // ✅ 直接從 props 衍生，不需要任何 state / effect
+    const [isPaid, setIsPaid] = useState(templateOrder?.is_paid || false);
 
-    // templateOrder 變更時同步表單
-    useEffect(() => {
-        if (templateOrder) {
-            setFormData({ is_paid: templateOrder.is_paid || false });
-        }
-    }, [templateOrder]);
+    // templateOrder 切換時（開新 modal）由 key prop 控制重置，見父層說明
 
     const formatDate = (timestamp) => {
         if (!timestamp) return "—";
@@ -63,7 +56,7 @@ function OrderModal({
             const token = getToken();
             await axios.put(
                 `${VITE_API_BASE}/api/${VITE_API_PATH}/admin/order/${templateOrder.id}`,
-                { data: { ...templateOrder, is_paid: formData.is_paid } },
+                { data: { ...templateOrder, is_paid: isPaid } },
                 { headers: { Authorization: token } }
             );
             showSuccess("訂單更新成功");
@@ -163,15 +156,13 @@ function OrderModal({
                                                 className="form-check-input"
                                                 type="checkbox"
                                                 id="isPaidSwitch"
-                                                checked={formData.is_paid}
-                                                onChange={(e) =>
-                                                    setFormData({ is_paid: e.target.checked })
-                                                }
+                                                checked={isPaid}
+                                                onChange={(e) => setIsPaid(e.target.checked)}
                                                 disabled={modalType === "delete"}
                                             />
                                             <label className="form-check-label" htmlFor="isPaidSwitch">
-                                                <span className={`badge ${formData.is_paid ? "bg-success" : "bg-secondary"}`}>
-                                                    {formData.is_paid ? "已付款" : "未付款"}
+                                                <span className={`badge ${isPaid ? "bg-success" : "bg-secondary"}`}>
+                                                    {isPaid ? "已付款" : "未付款"}
                                                 </span>
                                             </label>
                                         </div>
@@ -288,7 +279,7 @@ function OrderModal({
                     <div className="modal-footer">
                         <button
                             type="button"
-                            className="btn btn-outline-secondary"
+                            className="btn btn-outline-primary cancelBtn"
                             data-bs-dismiss="modal"
                         >
                             取消

@@ -71,6 +71,9 @@ const BackendLayout = () => {
                         <Link className="nav-link" to="/">回前台</Link>
                     </li>
                     <li className="nav-item">
+                        <Link className="nav-link" to="/admin/dashboard">儀表板</Link>
+                    </li>
+                    <li className="nav-item">
                         <Link className="nav-link" to="/admin/product">商品管理</Link>
                     </li>
                     <li className="nav-item">

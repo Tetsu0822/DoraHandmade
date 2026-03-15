@@ -139,6 +139,7 @@ function AdminOrders() {
             <Pagination pagination={pagination} onPageChange={fetchOrders} />
         </div>
         <OrderModal
+            key={templateOrder?.id + modalType}
             modalType={modalType}
             templateOrder={templateOrder}
             getOrders={fetchOrders}
