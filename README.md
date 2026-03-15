@@ -4,7 +4,8 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
-- 2026/03/14 修正Products.jsx api資料抓取 By MidyWu
+- 2026/03/15 新增後台訂單管理功能 By Tetsu
+- 2026/03/15 修正Products.jsx api資料抓取 By MidyWu
 - 2026/03/15 更新訂單及單一訂單頁面 By Tetsu
 - 2026/03/15 更新後台商品管理，加入useMessage By Tetsu
 - 2026/03/14 優化成品與材料選單行為，改為點擊僅展開選單而不執行跳轉 By Tim

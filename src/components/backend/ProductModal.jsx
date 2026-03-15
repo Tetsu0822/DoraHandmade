@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-// import { useDispatch } from "react-redux";
 import useMessage from "@hooks/useMessage";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
@@ -78,9 +77,7 @@ function ProductModal({
         setTemplateData((pre) => {
         const newImage = [...pre.imagesUrl];
         newImage.pop();
-        // if (newImage.length > 1) {
-        //   newImage.splice(index, 1);
-        // }
+
         return {
             ...pre,
             imagesUrl: newImage,
@@ -110,15 +107,12 @@ function ProductModal({
         }
 
         try {
-        // [method] 動態設定 axios 方法
-        const response = await axios[method](url, productData);
-        // alert("產品更新成功");
-        // dispatch(createAsyncMessage(response.data));
-        showSuccess(response.data.message);
-        getProducts(currentPage || 1);
-        closeProductModal();
+            const response = await axios[method](url, productData);
+            showSuccess(response.data.message);
+            getProducts(currentPage || 1);
+            closeProductModal();
         } catch (error) {
-        showError("產品更新失敗: " + (error.response?.data?.message || error.message));
+            showError("產品更新失敗: " + (error.response?.data?.message || error.message));
         }
     };
 

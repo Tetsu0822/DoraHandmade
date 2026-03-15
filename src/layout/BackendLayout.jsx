@@ -2,16 +2,18 @@ import { useForm } from "react-hook-form";
 import { emailValidation } from "../utils/validation";
 const ADMIN_USERNAME = import.meta.env.VITE_ADMIN_USERNAME;
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD;
-import { Link, Outlet } from "react-router";
-import { useState, useEffect } from "react";
+import { Link, Outlet, useLocation, Navigate } from "react-router";
+import { useState, useEffect , useCallback } from "react";
 import { useNavigate } from "react-router";
 import axios from 'axios'
+import useMessage from "@hooks/useMessage.jsx";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
 const BackendLayout = () => {
     const navigate = useNavigate();
     const [ isLogin, setIsLogin ] = useState(false);
+    const { showError } = useMessage();
     const {
         register,
         handleSubmit,
@@ -24,47 +26,29 @@ const BackendLayout = () => {
         }
     });
 
-    const onSubmit = async (formData) => {
+    const onSubmit = useCallback(async (formData) => {
         try {
-            console.log("預設資料:", ADMIN_PASSWORD, ADMIN_USERNAME);
-            console.log("登入資料:", formData);
             if (formData.username === ADMIN_USERNAME && formData.password === ADMIN_PASSWORD) {
                 setIsLogin(true);
                 localStorage.setItem("adminLogin", "true");
 
             // 登入六角API
             const response = await axios.post(`${VITE_API_BASE}/admin/signin`, formData);
-            console.log("登入成功:", response.data);
             const setCookie = () => {
                 const { token, expired } = response.data;
                 document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
                 axios.defaults.headers.common.Authorization = token;
             };
             setCookie();
-            // getProducts();
-            // setIsAuth(true);
-            // alert("登入成功: " + response.data.message);
             navigate("/admin/product");
             } else {
-                alert("帳號或密碼錯誤");
+                showError("帳號或密碼錯誤");
             }
-
-            // const loginData = {
-            //     username: formData.username,
-            //     password: formData.password,
-            // };
-            // const response = await axios.post(`${VITE_API_BASE}${VITE_API_PATH}/admin/signin`, loginData);
-            // if (response.data.success) {
-            //     setIsLogin(true);
-            //     localStorage.setItem("adminLogin", "true");
-            // } else {
-            //     alert(response.data.message);
-            // }
         } catch (error) {
             console.error(error);
-            alert("登入失敗，請稍後再試");
+            showError("登入失敗，請稍後再試");
         }
-    };
+    }, [navigate, showError]);
 
     // 初始化時自動讀取 localStorage 判斷是否已登入
     useEffect(() => {
@@ -75,6 +59,7 @@ const BackendLayout = () => {
         }
     }, []);
 
+    const location = useLocation();
     return (
         <>
         {/* // 如果已登入顯示後台選單，否則顯示登入選單 */}
@@ -100,6 +85,7 @@ const BackendLayout = () => {
                 </ul>
             </header>
             <main>
+                {location.pathname === "/admin" && <Navigate to="/admin/dashboard" replace />}
                 <Outlet />
             </main>
             <footer></footer>

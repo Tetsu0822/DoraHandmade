@@ -13,6 +13,7 @@ import NotFound from "../pages/frontend/NotFound.jsx";
 import AdminProducts from "../pages/backend/AdminProducts.jsx";
 import BackendLayout from "../layout/BackendLayout.jsx";
 import AdminOrders from "../pages/backend/AdminOrders.jsx";
+import Dashboard from "../pages/backend/Dashboard.jsx";
 
 export const routes = createHashRouter([
     {
@@ -69,6 +70,11 @@ export const routes = createHashRouter([
         path: "/admin",
         element: <BackendLayout />,
         children: [
+            {
+                index: true,
+                path: "dashboard",
+                element: <Dashboard />
+            },
             {
                 path: "product",
                 element: <AdminProducts />
