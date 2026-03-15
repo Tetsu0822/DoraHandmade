@@ -25,7 +25,6 @@ function AdminOrders() {
                 "$1"
             );
             axios.defaults.headers.common.Authorization = token;
-            // ✅ 修正：後台路由應為 /admin/orders
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/admin/orders`, {
                 params: { page },
                 headers: { Authorization: token },

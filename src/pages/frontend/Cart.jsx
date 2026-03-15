@@ -259,8 +259,8 @@ function Cart() {
         } catch (error) {
             console.log("取得購物車資料失敗:", error);
         }
-      }
-      fetchCartData();
+    }
+    fetchCartData();
   }, []);
   return (
     <>
