@@ -11,6 +11,7 @@ import Account from "../pages/frontend/Account.jsx";
 import Faq from "../pages/frontend/Faq.jsx";
 import Workshop from "../pages/frontend/Workshop.jsx";
 import Articles from "../pages/frontend/Articles.jsx";
+import MyFavorites from "../pages/frontend/MyFavorites.jsx";
 import SingleOrder from "../pages/frontend/SingleOrder.jsx";
 import NotFound from "../pages/frontend/NotFound.jsx";
 import AdminProducts from "../pages/backend/AdminProducts.jsx";
@@ -63,6 +64,10 @@ export const routes = createHashRouter([
             {
                 path: "account",
                 element: <Account />
+            },
+            {
+                path: "favorites",
+                element: <MyFavorites />
             },
             {
                 path: "faq",

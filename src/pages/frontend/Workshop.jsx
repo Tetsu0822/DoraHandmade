@@ -6,26 +6,9 @@ function Workshop() {
       style={{
         minHeight: "100vh",
         background: "#FDFAFA",
-        fontFamily: "'Noto Sans TC', 'PingFang TC', sans-serif",
+        fontFamily: "'Noto Serif TC', 'PingFang TC', sans-serif",
       }}
     >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;600&display=swap');
-        * { box-sizing: border-box; }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .float-icon { animation: float 3.5s ease-in-out infinite; }
-        .fade-up    { animation: fadeUp 0.7s ease both; }
-        .fade-up-2  { animation: fadeUp 0.7s ease 0.15s both; }
-        .fade-up-3  { animation: fadeUp 0.7s ease 0.3s both; }
-        .fade-up-4  { animation: fadeUp 0.7s ease 0.45s both; }
-      `}</style>
 
       {/* Hero Banner */}
       <div

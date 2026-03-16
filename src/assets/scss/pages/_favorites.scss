@@ -1,0 +1,113 @@
+.my-favorites {
+    min-height: 100vh;
+    background: #FDFAFA;
+}
+
+/* Hero */
+.favorites-hero {
+    background: linear-gradient(135deg, #FFF0F4 0%, #FCE8F0 40%, #F8D9E8 100%);
+    padding: 64px 24px 52px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.favorites-hero__circle-1 {
+    position: absolute; top: -40px; right: -40px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(220,50,115,0.06);
+}
+.favorites-hero__circle-2 {
+    position: absolute; bottom: -30px; left: 5%;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(220,50,115,0.05);
+}
+.favorites-hero__eyebrow {
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    color: #C2547A;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+.favorites-hero__title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 600;
+    color: #2a2a2a;
+    margin: 0 0 12px;
+    font-family: 'Noto Serif TC', serif;
+    letter-spacing: 0.05em;
+}
+.favorites-hero__subtitle {
+    color: #C2547A;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    margin: 0;
+}
+.favorites-hero__divider {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.favorites-hero__line {
+    height: 1px;
+    width: 40px;
+    background: #D4849E;
+}
+
+/* Toolbar */
+.favorites-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px 0 0;
+    margin-bottom: 32px;
+    border-bottom: 1.5px solid #ECD4DE;
+    padding-bottom: 16px;
+}
+.favorites-toolbar__count {
+    font-size: 0.88rem;
+    color: #888;
+}
+.favorites-toolbar__count strong {
+    color: #C2547A;
+    font-weight: 600;
+}
+.favorites-toolbar__clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: #bbb;
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s;
+    font-family: inherit;
+}
+.favorites-toolbar__clear:hover {
+    color: #C2547A;
+}
+
+/* Skeleton */
+@keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+}
+.skeleton {
+    background: linear-gradient(90deg, #F5EDF1 25%, #FFF0F4 50%, #F5EDF1 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+.skeleton-card {
+    background: #fff;
+    border: 1.5px solid #F0E4EA;
+    border-radius: 16px;
+    overflow: hidden;
+    padding: 16px;
+}

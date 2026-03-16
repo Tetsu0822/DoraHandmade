@@ -114,7 +114,7 @@ const faqData = [
             </div>
             <div>
               <span style={{ fontWeight: 600, color: "#C2547A" }}>聯絡方式</span>
-              <p style={{ marginTop: "4px" }}>Instagram：@dora-handmade　Facebook 粉絲團：dora-handmade</p>
+              <p style={{ marginTop: "4px" }}>Instagram：@dora-handmade Facebook 粉絲團：dora-handmade</p>
             </div>
             <p style={{ marginTop: "10px", color: "#999", fontSize: "0.84rem" }}>
               ※ 請務必先聯繫客服確認後再寄出商品，未經聯繫自行寄出將無法受理。
@@ -276,15 +276,9 @@ function Faq() {
       style={{
         minHeight: "100vh",
         background: "#FDFAFA",
-        fontFamily: "'Noto Sans TC', 'PingFang TC', sans-serif",
+        fontFamily: "'Noto Serif TC', 'PingFang TC', sans-serif",
       }}
     >
-      {/* Google Fonts */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;600&display=swap');
-        * { box-sizing: border-box; }
-        ul { margin: 0; }
-      `}</style>
 
       {/* Hero Banner */}
       <div

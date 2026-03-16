@@ -1,0 +1,28 @@
+* { box-sizing: border-box; }
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+.float-icon { animation: float 4s ease-in-out infinite; }
+.fade-up    { animation: fadeUp 0.7s ease both; }
+.fade-up-2  { animation: fadeUp 0.7s ease 0.15s both; }
+.fade-up-3  { animation: fadeUp 0.7s ease 0.3s both; }
+.fade-up-4  { animation: fadeUp 0.7s ease 0.45s both; }
+.skeleton {
+    background: linear-gradient(90deg, #F5EDF1 25%, #FFF0F4 50%, #F5EDF1 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.6s infinite;
+    border-radius: 8px;
+}
+.article-card:hover {
+    box-shadow: 0 8px 28px rgba(194,84,122,0.12) !important;
+    transform: translateY(-3px) !important;
+}
