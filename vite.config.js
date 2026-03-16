@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => ({
       "@contexts": path.resolve(__dirname, "./src/contexts"),
       "@images": path.resolve(__dirname, "./src/assets/images"),
       "@utils": path.resolve(__dirname, "./src/utils"),
+      "@data": path.resolve(__dirname, "./src/data"),
     },
   },
   css: {

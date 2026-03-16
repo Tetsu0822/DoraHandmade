@@ -1,3 +1,6 @@
+import ArticleCard from '@components/ArticleCard';
+import { articles } from '@data/articles';
+
 function Articles() {
   return (
     <div
@@ -32,10 +35,6 @@ function Articles() {
           background-size: 400px 100%;
           animation: shimmer 1.6s infinite;
           border-radius: 8px;
-        }
-        .article-card:hover {
-          box-shadow: 0 8px 28px rgba(194,84,122,0.12) !important;
-          transform: translateY(-3px) !important;
         }
       `}</style>
 
@@ -104,6 +103,16 @@ function Articles() {
           </div>
         </div>
       </div>
+      <div className="container py-10 py-lg-15">
+        {/* <h1 className="text-p-28-b text-center text-secondary-700 py-15">文章專區</h1> */}
+        <ul className="row row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
+          {articles.map((article) => (
+            <li className="col-12 list-unstyled" key={article.id || article.title}>
+              <ArticleCard article={article} />
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Coming Soon Content */}
       <div
@@ -166,7 +175,7 @@ function Articles() {
             marginRight: "auto",
           }}
         >
-          文章專區即將與你見面。<br />
+          更多文章即將與你見面。<br />
           我們將在這裡分享品牌故事、穿搭靈感、手作日記，以及每一個蝴蝶結背後的小故事——那些只有用心才看得見的溫度。
         </p>
 
