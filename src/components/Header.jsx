@@ -190,8 +190,8 @@ const Header = () => {
           >
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
               <li className="nav-item me-lg-3 text-p-16-b">
-                <Link className="nav-link nav-link-custom" to="/article" onClick={closeMobileMenu}>
-                  文章專區
+                <Link className="nav-link nav-link-custom " to="/workshop" onClick={closeMobileMenu}>
+                  手作小教室
                 </Link>
               </li>
 
