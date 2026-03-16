@@ -5,12 +5,8 @@ import { ShoppingCart } from 'lucide-react';
 import { Heart } from 'lucide-react';
 import { Minus } from 'lucide-react';
 import { Plus } from 'lucide-react';
-import axios from 'axios';
-import product1 from '@images/product-1.png';
-import product2 from '@images/product-2.png';
-import product3 from '@images/product-3.png';
-import product4 from '@images/product-4.png';
 
+import axios from 'axios';
 
 
 // API 設定
@@ -41,11 +37,11 @@ function SingleProduct() {
   }, [id]);
 
   const relatedProducts = [
-  { id: 1, title: "銀白冬夜亮片蝴蝶結", price: 777, images: product1 },
-  { id: 2, title: "聖誕紅緞帶雙層蝴蝶結", price: 777, images: product2 },
-  { id: 3, title: "聖誕雪花點點蝴蝶結", price: 777, images: product3 },
-  { id: 4, title: "銀白冬夜亮片蝴蝶結", price: 777, images: product4 },
-];
+    { id: 1, title: "銀白冬夜亮片蝴蝶結", price: 777, images: "/src/assets/images/product-1.png" },
+    { id: 2, title: "聖誕紅緞帶雙層蝴蝶結", price: 777, images: "/src/assets/images/product-2.png" },
+    { id: 3, title: "聖誕雪花點點蝴蝶結", price: 777, images: "/src/assets/images/product-3.png" },
+    { id: 4, title: "銀白冬夜亮片蝴蝶結", price: 777, images: "/src/assets/images/product-4.png" },
+  ];
 
   // --- 函式處理 (補齊你報錯的功能) ---
   const handleQtyChange = (delta) => {
