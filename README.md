@@ -28,7 +28,6 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
-- 2026/03/16 調整 SingleProduct 圖片路徑 By cindy
 - 2026/03/16 修正註冊/登入表單 mode 切換 By Tetsu
 - 2026/03/15 新增後台儀表板功能 By Tetsu
 - 2026/03/15 新增後台優惠券管理、SweetAleart2 元件 By Tetsu
