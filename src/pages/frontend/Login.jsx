@@ -84,11 +84,12 @@ function Signup() {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const modeParam = params.get("mode");
-        if (modeParam === "register" && mode !== "register") {
-            // 使用 setTimeout 避免同步 setState 警告
+        if (modeParam === "register") {
             setTimeout(() => setMode("register"), 0);
+        } else {
+            setTimeout(() => setMode("login"), 0);
         }
-    }, [location, mode]);
+    }, [location.search]);
 
     useEffect(() => {
         // 取得 token
