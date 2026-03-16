@@ -22,6 +22,7 @@
 ## api文件
 
 - [API文件](https://hexschool.github.io/ec-courses-api-swaggerDoc/#/)
+- 自訂API(PHP+MySql+JWT)
 
 ## 更新紀錄
 
