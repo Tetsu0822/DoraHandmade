@@ -83,7 +83,7 @@ const Footer = () => {
           <div className="footer-section">
             <div className="footer-logo-container">
               <img
-                src="/Handmade_Bow.png"
+                src={logoImg}
                 alt="愛哆啦也愛手作"
                 className="me-2"
               />
