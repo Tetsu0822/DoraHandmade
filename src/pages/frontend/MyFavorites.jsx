@@ -68,13 +68,21 @@ function MyFavorites() {
   const [isLoading, setIsLoading] = useState(true);
   const { toggleFavoriteProduct } = useFavoriteProductsContext();
 
-  // Read ids from localStorage and fetch matching products
+  // 讀取 localStorage 並同步收藏商品
   useEffect(() => {
     async function loadFavorites() {
       setIsLoading(true);
       try {
+        // 讀取 localStorage
         const stored = localStorage.getItem(STORAGE_KEY);
-        const ids = stored ? JSON.parse(stored) : [];
+        let ids = [];
+        try {
+          ids = stored ? JSON.parse(stored) : [];
+        } catch (e) {
+          console.log('解析收藏 ID 失敗，重置收藏', e);
+          ids = [];
+        }
+        if (!Array.isArray(ids)) ids = [];
 
         if (ids.length === 0) {
           setFavoriteProducts([]);
@@ -82,27 +90,27 @@ function MyFavorites() {
           return;
         }
 
-        const response = await axios.get(`${API_BASE}/api/${API_PATH}/products`);
+        // 取得所有商品
+        const response = await axios.get(`${API_BASE}/api/${API_PATH}/products/all`);
+        console.log('所有商品', response.data.products);
         const allProducts = response.data.products?.filter((p) => p.is_enabled) ?? [];
 
-        // Keep only products whose id is in the stored list,
-        // and preserve the order they were saved in
+        // 比對收藏 id，保留順序
         const matched = ids
-          .map((id) => allProducts.find((p) => p.id === id))
+          .map((id) => allProducts.find((p) => String(p.id) === String(id)))
           .filter(Boolean);
 
         setFavoriteProducts(matched);
       } catch (error) {
         console.error('載入收藏商品失敗', error);
+        setFavoriteProducts([]);
       } finally {
         setIsLoading(false);
       }
     }
-
     loadFavorites();
   }, []);
 
-  // Re-sync when a product is un-favorited via ProductCard's heart button
   function handleRemove(product) {
     toggleFavoriteProduct(product);
     setFavoriteProducts((prev) => prev.filter((p) => p.id !== product.id));
