@@ -61,8 +61,8 @@ const faqData = [
           <div style={{ color: "#555", fontSize: "0.92rem", lineHeight: "1.9" }}>
             目前提供以下付款方式：
             <ul style={{ marginTop: "6px", paddingLeft: "1.2em", listStyle: "disc" }}>
+              <li>信用卡付款</li>
               <li>超商取貨付款</li>
-              <li>銀行轉帳 / 匯款</li>
             </ul>
             <p style={{ marginTop: "8px", color: "#999", fontSize: "0.85rem" }}>
               實際付款方式依官網結帳頁面顯示為準。
