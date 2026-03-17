@@ -17,8 +17,6 @@ function SingleOrder() {
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/order/${id}`);
             const fetchedOrder = response.data.order;
-            console.log("Fetched order:", fetchedOrder);
-            console.log("Current user:", user);
             setOrder(fetchedOrder);
 
             // 取得 order 資料後才判斷是否為本人
@@ -67,6 +65,7 @@ function SingleOrder() {
         }
     };
 
+    // 從 message 字串中解析出 key-value 資訊
     const parseMessage = (message) => {
         if (!message) return {};
         const result = {};
