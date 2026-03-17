@@ -1,0 +1,6 @@
+fix: 修正 Header 子選單路由連結與 Products 分類邏輯
+
+- 修正路由參數名：由 child 改為正確的 subCat
+- 建立 subCatMap：對應 URL 路徑 與商品 category 中文名稱
+- 重構為「路由驅動」：移除 localCategory state，使分類完全跟隨 URL
+- 修復版本衝突：將 useNavigate import 來源統一為 react-router
