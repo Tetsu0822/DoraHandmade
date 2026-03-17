@@ -8,30 +8,31 @@ import { ClassicBow, WavyLine } from '@components/icons';
 import ProductCard from '@components/ProductCard';
 import ArticleCard from '@components/ArticleCard';
 import SwiperNavButtons from '@components/SwiperNavButtons';
-import articleImage1 from '@images/article-1.png';
-import articleImage2 from '@images/article-2.png';
+// import articleImage1 from '@images/article-1.png';
+// import articleImage2 from '@images/article-2.png';
+import { articles } from '@data/articles';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
-const articleData = [
-  {
-    id: 1,
-    title: '新手也能做！3 種超簡單蝴蝶結綁法教學',
-    content: '剛開始接觸手作？這篇教你三種最容易上手的蝴蝶結綁法，\n從基本對折到立體雙層，五分鐘完成第一個作品！',
-    image: articleImage1,
-    likes: 2,
-    createdAt: '2026-01-01'
-  },
-  {
-    id: 2,
-    title: '如何挑選緞帶？四種材質的手感與用途總整理',
-    content: '緞帶材質百百種，霧面、亮面、雪紗、絨布到底差在哪？\n文章教你如何依作品風格挑選最適合的材料',
-    image: articleImage2,
-    likes: 2,
-    createdAt: '2025-12-20'
-  }
-];
+// const articleData = [
+//   {
+//     id: 1,
+//     title: '新手也能做！3 種超簡單蝴蝶結綁法教學',
+//     content: '剛開始接觸手作？這篇教你三種最容易上手的蝴蝶結綁法，\n從基本對折到立體雙層，五分鐘完成第一個作品！',
+//     image: articleImage1,
+//     likes: 2,
+//     createdAt: '2026-01-01'
+//   },
+//   {
+//     id: 2,
+//     title: '如何挑選緞帶？四種材質的手感與用途總整理',
+//     content: '緞帶材質百百種，霧面、亮面、雪紗、絨布到底差在哪？\n文章教你如何依作品風格挑選最適合的材料',
+//     image: articleImage2,
+//     likes: 2,
+//     createdAt: '2025-12-20'
+//   }
+// ];
 
 function Home() {
   const [newProducts, setNewProducts] = useState([]);
@@ -177,16 +178,16 @@ function Home() {
           <span className="t-section-title">最新文章</span>
         </h2>
         <ul className="row row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
-          {articleData.map((article) => (
+          {articles.map((article) => (
             <li className="col-12 list-unstyled" key={article.id || article.title}>
               <ArticleCard article={article} />
             </li>
           ))}
         </ul>
         <div className="text-center">
-          <a href="#" className="btn btn-underline">
+          <Link to="/article" className="btn btn-underline">
             更多文章
-          </a>
+          </Link>
         </div>
       </div>
 
