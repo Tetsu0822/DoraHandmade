@@ -1,35 +1,24 @@
 import ArticleCard from '@components/ArticleCard';
 import { articles } from '@data/articles';
+import { Facebook, Instagram } from '@components/icons';
 
 function Articles() {
   return (
     <div
       style={{
-        minHeight: "100vh",
         background: "#FDFAFA",
-        fontFamily: "'Noto Sans TC', 'PingFang TC', sans-serif",
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;600&display=swap');
-        * { box-sizing: border-box; }
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-10px); }
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes shimmer {
           0%   { background-position: -400px 0; }
           100% { background-position: 400px 0; }
         }
         .float-icon { animation: float 4s ease-in-out infinite; }
-        .fade-up    { animation: fadeUp 0.7s ease both; }
-        .fade-up-2  { animation: fadeUp 0.7s ease 0.15s both; }
-        .fade-up-3  { animation: fadeUp 0.7s ease 0.3s both; }
-        .fade-up-4  { animation: fadeUp 0.7s ease 0.45s both; }
         .skeleton {
           background: linear-gradient(90deg, #F5EDF1 25%, #FFF0F4 50%, #F5EDF1 75%);
           background-size: 400px 100%;
@@ -76,7 +65,6 @@ function Articles() {
               fontWeight: 600,
               color: "#2a2a2a",
               margin: "0 0 12px",
-              fontFamily: "'Noto Serif TC', serif",
               letterSpacing: "0.05em",
             }}
           >
@@ -130,7 +118,6 @@ function Articles() {
 
         {/* Badge */}
         <div
-          className="fade-up"
           style={{
             display: "inline-block",
             padding: "6px 20px",
@@ -149,12 +136,9 @@ function Articles() {
         </div>
 
         <h2
-          className="fade-up-2"
           style={{
-            fontFamily: "'Noto Serif TC', serif",
             fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
             fontWeight: 600,
-            color: "#2a2a2a",
             margin: "0 0 20px",
             lineHeight: "1.6",
           }}
@@ -164,9 +148,8 @@ function Articles() {
         </h2>
 
         <p
-          className="fade-up-3"
+          className="text-gray-600"
           style={{
-            color: "#888",
             fontSize: "0.95rem",
             lineHeight: "1.9",
             margin: "0 0 52px",
@@ -228,7 +211,6 @@ function Articles() {
         >
           <span style={{ fontSize: "1.4rem" }}>📬</span>
           <p style={{
-            fontFamily: "'Noto Serif TC', serif",
             fontSize: "0.95rem",
             color: "#2a2a2a",
             fontWeight: 600,
@@ -236,8 +218,9 @@ function Articles() {
           }}>
             不想錯過任何文章？
           </p>
-          <p style={{
-            color: "#aaa",
+          <p
+            className="text-gray-600"
+            style={{
             fontSize: "0.84rem",
             lineHeight: "1.7",
             margin: "0 0 20px",
@@ -247,28 +230,31 @@ function Articles() {
           <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
             <a
               href="https://instagram.com/dora-handmade"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-dora"
               style={{
                 display: "inline-flex", alignItems: "center", gap: "6px",
                 padding: "10px 22px", borderRadius: "24px",
-                background: "#C2547A", color: "#fff",
                 fontSize: "0.85rem", fontWeight: 500,
-                textDecoration: "none",
               }}
             >
-              📸 追蹤 Instagram
+              <Instagram color="currentColor" size={16} />
+              追蹤 Instagram
             </a>
             <a
               href="https://facebook.com/dora-handmade"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-dora-outline"
               style={{
                 display: "inline-flex", alignItems: "center", gap: "6px",
                 padding: "10px 22px", borderRadius: "24px",
-                background: "#fff", color: "#C2547A",
-                border: "1.5px solid #C2547A",
                 fontSize: "0.85rem", fontWeight: 500,
-                textDecoration: "none",
               }}
             >
-              👥 追蹤 Facebook
+              <Facebook color="currentColor" />
+              追蹤 Facebook
             </a>
           </div>
         </div>
