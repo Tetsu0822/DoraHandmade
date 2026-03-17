@@ -82,7 +82,11 @@ function SingleOrder() {
             <div className="container">
 
                 {/* 麵包屑 */}
-                <nav aria-label="breadcrumb" className="mb-3">
+                <nav
+                    style={{ "--bs-breadcrumb-divider": "'>'" }}
+                    aria-label="breadcrumb"
+                    className="mb-3"
+                >
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item">
                             <Link to="/">首頁</Link>
@@ -228,6 +232,32 @@ function SingleOrder() {
                                     ))}
                                 </div>
                             </div>
+
+                            {/* 收件人資訊 */}
+                            {order.message && (() => {
+                                const recipient = parseMessage(order.message);
+                                return (
+                                    <div className="order-card mb-4">
+                                        <div className="order-card-header">
+                                            <h5>📦 收件人資訊</h5>
+                                        </div>
+                                        <div className="p-3 p-md-4">
+                                            {[
+                                                { label: "姓名", value: recipient["收件人"] },
+                                                { label: "電話", value: recipient["電話"] },
+                                                { label: "Email", value: recipient["Email"] },
+                                                { label: "地址", value: recipient["地址"] },
+                                            ].map(({ label, value }) => (
+                                                <div key={label} className="mb-3">
+                                                    <p className="info-label">{label}</p>
+                                                    <p className="info-value text-break mb-0">{value}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+
 
                             {/* 付款方式 */}
                             {order.message && (() => {

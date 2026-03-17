@@ -28,6 +28,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/17 訂單詳細頁面，新增收件人卡片 By Tetsu
 - 2026/03/17 新增 ScrollToTop 元件 By PeiYiWu
 - 2026/03/17 補充文章頁面 By PeiYiWu
 - 2026/03/16 調整 SingleProduct 圖片路徑 By cindy
