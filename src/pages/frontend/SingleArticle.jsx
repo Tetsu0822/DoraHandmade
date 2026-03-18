@@ -4,17 +4,26 @@ import { articles } from '@data/articles';
 
 function SingleArticle() {
   const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
   const [article, setArticle] = useState(null);
   const [redirectSeconds, setRedirectSeconds] = useState(3);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const foundArticle = articles.find((article) => '' + article.id === id);
-    setArticle(foundArticle);
+    const fetchArticle = async () => {
+      setIsLoading(true);
+      // 模擬延遲
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const foundArticle = articles.find((article) => '' + article.id === id);
+      setArticle(foundArticle);
+      setIsLoading(false);
+    };
+    
+    fetchArticle();
   }, [id]);
 
   useEffect(() => {
-    if (!article) {
+    if (!article && !isLoading) {
       const timer = setInterval(() => {
         setRedirectSeconds(prev => {
           if (prev <= 1) {
@@ -26,8 +35,13 @@ function SingleArticle() {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [article]);
+  }, [article, isLoading, navigate]);
 
+  if (isLoading) {
+    return (
+      <div style={{ height: '80vh' }}></div>
+    );
+  }
   if (!article) {
     return (
       <div className="container py-10 py-lg-15" style={{ height: '80vh' }}>
