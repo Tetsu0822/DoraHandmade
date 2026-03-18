@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { ClassicBow } from '@components/icons';
 import ProductCard from '@components/ProductCard';
+import ProductCardSkeleton from '@components/ProductCardSkeleton';
 import { useFavoriteProductsContext } from '@contexts/FavoriteProducts';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -149,11 +150,7 @@ function MyFavorites() {
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8">
             {[1, 2, 3].map((i) => (
               <div className="col" key={i}>
-                <div className="skeleton-card">
-                  <div className="skeleton" style={{ height: '220px', marginBottom: '14px', borderRadius: '12px' }} />
-                  <div className="skeleton" style={{ height: '18px', width: '70%', marginBottom: '10px' }} />
-                  <div className="skeleton" style={{ height: '16px', width: '40%' }} />
-                </div>
+                <ProductCardSkeleton />
               </div>
             ))}
           </div>
