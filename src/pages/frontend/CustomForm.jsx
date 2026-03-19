@@ -132,6 +132,44 @@ const CustomForm = () => {
     fileInputRef.current?.click();
   };
 
+  /**
+   * 前端圖片壓縮輔助
+   * 將較大的圖片壓縮至 < 100KB，以符合 API 限制同時能傳輸至後台
+   */
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          // 限制最大寬度為 400px（極端環境相容），高度依比例縮放
+          const MAX_WIDTH = 400;
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // 輸出為 JPEG 格式，品質設為 0.5 (再降一點以通過 API 門檻)
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.5);
+          resolve(compressedBase64);
+        };
+        img.onerror = (err) => reject(new Error("圖片載入失敗: " + err.message));
+      };
+      reader.onerror = (err) => reject(new Error("讀取檔案失敗: " + err.message));
+    });
+  };
+
   const uploadImage = async (file) => {
     if (!file) return;
 
@@ -189,17 +227,20 @@ const CustomForm = () => {
           showToast("圖片上傳成功！", true);
         }
       } else {
-        // --- 備案：本地預覽 (FileReader) ---
-        const reader = new FileReader();
-        reader.onload = (e) => {
+        // --- 備案：本地預覽 + 壓縮傳輸 ---
+        // 當沒有 token 時（一般使用者），進行前端壓縮
+        try {
+          const compressedUrl = await compressImage(file);
           setFormData((prev) => ({
             ...prev,
-            fileReferences: [...prev.fileReferences, e.target.result],
+            fileReferences: [...prev.fileReferences, compressedUrl],
           }));
           setUploadProgress(100);
-          showToast("這是本地圖片上傳成功的預覽顯示!", false);
-        };
-        reader.readAsDataURL(file);
+          showToast("參考圖片已加入（已自動進行前端壓縮以符合傳輸限制）", true);
+        } catch (err) {
+          console.error("Compression component failed:", err);
+          showToast("圖片解析失敗，請換一張試試看。", false);
+        }
       }
     } catch (error) {
       console.error("Upload failed:", error);
@@ -284,6 +325,17 @@ const CustomForm = () => {
                         ${formData.fileReferences.length > 0 ? formData.fileReferences.map((url, i) => `\n圖片 ${i + 1}: ${url}`).join("\n") : "無上傳圖片"}`,
           },
         };
+
+        // 體積預檢查
+        const payloadSize = JSON.stringify(payload).length;
+        if (payloadSize > 800000) { // 預留空間給 Header 與其他資料，抓 800KB
+           showToast(
+            "【貼心提醒】由於上傳的參考圖片過多或解析度過高，導致需求內容體積超標，請刪除 1~2 張圖片後再試試看喔！",
+            false
+          );
+          return;
+        }
+
         const response = await axios.post(
           `${VITE_API_BASE}/api/${VITE_API_PATH}/order`,
           payload,
@@ -291,7 +343,7 @@ const CustomForm = () => {
 
         if (response.data.success) {
           showToast(
-            `您的客製化需求已成功送出！\n訂單編號：${response.data.orderId}`,
+            `客製化需求已成功送出囉！\n訂單編號：${response.data.orderId}`,
             true,
             response.data.orderId,
           );
@@ -310,9 +362,17 @@ const CustomForm = () => {
           setErrors({});
         }
       } catch (error) {
-        const errorMsg = error.response?.data?.message || error.message;
+        console.error("Submit error:", error);
+        
+        // 判斷 413 錯誤 (Payload Too Large)
+        const is413 = error.response?.status === 413 || error.message.includes("413");
+        const errorMsg = is413 
+          ? "【傳輸失敗】需求內容過大，請嘗試減少圖片數量後再試一次。"
+          : (error.response?.data?.message || error.message);
+          
         showToast(
           `送出失敗，請稍後再試：\n${Array.isArray(errorMsg) ? errorMsg.join("\n") : errorMsg}`,
+          false
         );
       }
     } else {
