@@ -1,7 +1,9 @@
 import { useState, useRef } from "react";
 import * as bootstrap from "bootstrap";
 import { Link } from "react-router";
-import { WandSparkles, ImageIcon, Search, Plus, Minus } from "lucide-react";
+import { WandSparkles, ImageIcon } from "lucide-react";
+import ImageUploadGrid from "@components/common/ImageUploadGrid";
+import ImageLightbox from "@components/common/ImageLightbox";
 import customFormBanner from "@images/custom_form_banner.png";
 import axios from "axios";
 
@@ -9,6 +11,8 @@ const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
 const CustomForm = () => {
+
+  // 提示訊息相關狀態
   const toastRef = useRef(null);
   const [toastMessage, setToastMessage] = useState("");
   const [toastIsSuccess, setToastIsSuccess] = useState(true);
@@ -467,64 +471,14 @@ const CustomForm = () => {
                   style={{ display: "none" }}
                 />
 
-                <div className="images-grid">
-                  {formData.fileReferences.map((url, index) => (
-                    <div key={index} className="uploaded-item">
-                      <div
-                        className="image-wrapper"
-                        onClick={() => openLightbox(url)}
-                      >
-                        <img src={url} alt={`參考圖 ${index + 1}`} />
-                        <div className="image-overlay">
-                          <Search size={24} />
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        className="remove-btn"
-                        onClick={() => removeImage(index)}
-                        title="刪除圖片"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-
-                  {isUploading && (
-                    <div className="uploaded-item uploading">
-                      <div className="upload-loading">
-                        <div
-                          className="spinner-border text-primary spinner-border-sm mb-2"
-                          role="status"
-                        ></div>
-                        <span className="uploading-text">圖片上傳中...</span>
-                        <span className="progress-text">{uploadProgress}%</span>
-                        <div
-                          className="progress w-75 mt-2"
-                          style={{ height: "6px" }}
-                        >
-                          <div
-                            className="progress-bar progress-bar-striped progress-bar-animated"
-                            role="progressbar"
-                            style={{ width: `${uploadProgress}%` }}
-                            aria-valuenow={uploadProgress}
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {!isUploading && formData.fileReferences.length < 5 && (
-                    <div className="upload-dropzone" onClick={handleFileUpload}>
-                      <div className="upload-placeholder">
-                        <ImageIcon size={32} className="dropzone-icon" />
-                        <p>新增圖片</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ImageUploadGrid
+                  fileReferences={formData.fileReferences}
+                  isUploading={isUploading}
+                  uploadProgress={uploadProgress}
+                  onUpload={handleFileUpload}
+                  onRemove={removeImage}
+                  onOpenLightbox={openLightbox}
+                />
               </div>
             </div>
           </section>
@@ -600,66 +554,11 @@ const CustomForm = () => {
         </div>
       </div>
 
-      {/* 圖片燈箱 Modal */}
-      <div
-        className="modal fade"
-        id="imageLightbox"
-        tabIndex="-1"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered modal-xl">
-          <div className="modal-content border-0 bg-transparent">
-            <div
-              className="modal-header border-0 p-0 position-absolute top-0 end-0 m-3"
-              style={{ zIndex: 10 }}
-            >
-              <button
-                type="button"
-                className="btn-close btn-close-white shadow-none"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div
-              className="modal-body p-0 d-flex flex-column align-items-center justify-content-center"
-              style={{ minHeight: "80vh" }}
-            >
-              <div className="lightbox-image-container mb-4">
-                <img
-                  src={selectedPreviewImage}
-                  alt="放大預覽"
-                  className="img-fluid rounded shadow-lg"
-                  style={{
-                    transform: `scale(${zoomLevel})`,
-                    transition: "transform 0.2s ease-out",
-                    maxHeight: "85vh",
-                    objectFit: "contain",
-                  }}
-                />
-              </div>
-              <div className="lightbox-toolkit d-flex gap-3 p-3 rounded-pill bg-white shadow-sm mb-3">
-                <button
-                  className="btn btn-outline-primary rounded-circle zoom-btn"
-                  onClick={() => handleZoom(-0.2)}
-                  title="縮小"
-                >
-                  <Minus size={20} />
-                </button>
-                <span className="zoom-percentage">
-                  {Math.round(zoomLevel * 100)}%
-                </span>
-                <button
-                  className="btn btn-outline-primary rounded-circle zoom-btn"
-                  onClick={() => handleZoom(0.2)}
-                  title="放大"
-                >
-                  <Plus size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ImageLightbox
+        selectedImage={selectedPreviewImage}
+        zoomLevel={zoomLevel}
+        onZoom={handleZoom}
+      />
     </div>
   );
 };

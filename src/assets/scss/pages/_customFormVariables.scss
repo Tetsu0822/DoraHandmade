@@ -1,0 +1,26 @@
+// 響應式斷點
+$mobile-bp: 768px !default;
+
+// 佈局與間距
+$container-max-width: 1000px !default;
+$container-padding: 16px !default;
+$section-margin-bottom: 32px !default;
+
+// Banner 相關設定
+$banner-width-desktop: 1296px !default;
+$banner-height-desktop: 580px !default;
+$banner-radius-desktop: 20px !default;
+$banner-radius-mobile: 12px !default;
+
+// 表單組件間距與內距
+$input-padding: 12px !default;
+$form-group-margin: 12px !default;
+$form-group-margin-lg: 24px !default;
+$form-group-gap: 4px !default;
+$icon-size-base: 20px !default;
+
+// 核心設計特徵 (Design Tokens)
+$error-red: #dc3545 !default;
+$border-radius-base: 4px !default;
+$transition-base: all 0.3s ease !default;
+$transition-btn: all 0.2s ease !default;
