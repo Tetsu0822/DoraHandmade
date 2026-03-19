@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./assets/scss/all.scss";
 import App from "./App.jsx";
@@ -38,7 +38,9 @@ document.addEventListener("click", (e) => {
 }, true);
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <GoogleOAuthProvider clientId={import.meta.env.VITE_API_GOOGLE_CLIENT_ID}>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </GoogleOAuthProvider>
 );
