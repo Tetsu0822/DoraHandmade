@@ -30,7 +30,8 @@ function Products() {
     async function fetchProducts() {
       try {
         const res = await axios.get(`${API_BASE}/api/${API_PATH}/products/all`);
-        const enabledProducts = res.data.products?.filter(p => p.is_enabled);
+        // const enabledProducts = res.data.products?.filter(p => p.is_enabled);
+        const enabledProducts = res.data.products?.filter(p => p.is_enabled && !p.is_placeholder);
         setProducts(enabledProducts);
         setSortedProducts(enabledProducts);
       } catch (err) {

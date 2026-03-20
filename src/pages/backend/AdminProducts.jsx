@@ -24,6 +24,7 @@ const INITIAL_TEMPLATE_DATA = {
     is_hot: false,
     is_new: false,
     published_at: "",
+    is_placeholder: false, // 佔位商品（用於客製化表單送出時暫時填充購物車）
 };
 
 function AdminProducts() {
@@ -112,6 +113,7 @@ function AdminProducts() {
                     <th width="120">售價</th>
                     <th width="100">是否啟用</th>
                     <th width="120">發布日期</th>
+                    <th width="100">佔位商品</th>
                     <th width="120">編輯</th>
                 </tr>
                 </thead>
@@ -129,6 +131,11 @@ function AdminProducts() {
                         </span>
                     </td>
                     <td>{new Date(item.published_at).toLocaleDateString()}</td>
+                    <td>
+                        {item.is_placeholder && (
+                            <span className="badge bg-warning text-dark">佔位</span>
+                        )}
+                    </td>
                     <td>
                     <div className="btn-group">
                         <button
