@@ -449,6 +449,23 @@ function ProductModal({
                                 </label>
                             </div>
                         </div>
+                        <div className="mb-3">
+                            <div className="form-check">
+                                <input
+                                id="is_placeholder"
+                                className="form-check-input"
+                                type="checkbox"
+                                checked={Boolean(templateData.is_placeholder)}
+                                onChange={(e) => handleModelInputChange(e)}
+                                />
+                                <label className="form-check-label" htmlFor="is_placeholder">
+                                佔位商品
+                                <span className="text-muted ms-2" style={{fontSize: "12px"}}>
+                                    （勾選後此商品僅供客製化表單送出時使用，前台不會顯示）
+                                </span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     </div>
                 </div>

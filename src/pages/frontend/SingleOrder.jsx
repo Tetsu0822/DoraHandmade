@@ -17,8 +17,6 @@ function SingleOrder() {
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/order/${id}`);
             const fetchedOrder = response.data.order;
-            console.log("Fetched order:", fetchedOrder);
-            console.log("Current user:", user);
             setOrder(fetchedOrder);
 
             // 取得 order 資料後才判斷是否為本人
@@ -67,6 +65,12 @@ function SingleOrder() {
         }
     };
 
+    // ── 判斷是否為客製化訂單 ──────────────────────────────────
+    const isCustomOrder = (message) => {
+        return message?.includes("客製化顏色：") ?? false;
+    };
+
+    // ── 解析一般訂單 message（逗號分隔格式）────────────────────
     const parseMessage = (message) => {
         if (!message) return {};
         const result = {};
@@ -77,12 +81,39 @@ function SingleOrder() {
         return result;
     };
 
+    // ── 解析客製化訂單 message（換行分隔格式）──────────────────
+    const parseCustomMessage = (message) => {
+        if (!message) return { color: "", pattern: "", description: "", imgUrls: [] };
+        const lines = message.split("\n");
+        const getValue = (prefix) => {
+            const line = lines.find((l) => l.startsWith(prefix));
+            return line ? line.replace(prefix, "").trim() : "";
+        };
+        let imgUrls = [];
+        try {
+            const raw = getValue("imgUrls：");
+            imgUrls = raw ? JSON.parse(raw) : [];
+        } catch {
+            imgUrls = [];
+        }
+        return {
+            color: getValue("客製化顏色："),
+            pattern: getValue("客製化花色："),
+            description: getValue("客製化需求說明："),
+            imgUrls,
+        };
+    };
+
     return (
         <div className="single-order-page py-5">
             <div className="container">
 
                 {/* 麵包屑 */}
-                <nav aria-label="breadcrumb" className="mb-3">
+                <nav
+                    style={{ "--bs-breadcrumb-divider": "'>'" }}
+                    aria-label="breadcrumb"
+                    className="mb-3"
+                >
                     <ol className="breadcrumb">
                         <li className="breadcrumb-item">
                             <Link to="/">首頁</Link>
@@ -121,9 +152,12 @@ function SingleOrder() {
                             <div className="order-card mb-4">
                                 <div className="order-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <h5>🎀 訂單資訊</h5>
-                                    <span className={order.is_paid ? "badge-paid" : "badge-unpaid"}>
-                                        {order.is_paid ? "✓ 已付款" : "✗ 未付款"}
-                                    </span>
+                                    {/* 客製化訂單不顯示付款狀態 */}
+                                    {!isCustomOrder(order.message) && (
+                                        <span className={order.is_paid ? "badge-paid" : "badge-unpaid"}>
+                                            {order.is_paid ? "✓ 已付款" : "✗ 未付款"}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="p-3 p-md-4">
                                     <div className="row g-3">
@@ -131,27 +165,31 @@ function SingleOrder() {
                                             <p className="info-label">建立日期</p>
                                             <p className="info-value">{formatDate(order.create_at)}</p>
                                         </div>
-                                        {order.is_paid && order.paid_date && (
-                                            <div className="col-6 col-md-4">
-                                                <p className="info-label">付款日期</p>
-                                                <p className="info-value">{formatDate(order.paid_date)}</p>
-                                            </div>
-                                        )}
-                                        <div className="col-6 col-md-4">
-                                            <p className="info-label">訂單總額</p>
-                                            <p className="info-value total-amount" style={{ fontSize: "1rem" }}>
-                                                NT$ {order.total?.toLocaleString()}
-                                            </p>
-                                        </div>
-                                        {/* 若未付款，顯示付款按鈕 */}
-                                        {!order.is_paid && (
-                                            <div className="col-6 col-md-4">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline-success btn-sm mt-2"
-                                                    onClick={() => handlePayment(order.id)}
-                                                >立即付款</button>
-                                            </div>
+                                        {/* 客製化訂單不顯示付款日期與訂單總額 */}
+                                        {!isCustomOrder(order.message) && (
+                                            <>
+                                                {order.is_paid && order.paid_date && (
+                                                    <div className="col-6 col-md-4">
+                                                        <p className="info-label">付款日期</p>
+                                                        <p className="info-value">{formatDate(order.paid_date)}</p>
+                                                    </div>
+                                                )}
+                                                <div className="col-6 col-md-4">
+                                                    <p className="info-label">訂單總額</p>
+                                                    <p className="info-value total-amount" style={{ fontSize: "1rem" }}>
+                                                        NT$ {order.total?.toLocaleString()}
+                                                    </p>
+                                                </div>
+                                                {!order.is_paid && (
+                                                    <div className="col-6 col-md-4">
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-outline-success btn-sm mt-2"
+                                                            onClick={() => handlePayment(order.id)}
+                                                        >立即付款</button>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>
@@ -177,32 +215,42 @@ function SingleOrder() {
                                                 <p className="product-meta mb-1">
                                                     {item.product?.parentCategory} · {item.product?.category}
                                                 </p>
-                                                <p className="product-meta mb-2">
-                                                    單價 NT$ {item.product?.price} × {item.qty} {item.product?.unit}
-                                                </p>
-                                                {item.coupon && (
+                                                {/* 客製化訂單不顯示單價 */}
+                                                {!isCustomOrder(order.message) && (
+                                                    <p className="product-meta mb-2">
+                                                        單價 NT$ {item.product?.price} × {item.qty} {item.product?.unit}
+                                                    </p>
+                                                )}
+                                                {item.coupon && !isCustomOrder(order.message) && (
                                                     <span className="coupon-badge">
                                                         🏷 {item.coupon.title}（{item.coupon.percent}折）
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="text-end flex-shrink-0">
-                                                {item.coupon && (
-                                                    <p className="info-label text-decoration-line-through">
-                                                        NT$ {item.total}
+                                            {/* 客製化訂單不顯示小計金額 */}
+                                            {!isCustomOrder(order.message) && (
+                                                <div className="text-end flex-shrink-0">
+                                                    {item.coupon && (
+                                                        <p className="info-label text-decoration-line-through">
+                                                            NT$ {item.total}
+                                                        </p>
+                                                    )}
+                                                    <p className="total-amount" style={{ fontSize: "1rem" }}>
+                                                        NT$ {item.final_total?.toLocaleString()}
                                                     </p>
-                                                )}
-                                                <p className="total-amount" style={{ fontSize: "1rem" }}>
-                                                    NT$ {item.final_total?.toLocaleString()}
-                                                </p>
-                                            </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
 
-                                    {/* 合計 */}
+                                    {/* 合計：客製化訂單顯示"另行報價" */}
                                     <div className="total-row d-flex justify-content-between align-items-center pb-3">
                                         <span className="info-label" style={{ fontSize: "0.9rem" }}>訂單合計</span>
-                                        <span className="total-amount">NT$ {order.total?.toLocaleString()}</span>
+                                        {isCustomOrder(order.message) ? (
+                                            <span className="info-value" style={{ color: "#a07850", fontWeight: 600 }}>另行報價</span>
+                                        ) : (
+                                            <span className="total-amount">NT$ {order.total?.toLocaleString()}</span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -229,21 +277,94 @@ function SingleOrder() {
                                 </div>
                             </div>
 
-                            {/* 付款方式 */}
-                            {order.message && (() => {
-                                const parsed = parseMessage(order.message);
-                                return parsed["付款方式"] ? (
-                                    <div className="order-card">
-                                        <div className="order-card-header">
-                                            <h5>💳 付款資訊</h5>
-                                        </div>
-                                        <div className="p-3 p-md-4">
-                                            <p className="info-label">付款方式</p>
-                                            <p className="info-value mb-0">{parsed["付款方式"]}</p>
-                                        </div>
-                                    </div>
-                                ) : null;
-                            })()}
+                            {/* 根據訂單類型顯示不同資訊卡片 */}
+                            {order.message && isCustomOrder(order.message) ? (
+                                // ── 客製化訂單：顯示設計需求 + 參考圖片 ──
+                                (() => {
+                                    const custom = parseCustomMessage(order.message);
+                                    return (
+                                        <>
+                                            <div className="order-card mb-4">
+                                                <div className="order-card-header">
+                                                    <h5>🎀 客製化需求</h5>
+                                                </div>
+                                                <div className="p-3 p-md-4">
+                                                    {[
+                                                        { label: "顏色", value: custom.color },
+                                                        { label: "花色", value: custom.pattern },
+                                                        { label: "需求說明", value: custom.description },
+                                                    ].map(({ label, value }) => (
+                                                        <div key={label} className="mb-3">
+                                                            <p className="info-label">{label}</p>
+                                                            <p className="info-value text-break mb-0">{value || "—"}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {custom.imgUrls.length > 0 && (
+                                                <div className="order-card mb-4">
+                                                    <div className="order-card-header">
+                                                        <h5>🖼️ 參考圖片</h5>
+                                                    </div>
+                                                    <div className="p-3 p-md-4">
+                                                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))", gap: "8px" }}>
+                                                            {custom.imgUrls.map((url, i) => (
+                                                                <a key={i} href={url} target="_blank" rel="noreferrer">
+                                                                    <img
+                                                                        src={url}
+                                                                        alt={`參考圖 ${i + 1}`}
+                                                                        style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: "6px" }}
+                                                                    />
+                                                                </a>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    );
+                                })()
+                            ) : (
+                                // ── 一般訂單：顯示收件人 + 付款方式 ──
+                                (() => {
+                                    const parsed = parseMessage(order.message);
+                                    return (
+                                        <>
+                                            <div className="order-card mb-4">
+                                                <div className="order-card-header">
+                                                    <h5>📦 收件人資訊</h5>
+                                                </div>
+                                                <div className="p-3 p-md-4">
+                                                    {[
+                                                        { label: "姓名", value: parsed["收件人"] },
+                                                        { label: "電話", value: parsed["電話"] },
+                                                        { label: "Email", value: parsed["Email"] },
+                                                        { label: "地址", value: parsed["地址"] },
+                                                    ].map(({ label, value }) => (
+                                                        <div key={label} className="mb-3">
+                                                            <p className="info-label">{label}</p>
+                                                            <p className="info-value text-break mb-0">{value || "—"}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {parsed["付款方式"] && (
+                                                <div className="order-card mb-4">
+                                                    <div className="order-card-header">
+                                                        <h5>💳 付款資訊</h5>
+                                                    </div>
+                                                    <div className="p-3 p-md-4">
+                                                        <p className="info-label">付款方式</p>
+                                                        <p className="info-value mb-0">{parsed["付款方式"]}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </>
+                                    );
+                                })()
+                            )}
                         </div>
 
                     </div>

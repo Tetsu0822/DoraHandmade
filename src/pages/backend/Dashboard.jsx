@@ -30,7 +30,7 @@ function StatCard({ title, value, sub, color, icon, onClick }) {
     );
 }
 
-function DashBoard() {
+function Dashboard() {
     const navigate = useNavigate();
     const { showError } = useMessage();
     const [loading, setLoading] = useState(true);
@@ -108,6 +108,8 @@ function DashBoard() {
     const recentOrders = [...orders]
         .sort((a, b) => b.create_at - a.create_at)
         .slice(0, 5);
+
+    const isCustomOrder = (message) => message?.includes("客製化顏色：") ?? false;
 
     const formatDate = (ts) => {
         if (!ts) return "—";
@@ -265,12 +267,20 @@ function DashBoard() {
                                     <td className="text-break small">{order.id}</td>
                                     <td>{order.user?.name}</td>
                                     <td>
-                                        <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
-                                            {order.is_paid ? "已付款" : "未付款"}
-                                        </span>
+                                        {isCustomOrder(order.message) ? (
+                                            <span className="badge bg-warning text-dark">另行報價</span>
+                                        ) : (
+                                            <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
+                                                {order.is_paid ? "已付款" : "未付款"}
+                                            </span>
+                                        )}
                                     </td>
                                     <td style={{ whiteSpace: "nowrap" }}>{formatDate(order.create_at)}</td>
-                                    <td className="text-end">NT$ {order.total?.toLocaleString()}</td>
+                                    <td className="text-end">
+                                        {isCustomOrder(order.message)
+                                            ? <span style={{ color: "#a07850", fontWeight: 600 }}>另行報價</span>
+                                            : `NT$ ${order.total?.toLocaleString()}`}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -292,4 +302,4 @@ function DashBoard() {
     );
 }
 
-export default DashBoard;
+export default Dashboard;

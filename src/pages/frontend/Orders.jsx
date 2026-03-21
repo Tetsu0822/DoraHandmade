@@ -60,6 +60,9 @@ function Orders() {
         });
     };
 
+    // 判斷是否為客製化訂單
+    const isCustomOrder = (message) => message?.includes("客製化顏色：") ?? false;
+
     const filteredOrders = user
         ? orders.filter((order) => order.user?.email === user.email)
         : [];
@@ -105,11 +108,19 @@ function Orders() {
                                         <td>{formatDate(order.create_at)}</td>
                                         <td>{order.user?.name}</td>
                                         <td>
-                                            <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
-                                                {order.is_paid ? "已付款" : "未付款"}
-                                            </span>
+                                            {isCustomOrder(order.message) ? (
+                                                <span className="badge bg-warning text-dark">另行報價</span>
+                                            ) : (
+                                                <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
+                                                    {order.is_paid ? "已付款" : "未付款"}
+                                                </span>
+                                            )}
                                         </td>
-                                        <td>NT$ {order.total?.toLocaleString()}</td>
+                                        <td>
+                                            {isCustomOrder(order.message)
+                                                ? <span style={{ color: "#a07850", fontWeight: 600 }}>另行報價</span>
+                                                : `NT$ ${order.total?.toLocaleString()}`}
+                                        </td>
                                         <td>
                                             <div className="btn-group btn-group-sm">
                                                 <button
@@ -117,7 +128,7 @@ function Orders() {
                                                     className="btn btn-outline-primary"
                                                     onClick={() => handleViewMoreOrder(order.id)}
                                                 >查看</button>
-                                                {!order.is_paid && (
+                                                {!order.is_paid && !isCustomOrder(order.message) && (
                                                     <button
                                                         type="button"
                                                         className="btn btn-outline-success"
@@ -163,9 +174,13 @@ function Orders() {
                                                 {order.id}
                                             </p>
                                         </div>
-                                        <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
-                                            {order.is_paid ? "已付款" : "未付款"}
-                                        </span>
+                                        {isCustomOrder(order.message) ? (
+                                            <span className="badge bg-warning text-dark">另行報價</span>
+                                        ) : (
+                                            <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
+                                                {order.is_paid ? "已付款" : "未付款"}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <hr className="my-2" />
@@ -178,7 +193,11 @@ function Orders() {
                                         </div>
                                         <div className="col-6">
                                             <small className="text-muted d-block">訂單金額</small>
-                                            <span className="fw-bold">NT$ {order.total?.toLocaleString()}</span>
+                                            {isCustomOrder(order.message) ? (
+                                                <span style={{ color: "#a07850", fontWeight: 600 }}>另行報價</span>
+                                            ) : (
+                                                <span className="fw-bold">NT$ {order.total?.toLocaleString()}</span>
+                                            )}
                                         </div>
                                         <div className="col-12">
                                             <small className="text-muted d-block">訂單日期</small>
@@ -195,7 +214,7 @@ function Orders() {
                                             className="btn btn-outline-primary btn-sm flex-fill"
                                             onClick={() => handleViewMoreOrder(order.id)}
                                         >查看訂單</button>
-                                        {!order.is_paid && (
+                                        {!order.is_paid && !isCustomOrder(order.message) && (
                                             <button
                                                 type="button"
                                                 className="btn btn-outline-success btn-sm flex-fill"

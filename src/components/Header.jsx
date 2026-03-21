@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import { ShoppingCart, User, ChevronDown, ChevronRight } from "lucide-react";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import UserContext from "@contexts/UserContext";
 import logoImg from "@images/logo.png";
 
@@ -13,6 +13,26 @@ const Header = () => {
   const [openHandmade, setOpenHandmade] = useState(false);
   const [openMaterial, setOpenMaterial] = useState(false);
   const navigate = useNavigate();
+
+  const headerSubmenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        headerSubmenuRef.current &&
+        !headerSubmenuRef.current.contains(event.target)
+      ) {
+        setIsSubmenuOpen(false);
+        setOpenHandmade(false);
+        setOpenMaterial(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -27,6 +47,9 @@ const Header = () => {
 
   const closeMobileMenu = () => {
     setIsMenuOpen(false);
+    setIsSubmenuOpen(false); // 關閉選單時也重置子選單
+    setOpenHandmade(false);
+    setOpenMaterial(false);
   };
 
   const toggleMobileMenu = () => {
@@ -43,6 +66,10 @@ const Header = () => {
     e.preventDefault();
     e.stopPropagation();
     if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation();
+
+    // 立即移除點擊後的焦點
+    e.currentTarget.blur();
+
     setIsSubmenuOpen((prev) => !prev);
   };
 
@@ -50,6 +77,8 @@ const Header = () => {
     e.preventDefault();
     e.stopPropagation();
     if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation();
+    // 電腦版不觸發點擊 Toggle，僅由 Hover 控制
+    if (window.innerWidth >= 992) return;
     setOpenHandmade(!openHandmade);
   };
 
@@ -57,8 +86,11 @@ const Header = () => {
     e.preventDefault();
     e.stopPropagation();
     if (e.nativeEvent) e.nativeEvent.stopImmediatePropagation();
+    // 電腦版不觸發點擊 Toggle，僅由 Hover 控制
+    if (window.innerWidth >= 992) return;
     setOpenMaterial(!openMaterial);
   };
+
   // 自動判斷右側主選單（如使用者選單）展開方向
   const handleUserMenuEnter = (e) => {
     const button = e.currentTarget;
@@ -95,7 +127,11 @@ const Header = () => {
       <nav className="navbar navbar-expand-lg navbar-custom">
         <div className="container">
           {/* Logo */}
-          <Link className="navbar-brand d-flex align-items-center" to="/" onClick={closeMobileMenu}>
+          <Link
+            className="navbar-brand d-flex align-items-center"
+            to="/"
+            onClick={closeMobileMenu}
+          >
             <span className="logo-font">
               <img src={logoImg} className="mb-2 me-1" alt="愛哆啦也愛手作" />
               <span className="logo-text-dark">愛哆啦也愛</span>
@@ -190,18 +226,27 @@ const Header = () => {
           >
             <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
               <li className="nav-item me-lg-3 text-p-16-b">
-                <Link className="nav-link nav-link-custom " to="/workshop" onClick={closeMobileMenu}>
+                <Link
+                  className="nav-link nav-link-custom "
+                  to="/workshop"
+                  onClick={closeMobileMenu}
+                >
                   手作小教室
                 </Link>
               </li>
 
               <li className="nav-item me-lg-3 text-p-16-b">
-                <Link className="nav-link nav-link-custom" to="/custom-form" onClick={closeMobileMenu}>
+                <Link
+                  className="nav-link nav-link-custom"
+                  to="/custom-form"
+                  onClick={closeMobileMenu}
+                >
                   客製化專區
                 </Link>
               </li>
 
               <li
+                ref={headerSubmenuRef}
                 className="nav-item dropdown dropdown-custom me-lg-4 text-p-16-b"
               >
                 {/* 商品分類：完全使用 React state 控制，不依賴 Bootstrap Dropdown JS */}
@@ -217,7 +262,11 @@ const Header = () => {
                   className={`dropdown-menu ${isSubmenuOpen ? "show force-show" : ""}`}
                 >
                   <li>
-                    <Link className="dropdown-item" to="/product" onClick={closeMobileMenu}>
+                    <Link
+                      className="dropdown-item"
+                      to="/product"
+                      onClick={closeMobileMenu}
+                    >
                       全部商品
                     </Link>
                   </li>
@@ -234,7 +283,9 @@ const Header = () => {
                       成品
                       <ChevronRight size={16} className="ms-2" />
                     </a>
-                    <ul className={`dropdown-menu ${openHandmade ? "show force-show" : ""}`}>
+                    <ul
+                      className={`dropdown-menu ${openHandmade ? "show force-show" : ""}`}
+                    >
                       <li>
                         <Link
                           className="dropdown-item"
@@ -260,7 +311,9 @@ const Header = () => {
                       材料
                       <ChevronRight size={16} className="ms-2" />
                     </a>
-                    <ul className={`dropdown-menu ${openMaterial ? "show force-show" : ""}`}>
+                    <ul
+                      className={`dropdown-menu ${openMaterial ? "show force-show" : ""}`}
+                    >
                       <li>
                         <Link
                           className="dropdown-item"

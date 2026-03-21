@@ -38,6 +38,8 @@ function AdminOrders() {
         }
     }, [showError]);
 
+    const isCustomOrder = (message) => message?.includes("客製化顏色：") ?? false;
+
     const formatDate = (timestamp) => {
         if (!timestamp) return "";
         return new Date(timestamp * 1000).toLocaleString("zh-TW", {
@@ -105,12 +107,20 @@ function AdminOrders() {
                             <td>{order.id}</td>
                             <td>{order.user.name}</td>
                             <td>
-                                <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
-                                    {order.is_paid ? "已付款" : "未付款"}
-                                </span>
+                                {isCustomOrder(order.message) ? (
+                                    <span className="badge bg-warning text-dark">另行報價</span>
+                                ) : (
+                                    <span className={`badge ${order.is_paid ? "bg-success" : "bg-secondary"}`}>
+                                        {order.is_paid ? "已付款" : "未付款"}
+                                    </span>
+                                )}
                             </td>
                             <td>{formatDate(order.create_at)}</td>
-                            <td>NT$ {order.total?.toLocaleString()}</td>
+                            <td>
+                                {isCustomOrder(order.message)
+                                    ? <span style={{ color: "#a07850", fontWeight: 600 }}>另行報價</span>
+                                    : `NT$ ${order.total?.toLocaleString()}`}
+                            </td>
                             <td>
                                 <div className="btn-group">
                                     <button

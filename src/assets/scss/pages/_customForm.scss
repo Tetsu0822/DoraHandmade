@@ -1,29 +1,4 @@
-// --- 數值變數提取 ---
-$mobile-bp: 768px;
-
-// 佈局與間距
-$container-max-width: 1000px;
-$container-padding: 16px;
-$section-margin-bottom: 32px;
-
-// Banner 相關
-$banner-width-desktop: 1296px;
-$banner-height-desktop: 580px;
-$banner-radius-desktop: 20px;
-$banner-radius-mobile: 12px;
-
-// 表單項目
-$input-padding: 12px;
-$form-group-margin: 12px;
-$form-group-margin-lg: 24px;
-$form-group-gap: 4px;
-$icon-size-base: 20px;
-$error-red: #dc3545;
-
-// 通用樣式
-$border-radius-base: 4px;
-$transition-base: all 0.3s ease;
-$transition-btn: all 0.2s ease;
+@import "./customFormVariables";
 
 .custom-form-page {
 
@@ -201,6 +176,7 @@ $transition-btn: all 0.2s ease;
 
       &.is-invalid {
         border-color: $error-red;
+
         &:focus {
           box-shadow: 0 0 0 2px rgba($error-red, 0.1);
         }
@@ -257,32 +233,9 @@ $transition-btn: all 0.2s ease;
       }
     }
 
-    .upload-group {
-      display: flex;
-      gap: $form-group-margin;
-      align-items: flex-start;
-
-      input[type="text"] {
-        flex: 1;
-      }
-
-      .upload-btn {
-        padding: 8px 5px;
-        margin: 0 $form-group-margin-lg;
-        background-color: transparent;
-        color: $secondary-700;
-        border: none;
-        border-bottom: 2px solid $secondary-700;
-        border-radius: 0;
-        cursor: pointer;
-        font-weight: 700;
-        white-space: nowrap;
-        transition: $transition-btn;
-
-        &:hover {
-          background-color: rgba($secondary-700, 0.05);
-        }
-      }
+    .upload-area {
+      width: 100%;
+      margin-top: 8px;
     }
   }
 

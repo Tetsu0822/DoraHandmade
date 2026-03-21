@@ -19,11 +19,14 @@
 @import "./components/articleCard";
 @import "./components/buttons";
 @import "./components/productCard";
+@import "./components/productCardSkeleton";
 @import "./components/order";
 @import "./components/swiper";
 @import "./components/swiperNav";
 @import "./components/header";
 @import "./components/footer";
+@import "./components/imageUploadGrid";
+@import "./components/imageLightbox";
 @import "./utilities/animation";
 @import "./pages/customForm";
 @import "./pages/cartCheckout";
@@ -32,4 +35,3 @@
 @import "./pages/admin";
 @import "./pages/favorites";
 @import "./pages/workshop";
-// @import "./pages/articles";

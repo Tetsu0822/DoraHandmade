@@ -13,7 +13,7 @@ function OrderModal({
 }) {
     const { showSuccess, showError } = useMessage();
     // Debug log: 檢查收到的 props
-    console.log("OrderModal props", { modalType, templateOrder, getOrders, currentPage, closeOrderModal });
+    // console.log("OrderModal props", { modalType, templateOrder, getOrders, currentPage, closeOrderModal });
 
     const [isPaid, setIsPaid] = useState(templateOrder.is_paid || false);
 
@@ -34,7 +34,10 @@ function OrderModal({
         });
     };
 
-    // 解析 message 欄位
+    // 判斷是否為客製化訂單
+    const isCustomOrder = (message) => message?.includes("客製化顏色：") ?? false;
+
+    // 解析一般訂單 message（逗號分隔）
     const parseMessage = (message) => {
         if (!message) return {};
         const result = {};
@@ -43,6 +46,27 @@ function OrderModal({
             if (key && value) result[key.trim()] = value.trim();
         });
         return result;
+    };
+
+    // 解析客製化訂單 message（換行分隔）
+    const parseCustomMessage = (message) => {
+        if (!message) return { color: "", pattern: "", description: "", imgUrls: [] };
+        const lines = message.split("\n");
+        const getValue = (prefix) => {
+            const line = lines.find((l) => l.startsWith(prefix));
+            return line ? line.replace(prefix, "").trim() : "";
+        };
+        let imgUrls = [];
+        try {
+            const raw = getValue("imgUrls：");
+            imgUrls = raw ? JSON.parse(raw) : [];
+        } catch { imgUrls = []; }
+        return {
+            color: getValue("客製化顏色："),
+            pattern: getValue("客製化花色："),
+            description: getValue("客製化需求說明："),
+            imgUrls,
+        };
     };
 
     // 取得 token
@@ -87,7 +111,9 @@ function OrderModal({
         }
     };
 
+    const isCustom = isCustomOrder(templateOrder?.message);
     const parsed = parseMessage(templateOrder?.message);
+    const custom = parseCustomMessage(templateOrder?.message);
     const products = Object.values(templateOrder?.products || {});
 
     return (
@@ -149,26 +175,34 @@ function OrderModal({
                                         )}
                                         <div className="mb-3">
                                             <small className="text-muted">訂單金額</small>
-                                            <p className="mb-0 fw-bold">NT$ {templateOrder.total?.toLocaleString()}</p>
+                                            {isCustom ? (
+                                                <p className="mb-0 fw-bold" style={{ color: "#a07850" }}>另行報價</p>
+                                            ) : (
+                                                <p className="mb-0 fw-bold">NT$ {templateOrder.total?.toLocaleString()}</p>
+                                            )}
                                         </div>
 
-                                        {/* 付款狀態（可編輯） */}
-                                        <h6 className="fw-bold border-bottom pb-2 mb-3">付款狀態</h6>
-                                        <div className="form-check form-switch mb-4">
-                                            <input
-                                                className="form-check-input"
-                                                type="checkbox"
-                                                id="isPaidSwitch"
-                                                checked={isPaid}
-                                                onChange={(e) => setIsPaid(e.target.checked)}
-                                                disabled={modalType === "delete"}
-                                            />
-                                            <label className="form-check-label" htmlFor="isPaidSwitch">
-                                                <span className={`badge ${isPaid ? "bg-success" : "bg-secondary"}`}>
-                                                    {isPaid ? "已付款" : "未付款"}
-                                                </span>
-                                            </label>
-                                        </div>
+                                        {/* 付款狀態（客製化訂單隱藏） */}
+                                        {!isCustom && (
+                                            <>
+                                                <h6 className="fw-bold border-bottom pb-2 mb-3">付款狀態</h6>
+                                                <div className="form-check form-switch mb-4">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="checkbox"
+                                                        id="isPaidSwitch"
+                                                        checked={isPaid}
+                                                        onChange={(e) => setIsPaid(e.target.checked)}
+                                                        disabled={modalType === "delete"}
+                                                    />
+                                                    <label className="form-check-label" htmlFor="isPaidSwitch">
+                                                        <span className={`badge ${isPaid ? "bg-success" : "bg-secondary"}`}>
+                                                            {isPaid ? "已付款" : "未付款"}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </>
+                                        )}
 
                                         {/* 購買人資訊 */}
                                         <h6 className="fw-bold border-bottom pb-2 mb-3">購買人資訊</h6>
@@ -184,11 +218,64 @@ function OrderModal({
                                             </div>
                                         ))}
 
-                                        {/* 付款方式 */}
-                                        {parsed["付款方式"] && (
+                                        {/* 一般訂單：收件人 + 付款方式 */}
+                                        {!isCustom && (
+                                            <>
+                                                {(parsed["收件人"] || parsed["電話"] || parsed["地址"]) && (
+                                                    <div className="mt-3">
+                                                        <h6 className="fw-bold border-bottom pb-2 mb-3">收件人資訊</h6>
+                                                        {[
+                                                            { label: "姓名", key: "收件人" },
+                                                            { label: "電話", key: "電話" },
+                                                            { label: "Email", key: "Email" },
+                                                            { label: "地址", key: "地址" },
+                                                        ].map(({ label, key }) => parsed[key] && (
+                                                            <div className="mb-2" key={key}>
+                                                                <small className="text-muted">{label}</small>
+                                                                <p className="mb-0 text-break">{parsed[key]}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {parsed["付款方式"] && (
+                                                    <div className="mt-3">
+                                                        <h6 className="fw-bold border-bottom pb-2 mb-3">付款方式</h6>
+                                                        <p className="mb-0">{parsed["付款方式"]}</p>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {/* 客製化訂單：設計需求 + 參考圖片 */}
+                                        {isCustom && (
                                             <div className="mt-3">
-                                                <h6 className="fw-bold border-bottom pb-2 mb-3">付款方式</h6>
-                                                <p className="mb-0">{parsed["付款方式"]}</p>
+                                                <h6 className="fw-bold border-bottom pb-2 mb-3">🎀 客製化需求</h6>
+                                                {[
+                                                    { label: "顏色", value: custom.color },
+                                                    { label: "花色", value: custom.pattern },
+                                                    { label: "需求說明", value: custom.description },
+                                                ].map(({ label, value }) => (
+                                                    <div className="mb-2" key={label}>
+                                                        <small className="text-muted">{label}</small>
+                                                        <p className="mb-0 text-break">{value || "—"}</p>
+                                                    </div>
+                                                ))}
+                                                {custom.imgUrls.length > 0 && (
+                                                    <div className="mt-2">
+                                                        <small className="text-muted d-block mb-2">參考圖片</small>
+                                                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(72px, 1fr))", gap: "8px" }}>
+                                                            {custom.imgUrls.map((url, i) => (
+                                                                <a key={i} href={url} target="_blank" rel="noreferrer">
+                                                                    <img
+                                                                        src={url}
+                                                                        alt={`參考圖 ${i + 1}`}
+                                                                        style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: "6px", border: "1px solid #eee" }}
+                                                                    />
+                                                                </a>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -248,18 +335,20 @@ function OrderModal({
                                                             </span>
                                                         )}
                                                     </div>
-                                                    {/* 小計 */}
-                                                    <div className="text-end flex-shrink-0">
-                                                        {item.coupon && (
-                                                            <p className="text-muted text-decoration-line-through mb-0"
-                                                               style={{ fontSize: "0.78rem" }}>
-                                                                NT$ {item.total}
+                                                    {/* 小計：客製化不顯示 */}
+                                                    {!isCustom && (
+                                                        <div className="text-end flex-shrink-0">
+                                                            {item.coupon && (
+                                                                <p className="text-muted text-decoration-line-through mb-0"
+                                                                   style={{ fontSize: "0.78rem" }}>
+                                                                    NT$ {item.total}
+                                                                </p>
+                                                            )}
+                                                            <p className="fw-bold mb-0" style={{ color: "#c0607a", fontSize: "0.9rem" }}>
+                                                                NT$ {item.final_total?.toLocaleString()}
                                                             </p>
-                                                        )}
-                                                        <p className="fw-bold mb-0" style={{ color: "#c0607a", fontSize: "0.9rem" }}>
-                                                            NT$ {item.final_total?.toLocaleString()}
-                                                        </p>
-                                                    </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -267,9 +356,13 @@ function OrderModal({
                                         {/* 訂單合計 */}
                                         <div className="d-flex justify-content-between align-items-center pt-3">
                                             <span className="text-muted">訂單合計</span>
-                                            <span className="fw-bold fs-5" style={{ color: "#c0607a" }}>
-                                                NT$ {templateOrder.total?.toLocaleString()}
-                                            </span>
+                                            {isCustom ? (
+                                                <span className="fw-bold fs-5" style={{ color: "#a07850" }}>另行報價</span>
+                                            ) : (
+                                                <span className="fw-bold fs-5" style={{ color: "#c0607a" }}>
+                                                    NT$ {templateOrder.total?.toLocaleString()}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -295,6 +388,9 @@ function OrderModal({
                             >
                                 確認刪除
                             </button>
+                        ) : isCustom ? (
+                            // 客製化訂單：不顯示付款相關的儲存按鈕
+                            null
                         ) : (
                             <button
                                 type="button"

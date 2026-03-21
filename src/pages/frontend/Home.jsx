@@ -6,35 +6,16 @@ import { Autoplay } from 'swiper/modules';
 import { Sparkles, Crown, MoveRight, Scissors, BookOpen } from 'lucide-react';
 import { ClassicBow, WavyLine } from '@components/icons';
 import ProductCard from '@components/ProductCard';
+import ProductCardSkeleton from '@components/ProductCardSkeleton';
 import ArticleCard from '@components/ArticleCard';
 import SwiperNavButtons from '@components/SwiperNavButtons';
-// import articleImage1 from '@images/article-1.png';
-// import articleImage2 from '@images/article-2.png';
 import { articles } from '@data/articles';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
-// const articleData = [
-//   {
-//     id: 1,
-//     title: '新手也能做！3 種超簡單蝴蝶結綁法教學',
-//     content: '剛開始接觸手作？這篇教你三種最容易上手的蝴蝶結綁法，\n從基本對折到立體雙層，五分鐘完成第一個作品！',
-//     image: articleImage1,
-//     likes: 2,
-//     createdAt: '2026-01-01'
-//   },
-//   {
-//     id: 2,
-//     title: '如何挑選緞帶？四種材質的手感與用途總整理',
-//     content: '緞帶材質百百種，霧面、亮面、雪紗、絨布到底差在哪？\n文章教你如何依作品風格挑選最適合的材料',
-//     image: articleImage2,
-//     likes: 2,
-//     createdAt: '2025-12-20'
-//   }
-// ];
-
 function Home() {
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [newProducts, setNewProducts] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
   const [newMaterials, setNewMaterials] = useState([]);
@@ -55,6 +36,8 @@ function Home() {
         setNewMaterials(_newMaterials);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoadingProducts(false);
       }
     }
     
@@ -108,7 +91,13 @@ function Home() {
           <span className="t-section-title">新品上架</span>
         </h2>
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
-          {newProducts.map((product) => (
+          {isLoadingProducts ? (
+            [1, 2, 3].map((i) => (
+              <div className="col" key={i}>
+                <ProductCardSkeleton />
+              </div>
+            ))
+          ) : newProducts.map((product) => (
             <li className="col list-unstyled" key={product.id || product.title}>
               <ProductCard product={product} />
             </li>
@@ -128,7 +117,13 @@ function Home() {
             <span className="t-section-title">熱銷 TOP</span>
           </h2>
           <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
-            {bestSellers.map((product) => (
+            {isLoadingProducts ? (
+              [1, 2, 3].map((i) => (
+                <div className="col" key={i}>
+                  <ProductCardSkeleton />
+                </div>
+              ))
+            ) : bestSellers.map((product) => (
               <li className="col list-unstyled" key={product.id || product.title}>
                 <ProductCard product={product} />
               </li>
@@ -148,7 +143,13 @@ function Home() {
           <span className="t-section-title">材料新上架</span>
         </h2>
         <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
-          {newMaterials.map((product) => (
+          {isLoadingProducts ? (
+            [1, 2, 3].map((i) => (
+              <div className="col" key={i}>
+                <ProductCardSkeleton />
+              </div>
+            ))
+          ) : newMaterials.map((product) => (
             <li className="col list-unstyled" key={product.id || product.title}>
               <ProductCard product={product} />
             </li>
