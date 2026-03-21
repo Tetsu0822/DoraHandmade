@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router";
 import { ShoppingCart, User, ChevronDown, ChevronRight } from "lucide-react";
 import { useState, useContext, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { createAsyncMessage } from "@/slice/messageSlice";
 import UserContext from "@contexts/UserContext";
 import logoImg from "@images/logo.png";
 
@@ -13,6 +15,7 @@ const Header = () => {
   const [openHandmade, setOpenHandmade] = useState(false);
   const [openMaterial, setOpenMaterial] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const headerSubmenuRef = useRef(null);
 
@@ -42,6 +45,7 @@ const Header = () => {
     // 為了確保 cookie 被正確刪除，指定 path 為 /DoraHandmade
     const expiredDate = "Thu, 01 Jan 1970 00:00:00 UTC";
     document.cookie = `doraToken=; expires=${expiredDate}; path=/DoraHandmade;`;
+    dispatch(createAsyncMessage({ success: true, message: "已登出成功" }));
     navigate("/login");
   };
 
