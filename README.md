@@ -28,8 +28,18 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
- -2026/03/21 修正Products.jsx 分頁選取與header同步 By MidyWu
-- 2026/03/01 補充文章頁面 By PeiYiWu
+- 2026/03/21 修正Products.jsx 分頁選取與header同步 By MidyWu
+- 2026/03/20 優化客製化表單圖片上傳與修復檔案過大 413 錯誤 By Tim
+- 2026/03/20 抽離與優化客製化表單內部元件、樣式 By Tim
+- 2026/03/19 實作客製化表單圖片上傳功能與 UI 更新 By Tim
+- 2026/03/19 新增 Google 註冊/登入功能 By Tetsu
+- 2026/03/18 優化首頁產品列表載入狀態顯示 By PeiYiWu
+- 2026/03/18 將產品卡片骨架移至獨立元件 By PeiYiWu
+- 2026/03/18 充實文章專區 By PeiYiWu
+- 2026/03/17 修復導覽列下拉選單高亮與點擊邏輯異常，並更新選單 hover 效果 By Tim
+- 2026/03/17 訂單詳細頁面，新增收件人卡片 By Tetsu
+- 2026/03/17 新增 ScrollToTop 元件 By PeiYiWu
+- 2026/03/17 補充文章頁面 By PeiYiWu
 - 2026/03/16 修正註冊/登入表單 mode 切換 By Tetsu
 - 2026/03/15 新增後台儀表板功能 By Tetsu
 - 2026/03/15 新增後台優惠券管理、SweetAleart2 元件 By Tetsu
