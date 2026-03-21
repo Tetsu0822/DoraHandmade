@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router'; 
 import axios from 'axios';
 import ProductCard from '@components/ProductCard';
 import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
@@ -8,29 +8,34 @@ const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
 
 function Products() {
-  const { child } = useParams(); // 取得路由參數
+  // 取得路由參數
+  const { mainCat, subCat } = useParams();
+  const location = useLocation();
   const itemsPerPage = 9;
 
   const [products, setProducts] = useState([]);
   const [sortedProducts, setSortedProducts] = useState([]);
-
-  // 初始化分類
-  const [currentCategory, setCurrentCategory] = useState(() => child || 'all');
-
-  // 分頁
+  const [currentCategory, setCurrentCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 排序與下拉
   const [sortLabel, setSortLabel] = useState('預設排序');
   const [sortOpen, setSortOpen] = useState(false);
   const [materialOpen, setMaterialOpen] = useState(false);
+
+  // 分類對照表
+  const categoryMap = {
+    'bow': '蝴蝶結',
+    'ribbon': '帶子',
+    'clip': '夾子',
+    'patch': '貼片'
+  };
 
   // API 取得商品
   useEffect(() => {
     async function fetchProducts() {
       try {
         const res = await axios.get(`${API_BASE}/api/${API_PATH}/products/all`);
-        const enabledProducts = res.data.products?.filter(p => p.is_enabled);
+        const enabledProducts = res.data.products?.filter(p => p.is_enabled) || [];
         setProducts(enabledProducts);
         setSortedProducts(enabledProducts);
       } catch (err) {
@@ -40,7 +45,15 @@ function Products() {
     fetchProducts();
   }, []);
 
-  const effectivePage = child ? 1 : currentPage;
+  // 監聽路由變化，自動過濾
+  useEffect(() => {
+    if (subCat && categoryMap[subCat]) {
+      setCurrentCategory(categoryMap[subCat]);
+    } else {
+      setCurrentCategory('all');
+    }
+    setCurrentPage(1);
+  }, [subCat, location.pathname]);
 
   // 排序
   const handleSortChange = (type, label) => {
@@ -58,35 +71,31 @@ function Products() {
     setSortOpen(false);
   };
 
-  // 分類
   const handleCategoryChange = (category) => {
     setCurrentCategory(category);
     setCurrentPage(1);
     setMaterialOpen(false);
   };
 
+  // 過濾邏輯
   const filteredProducts = sortedProducts.filter(product => {
     if (currentCategory === 'all') return true;
     return product.category === currentCategory;
   });
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-
-  // 分頁
   const paginatedProducts = filteredProducts.slice(
-    (effectivePage - 1) * itemsPerPage,
-    effectivePage * itemsPerPage
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
-  // 分頁切換時滾動到頂部
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [effectivePage]);
+  }, [currentPage]);
 
   return (
     <div className="container pt-5">
       <div className="row">
-
         {/* 左側選單 */}
         <nav className="d-none d-md-block col-md-3 bg-white p-4">
           <div className="nav flex-column sticky-top" style={{ top: '20px' }}>
@@ -123,7 +132,6 @@ function Products() {
             </ul>
 
             <div className="d-flex justify-content-between align-items-center">
-              {/* 排序下拉 */}
               <div className="dropdown app-dropdown ms-4 mt-2 mb-4">
                 <button
                   className="btn dropdown-toggle border-0 p-0 fw-bold d-flex align-items-center gap-1 text-secondary-700"
@@ -144,14 +152,12 @@ function Products() {
                   </ul>
                 )}
               </div>
-
               <div className="text-muted small">
                 共 <span className="text-dark fw-bold">{filteredProducts.length}</span> 樣商品
               </div>
             </div>
           </header>
 
-          {/* 商品列表 */}
           <ul className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-gap-6 row-gap-md-8 ps-0 mb-6 mb-lg-12">
             {paginatedProducts.map((product) => (
               <li className="col list-unstyled" key={product.id}>
@@ -160,26 +166,23 @@ function Products() {
             ))}
           </ul>
 
-          {/* 分頁 */}
           {totalPages > 1 && (
             <nav className="mt-5">
               <ul className="pagination justify-content-center align-items-center">
-                <li className={`page-item ${effectivePage === 1 ? 'disabled' : ''}`}>
-                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (effectivePage > 1) setCurrentPage(effectivePage - 1); }}>
+                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (currentPage > 1) setCurrentPage(currentPage - 1); }}>
                     <ChevronLeft size={20} className="text-secondary-700" />
                   </a>
                 </li>
-
                 {[...Array(totalPages).keys()].map(pageNum => (
-                  <li className={`page-item ${pageNum + 1 === effectivePage ? 'active' : ''}`} key={pageNum}>
+                  <li className={`page-item ${pageNum + 1 === currentPage ? 'active' : ''}`} key={pageNum}>
                     <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); setCurrentPage(pageNum + 1); }}>
                       {pageNum + 1}
                     </a>
                   </li>
                 ))}
-
-                <li className={`page-item ${effectivePage === totalPages ? 'disabled' : ''}`}>
-                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (effectivePage < totalPages) setCurrentPage(effectivePage + 1); }}>
+                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                  <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) setCurrentPage(currentPage + 1); }}>
                     <ChevronRight size={20} className="text-secondary-700" />
                   </a>
                 </li>
