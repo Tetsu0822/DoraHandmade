@@ -15,6 +15,7 @@ const VITE_ECPAY_HASH_KEY    = import.meta.env.VITE_ECPAY_HASH_KEY;
 const VITE_ECPAY_HASH_IV     = import.meta.env.VITE_ECPAY_HASH_IV;
 const VITE_ECPAY_MAP_BASE    = import.meta.env.VITE_ECPAY_MAP_BASE;
 const VITE_ECPAY_REPLY_URL   = import.meta.env.VITE_ECPAY_REPLY_URL;
+const VITE_ECPAY_POLL_URL    = import.meta.env.VITE_ECPAY_POLL_URL;
 
 function Cart() {
     const [ cartData, setCartData ] = useState([]);
@@ -90,39 +91,115 @@ function Cart() {
             LogisticsSubType: subType,
             IsCollection:     "N",
             ServerReplyURL:   replyUrl,
-            Device:           "0",
+            // 手機裝置帶 Device=1，讓綠界顯示行動版地圖介面
+            Device: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "1" : "0",
         };
 
         const checkMac = await generateCheckMacValue(params);
-
-        // 綠界電子地圖要求 POST 送出，使用隱藏 form 實作
         const formParams = { ...params, CheckMacValue: checkMac };
 
-        // 先開啟空白視窗
-        const mapWindow = window.open("", "cvsMap", "width=900,height=700,scrollbars=yes");
+        const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
-        // 動態建立隱藏 form，target 指向剛開啟的視窗
-        const form = document.createElement("form");
-        form.method  = "POST";
-        form.action  = ECPAY_MAP_BASE;
-        form.target  = "cvsMap";
-        form.enctype = "application/x-www-form-urlencoded";
+        if (isMobile) {
+            // ── 手機版：開新分頁 → 選完門市 → cvsmap.php 存 session ────────
+            // 使用者切回購物車頁時，visibilitychange 觸發輪詢撈取門市資料
 
-        Object.entries(formParams).forEach(([k, v]) => {
-            const input = document.createElement("input");
-            input.type  = "hidden";
-            input.name  = k;
-            input.value = v;
-            form.appendChild(input);
-        });
+            // 開新分頁提交 POST
+            const form = document.createElement("form");
+            form.method  = "POST";
+            form.action  = ECPAY_MAP_BASE;
+            form.target  = "_blank";
+            form.enctype = "application/x-www-form-urlencoded";
 
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+            Object.entries(formParams).forEach(([k, v]) => {
+                const input = document.createElement("input");
+                input.type  = "hidden";
+                input.name  = k;
+                input.value = v;
+                form.appendChild(input);
+            });
 
-        // 若瀏覽器擋住 window.open，提示使用者
-        if (!mapWindow || mapWindow.closed) {
-            alert("請允許瀏覽器開啟彈出視窗後再試一次");
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            // 監聽使用者切回本頁（visibilitychange）
+            let pollTimer = null;
+            let pollCount = 0;
+            const MAX_POLL = 20; // 最多輪詢 20 次（約 10 秒）
+
+            const pollStore = async () => {
+                try {
+                    const res = await fetch(
+                        `${VITE_ECPAY_POLL_URL}?clear=1`,
+                        { credentials: "include" }
+                    );
+                    const data = await res.json();
+
+                    if (data.found) {
+                        // 取到資料：更新 state、停止輪詢
+                        setSelectedStore({
+                            label:   data.storeLabel,
+                            id:      data.storeID,
+                            name:    data.storeName,
+                            address: data.address,
+                            brand:   data.brand,
+                            subType: data.subType,
+                        });
+                        clearInterval(pollTimer);
+                        document.removeEventListener("visibilitychange", onVisible);
+                        return true;
+                    }
+                } catch (e) {
+                    console.error("輪詢門市資料失敗:", e);
+                }
+                return false;
+            };
+
+            const onVisible = async () => {
+                if (document.visibilityState !== "visible") return;
+
+                // 切回頁面時立即查一次
+                const found = await pollStore();
+                if (found) return;
+
+                // 若還沒有，每 500ms 輪詢一次
+                pollTimer = setInterval(async () => {
+                    pollCount++;
+                    const found = await pollStore();
+                    if (found || pollCount >= MAX_POLL) {
+                        clearInterval(pollTimer);
+                        document.removeEventListener("visibilitychange", onVisible);
+                    }
+                }, 500);
+            };
+
+            document.addEventListener("visibilitychange", onVisible);
+        } else {
+            // ── 桌機版：開新視窗，選完由 postMessage 傳回 ──────────────────
+            const mapWindow = window.open("", "cvsMap", "width=900,height=700,scrollbars=yes");
+
+            const form = document.createElement("form");
+            form.method  = "POST";
+            form.action  = ECPAY_MAP_BASE;
+            form.target  = "cvsMap";
+            form.enctype = "application/x-www-form-urlencoded";
+
+            Object.entries(formParams).forEach(([k, v]) => {
+                const input = document.createElement("input");
+                input.type  = "hidden";
+                input.name  = k;
+                input.value = v;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            if (!mapWindow || mapWindow.closed) {
+                alert("請允許瀏覽器開啟彈出視窗後再試一次");
+            }
         }
     };
     const [ couponStatus, setCouponStatus ] = useState("");
