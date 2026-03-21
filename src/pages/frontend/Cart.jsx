@@ -128,6 +128,11 @@ function Cart() {
             let pollCount = 0;
             const MAX_POLL = 20; // 最多輪詢 20 次（約 10 秒）
 
+            const stopPoll = () => {
+                clearInterval(pollTimer);
+                document.removeEventListener("visibilitychange", onVisible);
+            };
+
             const pollStore = async () => {
                 try {
                     const res = await fetch(
@@ -137,7 +142,6 @@ function Cart() {
                     const data = await res.json();
 
                     if (data.found) {
-                        // 取到資料：更新 state、停止輪詢
                         setSelectedStore({
                             label:   data.storeLabel,
                             id:      data.storeID,
@@ -146,30 +150,29 @@ function Cart() {
                             brand:   data.brand,
                             subType: data.subType,
                         });
-                        clearInterval(pollTimer);
-                        document.removeEventListener("visibilitychange", onVisible);
-                        return true;
+                        stopPoll();
+                        return "found";
                     }
+                    return "empty"; // 尚無資料，繼續等
                 } catch (e) {
                     console.error("輪詢門市資料失敗:", e);
+                    return "error"; // fetch 失敗，停止輪詢
                 }
-                return false;
             };
 
             const onVisible = async () => {
                 if (document.visibilityState !== "visible") return;
 
                 // 切回頁面時立即查一次
-                const found = await pollStore();
-                if (found) return;
+                const result = await pollStore();
+                if (result === "found" || result === "error") return;
 
-                // 若還沒有，每 500ms 輪詢一次
+                // 還沒有資料，每 500ms 輪詢，最多 MAX_POLL 次
                 pollTimer = setInterval(async () => {
                     pollCount++;
-                    const found = await pollStore();
-                    if (found || pollCount >= MAX_POLL) {
-                        clearInterval(pollTimer);
-                        document.removeEventListener("visibilitychange", onVisible);
+                    const result = await pollStore();
+                    if (result === "found" || result === "error" || pollCount >= MAX_POLL) {
+                        stopPoll();
                     }
                 }, 500);
             };
