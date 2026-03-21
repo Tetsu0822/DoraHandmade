@@ -9,11 +9,122 @@ import { emailValidation, twPhoneValidation } from "../../utils/validation";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
+// 綠界物流設定（從 .env 讀取，金鑰不寫死在程式碼）
+const VITE_ECPAY_MERCHANT_ID = import.meta.env.VITE_ECPAY_MERCHANT_ID;
+const VITE_ECPAY_HASH_KEY    = import.meta.env.VITE_ECPAY_HASH_KEY;
+const VITE_ECPAY_HASH_IV     = import.meta.env.VITE_ECPAY_HASH_IV;
+const VITE_ECPAY_MAP_BASE    = import.meta.env.VITE_ECPAY_MAP_BASE;
+const VITE_ECPAY_REPLY_URL   = import.meta.env.VITE_ECPAY_REPLY_URL;
+
 function Cart() {
     const [ cartData, setCartData ] = useState([]);
     const [ updatingId, setUpdatingId ] = useState(null);
     // 優惠券、運費等狀態可在此新增
     const [ couponCode, setCouponCode ] = useState("");
+    // 選擇的門市資訊
+    const [selectedStore, setSelectedStore] = useState(null); // { name, id, type }
+
+    // 綠界超商地圖設定
+    // 綠界物流設定（從頂部 .env 變數讀入）
+    const ECPAY_MERCHANT_ID = VITE_ECPAY_MERCHANT_ID;
+    const ECPAY_HASH_KEY    = VITE_ECPAY_HASH_KEY;
+    const ECPAY_HASH_IV     = VITE_ECPAY_HASH_IV;
+    const ECPAY_MAP_BASE    = VITE_ECPAY_MAP_BASE;
+
+    // 綠界 CheckMacValue 產生（依官方文件規格）
+    const generateCheckMacValue = async (params) => {
+        // Step 1：按 key 字母順序排序（case-insensitive）
+        const sorted = Object.keys(params)
+            .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+            .map(k => `${k}=${params[k]}`)
+            .join("&");
+
+        // Step 2：前後加上 HashKey / HashIV
+        const raw = `HashKey=${ECPAY_HASH_KEY}&${sorted}&HashIV=${ECPAY_HASH_IV}`;
+
+        // Step 3：URLEncode 整個字串（.NET 風格）
+        const urlEncoded = encodeURIComponent(raw)
+            .replace(/%20/g, "+")
+            .replace(/%21/g, "!")
+            .replace(/%27/g, "'")
+            .replace(/%28/g, "(")
+            .replace(/%29/g, ")")
+            .replace(/%2A/g, "*")
+            .replace(/%7E/g, "~");
+
+        // Step 4：轉小寫
+        const lowerStr = urlEncoded.toLowerCase();
+
+        // Step 5：SHA256 → 轉大寫
+        const msgBuffer  = new TextEncoder().encode(lowerStr);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+        const hashArray  = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    };
+
+    // 開啟綠界超商地圖
+    const openCvsMap = async (subType) => {
+        // 監聽子視窗透過 postMessage 傳回的門市資訊（後端已組好格式化字串）
+        const handleMessage = (event) => {
+            if (!event.data || event.data.type !== "CVS_STORE_SELECTED") return;
+            setSelectedStore({
+                label:   event.data.storeLabel || "",  // 後端組好的完整字串，直接存入 message
+                id:      event.data.storeID    || "",  // 備用顯示
+                name:    event.data.storeName  || "",
+                address: event.data.address    || "",
+                brand:   event.data.brand      || "",
+                subType: event.data.subType    || subType,
+            });
+            window.removeEventListener("message", handleMessage);
+        };
+        window.addEventListener("message", handleMessage);
+
+        const tradeNo  = "Cart" + Date.now().toString().slice(-8);
+        const replyUrl = VITE_ECPAY_REPLY_URL;
+
+        // 組成要簽章的參數（不含 HashKey/HashIV）
+        const params = {
+            MerchantID:       ECPAY_MERCHANT_ID,
+            MerchantTradeNo:  tradeNo,
+            LogisticsType:    "CVS",
+            LogisticsSubType: subType,
+            IsCollection:     "N",
+            ServerReplyURL:   replyUrl,
+            Device:           "0",
+        };
+
+        const checkMac = await generateCheckMacValue(params);
+
+        // 綠界電子地圖要求 POST 送出，使用隱藏 form 實作
+        const formParams = { ...params, CheckMacValue: checkMac };
+
+        // 先開啟空白視窗
+        const mapWindow = window.open("", "cvsMap", "width=900,height=700,scrollbars=yes");
+
+        // 動態建立隱藏 form，target 指向剛開啟的視窗
+        const form = document.createElement("form");
+        form.method  = "POST";
+        form.action  = ECPAY_MAP_BASE;
+        form.target  = "cvsMap";
+        form.enctype = "application/x-www-form-urlencoded";
+
+        Object.entries(formParams).forEach(([k, v]) => {
+            const input = document.createElement("input");
+            input.type  = "hidden";
+            input.name  = k;
+            input.value = v;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        // 若瀏覽器擋住 window.open，提示使用者
+        if (!mapWindow || mapWindow.closed) {
+            alert("請允許瀏覽器開啟彈出視窗後再試一次");
+        }
+    };
     const [ couponStatus, setCouponStatus ] = useState("");
     const [ showCouponList, setShowCouponList ] = useState(false);
 
@@ -226,7 +337,16 @@ function Cart() {
                         tel: formData.tel,
                         address: formData.address,
                     },
-                    message: `付款方式:${formData.paymentMethod}，收件人:${recipient.name}，電話:${recipient.tel}，Email:${recipient.email}，地址:${recipient.address}`,
+                    message: [
+                        `付款方式:${formData.paymentMethod}`,
+                        `收件人:${recipient.name}`,
+                        `電話:${recipient.tel}`,
+                        `Email:${recipient.email}`,
+                        `地址:${recipient.address}`,
+                        selectedStore
+                            ? `取貨門市:${selectedStore.label}`
+                            : `取貨門市:未選擇`,
+                    ].join("，"),
                     recipient,
                 }
             };
@@ -358,7 +478,7 @@ function Cart() {
                 <div className="mt-6 mb-6 mt-md-8 mb-md-8">
                     <h2 className="cart-heading-title">使用優惠券</h2>
 
-                    {/* 優惠券列表 */}
+                    {/* 優惠券列表（可折疊） */}
                     {showCouponList && (
                         <div className="mb-3" style={{ maxWidth: 500 }}>
                             <div className="border rounded-3 overflow-hidden">
@@ -383,8 +503,8 @@ function Cart() {
                                                 {coupon.name}
                                             </p>
                                             <p className="mb-0 small" style={{ color: "#888" }}>
-                                                代碼：<code style={{ color: "#c0607a", paddingRight: "0.5rem" }}>{coupon.code}</code>
-                                                折扣：<span className="fw-bold" style={{ color: "#493B3F" }}>{coupon.discount}</span>
+                                                代碼：<code style={{ color: "#c0607a" }}>{coupon.code}</code>
+                                                　折扣：<span className="fw-bold" style={{ color: "#493B3F" }}>{coupon.discount}</span>
                                             </p>
                                         </div>
                                         <button
@@ -819,37 +939,67 @@ function Cart() {
                 {/* 取貨方式 */}
                 <h3 className="text-p-20-b text-gray-600 mb-3">取貨方式</h3>
                 <div className="d-flex flex-column mb-6 mb-md-8">
-                    <div className="form-check d-flex align-items-center  mb-2">
+
+                    {/* 全家 */}
+                    <div className="form-check d-flex align-items-center mb-2">
                         <input type="radio" id="familyMart" name="deliveryMethod" value="familyMart" className="form-check-input me-1" defaultChecked />
                         <label htmlFor="familyMart" className="form-check-label text-p-16-b me-2">全家超商取貨</label>
                         <button
                             className="btn border-0"
                             type="button"
-                            style={{
-                                padding: "12px 24px 12px 24px",
-                                gap: "8px",
-                            }}
-                            onClick={() => {
-                                window.open("cvs-map?cvs=UNIMART&IsCollection=N", "", "width=800,height=800");
-                            }}
+                            style={{ padding: "12px 24px", gap: "8px" }}
+                            onClick={() => openCvsMap("FAMIC2C")}
                         >
-                            <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>搜尋門市</span>
+                            <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
                         </button>
                     </div>
+
+                    {/* 711 */}
                     <div className="form-check d-flex align-items-center mb-2">
                         <input type="radio" id="uniMart" name="deliveryMethod" value="uniMart" className="form-check-input me-1" />
                         <label htmlFor="uniMart" className="form-check-label text-p-16-b me-2">711 超商取貨</label>
                         <button
                             className="btn border-0"
                             type="button"
-                            style={{
-                                padding: "12px 24px 12px 24px",
-                                gap: "8px",
-                            }}
+                            style={{ padding: "12px 24px", gap: "8px" }}
+                            onClick={() => openCvsMap("UNIMARTC2C")}
                         >
-                            <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>搜尋門市</span>
+                            <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
                         </button>
                     </div>
+
+                    {/* 已選門市顯示卡片 */}
+                    {selectedStore && (
+                        <div
+                            className="mt-3 p-3 rounded-3 d-flex align-items-start gap-3"
+                            style={{ background: "#fff8f5", border: "1px solid #f0e0d8", maxWidth: 480 }}
+                        >
+                            <div style={{ fontSize: "1.4rem", lineHeight: 1.2 }}>
+                                {selectedStore.brand === "全家" ? "🏪" : "🏬"}
+                            </div>
+                            <div className="flex-grow-1">
+                                <p className="mb-0 fw-bold text-p-16-b" style={{ color: "#493B3F" }}>
+                                    {selectedStore.brand} · {selectedStore.name}
+                                </p>
+                                {selectedStore.id && (
+                                    <p className="mb-0 small" style={{ color: "#888" }}>
+                                        門市代號：{selectedStore.id}
+                                    </p>
+                                )}
+                                {selectedStore.address && (
+                                    <p className="mb-0 small" style={{ color: "#888" }}>
+                                        {selectedStore.address}
+                                    </p>
+                                )}
+                            </div>
+                            <button
+                                type="button"
+                                className="btn border-0 p-0 flex-shrink-0"
+                                style={{ color: "#aaa", fontSize: "1rem" }}
+                                onClick={() => setSelectedStore(null)}
+                            >✕</button>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="col-sm-12 col-md-3">

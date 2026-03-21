@@ -74,9 +74,13 @@ function SingleOrder() {
     const parseMessage = (message) => {
         if (!message) return {};
         const result = {};
+        // 用第一個冒號切 key/value，避免值本身含冒號（如取貨門市）被截斷
         message.split("，").forEach((pair) => {
-            const [key, value] = pair.split(":");
-            if (key && value) result[key.trim()] = value.trim();
+            const colonIdx = pair.indexOf(":");
+            if (colonIdx === -1) return;
+            const key   = pair.slice(0, colonIdx).trim();
+            const value = pair.slice(colonIdx + 1).trim();
+            if (key) result[key] = value;
         });
         return result;
     };
@@ -358,6 +362,17 @@ function SingleOrder() {
                                                     <div className="p-3 p-md-4">
                                                         <p className="info-label">付款方式</p>
                                                         <p className="info-value mb-0">{parsed["付款方式"]}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {parsed["取貨門市"] && (
+                                                <div className="order-card mb-4">
+                                                    <div className="order-card-header">
+                                                        <h5>🏪 取貨門市</h5>
+                                                    </div>
+                                                    <div className="p-3 p-md-4">
+                                                        <p className="info-value text-break mb-0">{parsed["取貨門市"]}</p>
                                                     </div>
                                                 </div>
                                             )}

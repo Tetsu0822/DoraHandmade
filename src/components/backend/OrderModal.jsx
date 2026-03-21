@@ -41,9 +41,13 @@ function OrderModal({
     const parseMessage = (message) => {
         if (!message) return {};
         const result = {};
+        // 用第一個冒號切 key/value，避免值含多個冒號（如取貨門市）被截斷
         message.split("，").forEach((pair) => {
-            const [key, value] = pair.split(":");
-            if (key && value) result[key.trim()] = value.trim();
+            const colonIdx = pair.indexOf(":");
+            if (colonIdx === -1) return;
+            const key   = pair.slice(0, colonIdx).trim();
+            const value = pair.slice(colonIdx + 1).trim();
+            if (key) result[key] = value;
         });
         return result;
     };
@@ -241,6 +245,12 @@ function OrderModal({
                                                     <div className="mt-3">
                                                         <h6 className="fw-bold border-bottom pb-2 mb-3">付款方式</h6>
                                                         <p className="mb-0">{parsed["付款方式"]}</p>
+                                                    </div>
+                                                )}
+                                                {parsed["取貨門市"] && (
+                                                    <div className="mt-3">
+                                                        <h6 className="fw-bold border-bottom pb-2 mb-3">取貨門市</h6>
+                                                        <p className="mb-0 text-break">{parsed["取貨門市"]}</p>
                                                     </div>
                                                 )}
                                             </>
