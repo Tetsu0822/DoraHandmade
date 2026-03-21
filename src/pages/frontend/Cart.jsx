@@ -15,6 +15,13 @@ function Cart() {
     // 優惠券、運費等狀態可在此新增
     const [ couponCode, setCouponCode ] = useState("");
     const [ couponStatus, setCouponStatus ] = useState("");
+    const [ showCouponList, setShowCouponList ] = useState(false);
+
+    // 優惠券列表（固定資料）
+    const availableCoupons = [
+        { name: "2026新春優惠", code: "newyear2026", discount: "9折" },
+        { name: "新會員折扣",   code: "newmember",   discount: "95折" },
+    ];
     // 折扣後的金額
     const [finalTotal, setFinalTotal] = useState(null);
     // useForm 表單驗證
@@ -350,9 +357,84 @@ function Cart() {
                 {/* 優惠券輸入區塊 */}
                 <div className="mt-6 mb-6 mt-md-8 mb-md-8">
                     <h2 className="cart-heading-title">使用優惠券</h2>
-                    <div className="d-flex" style={{maxWidth: 400}}>
-                        <input type="text" className="form-control me-2" placeholder="輸入優惠券代碼" value={couponCode} onChange={e => setCouponCode(e.target.value)} />
-                        <button className="btn btn-primary btn-sm text-white" onClick={applyCoupon}>套用</button>
+
+                    {/* 優惠券列表 */}
+                    {showCouponList && (
+                        <div className="mb-3" style={{ maxWidth: 500 }}>
+                            <div className="border rounded-3 overflow-hidden">
+                                <div className="px-3 py-2 d-flex justify-content-between align-items-center"
+                                     style={{ background: "#f8f3f0", borderBottom: "1px solid #e8ddd8" }}>
+                                    <span className="fw-bold text-p-16-b" style={{ color: "#493B3F" }}>可用優惠券</span>
+                                    <button
+                                        type="button"
+                                        className="btn border-0 p-0"
+                                        style={{ color: "#999", fontSize: "1.1rem", lineHeight: 1 }}
+                                        onClick={() => setShowCouponList(false)}
+                                    >✕</button>
+                                </div>
+                                {availableCoupons.map((coupon) => (
+                                    <div
+                                        key={coupon.code}
+                                        className="d-flex align-items-center justify-content-between px-3 py-3"
+                                        style={{ borderBottom: "1px solid #f0e8e4", background: "#fff" }}
+                                    >
+                                        <div>
+                                            <p className="mb-0 fw-bold text-p-16-b" style={{ color: "#493B3F" }}>
+                                                {coupon.name}
+                                            </p>
+                                            <p className="mb-0 small" style={{ color: "#888" }}>
+                                                代碼：<code style={{ color: "#c0607a" }}>{coupon.code}</code>
+                                                　折扣：<span className="fw-bold" style={{ color: "#493B3F" }}>{coupon.discount}</span>
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm ms-3 flex-shrink-0"
+                                            style={{
+                                                background: "#fff0f4",
+                                                color: "#c0607a",
+                                                border: "1px solid #f5c6d0",
+                                                borderRadius: "8px",
+                                                fontSize: "0.82rem",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                            onClick={() => {
+                                                setCouponCode(coupon.code);
+                                                setShowCouponList(false);
+                                            }}
+                                        >套用此券</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 輸入框 + 按鈕列 */}
+                    <div className="d-flex" style={{ maxWidth: 500 }}>
+                        <input
+                            type="text"
+                            className="form-control me-2"
+                            placeholder="輸入優惠券代碼"
+                            value={couponCode}
+                            onChange={e => setCouponCode(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-sm text-white me-2"
+                            style={{ background: "#493B3F", whiteSpace: "nowrap" }}
+                            onClick={applyCoupon}
+                        >套用</button>
+                        <button
+                            type="button"
+                            className="btn btn-sm"
+                            style={{
+                                background: "#fff",
+                                border: "1px solid #ccc",
+                                color: "#493B3F",
+                                whiteSpace: "nowrap",
+                            }}
+                            onClick={() => setShowCouponList(prev => !prev)}
+                        >{showCouponList ? "收起" : "檢視"}</button>
                     </div>
                     {couponStatus && <p className="mt-2">{couponStatus}</p>}
                 </div>
