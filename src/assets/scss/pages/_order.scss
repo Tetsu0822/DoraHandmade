@@ -139,3 +139,14 @@ $gray-900:  #333333;
         }
     }
 }
+
+.viewMoreBtn {
+    background: #fff;
+    color: $primary-500;
+    border: 2.5px solid $primary-500;
+    border-radius: 0px;
+    &:hover {
+        background: $primary-500;
+        color: #fff;
+    }
+}

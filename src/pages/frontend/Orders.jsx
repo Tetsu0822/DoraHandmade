@@ -125,7 +125,7 @@ function Orders() {
                                             <div className="btn-group btn-group-sm">
                                                 <button
                                                     type="button"
-                                                    className="btn btn-outline-primary"
+                                                    className="btn viewMoreBtn"
                                                     onClick={() => handleViewMoreOrder(order.id)}
                                                 >查看</button>
                                                 {!order.is_paid && !isCustomOrder(order.message) && (
@@ -211,7 +211,7 @@ function Orders() {
                                     <div className="d-flex gap-2 mt-2">
                                         <button
                                             type="button"
-                                            className="btn btn-outline-primary btn-sm flex-fill"
+                                            className="btn viewMoreBtn btn-sm flex-fill"
                                             onClick={() => handleViewMoreOrder(order.id)}
                                         >查看訂單</button>
                                         {!order.is_paid && !isCustomOrder(order.message) && (
