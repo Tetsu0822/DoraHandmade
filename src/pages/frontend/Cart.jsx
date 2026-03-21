@@ -383,7 +383,7 @@ function Cart() {
                                                 {coupon.name}
                                             </p>
                                             <p className="mb-0 small" style={{ color: "#888" }}>
-                                                代碼：<code style={{ color: "#c0607a" }}>{coupon.code}</code>
+                                                代碼：<code style={{ color: "#c0607a", paddingRight: "0.5rem" }}>{coupon.code}</code>
                                                 折扣：<span className="fw-bold" style={{ color: "#493B3F" }}>{coupon.discount}</span>
                                             </p>
                                         </div>
