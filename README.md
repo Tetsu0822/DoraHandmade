@@ -28,6 +28,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+-2026/03/15 修正Products.jsx 分頁選取與header同步 By MidyWu
 - 2026/03/01 補充文章頁面 By PeiYiWu
 - 2026/03/16 修正註冊/登入表單 mode 切換 By Tetsu
 - 2026/03/15 新增後台儀表板功能 By Tetsu
