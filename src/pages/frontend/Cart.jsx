@@ -1,7 +1,7 @@
 import axios from "axios";
 import OrderToast from "@components/OrderToast";
-import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { currency } from "../../utils/filter";
@@ -20,6 +20,15 @@ const VITE_ECPAY_POLL_URL    = import.meta.env.VITE_ECPAY_POLL_URL;
 
 function Cart() {
     const [ cartData, setCartData ] = useState([]);
+    // ── 新增：每個 item 的本地數量暫存 ──
+    const [localQty, setLocalQty] = useState({});
+    const debounceRef = useRef({});
+    // 初始化 localQty（cartData 載入後同步）
+    useEffect(() => {
+        const init = {};
+        cartData.forEach(item => { init[item.id] = item.qty; });
+        setLocalQty(init);
+    }, [cartData]);
     const [ updatingId, setUpdatingId ] = useState(null);
     // 優惠券、運費等狀態可在此新增
     const [ couponCode, setCouponCode ] = useState("");
@@ -335,8 +344,8 @@ function Cart() {
         setCommonRecipients(prev => prev.filter(recipient => recipient.id !== id));
     }
 
-  // 更新購物車數量
-    const updateCartQty = async (item, newQty) => {
+    // 更新購物車數量
+    const updateCartQty = useCallback(async (item, newQty) => {
         if (newQty < 1) return;
         setUpdatingId(item.id);
         try {
@@ -353,7 +362,21 @@ function Cart() {
             console.log("更新購物車數量失敗:", error);
         }
         setUpdatingId(null);
-    };
+    }, []);
+
+    // debounce 版本的數量更新
+    const handleQtyChange = useCallback((item, newQty) => {
+        if (newQty < 1) return;
+        // 立即更新 UI
+        setLocalQty(prev => ({ ...prev, [item.id]: newQty }));
+        // 清掉上一個 timer
+        if (debounceRef.current[item.id]) clearTimeout(debounceRef.current[item.id]);
+        // 800ms 後才打 API
+        debounceRef.current[item.id] = setTimeout(() => {
+            updateCartQty(item, newQty);
+        }, 800);
+    }, [updateCartQty]);
+
 
     // 刪除購物車項目
     const removeCartItem = async (itemId) => {
@@ -578,14 +601,20 @@ function Cart() {
                                         <td>
                                             <div className="input-group" style={{maxWidth: 140}}>
                                                 <button
-                                                    className={`btn btn-sm border-0${item.qty === 1 ? ' text-muted border-muted' : ''} me-2`}
+                                                    className={`btn btn-sm border-0${(localQty[item.id] ?? item.qty) === 1 ? ' text-muted border-muted' : ''} me-2`}
                                                     type="button"
-                                                    disabled={item.qty === 1 || updatingId === item.id}
-                                                    style={item.qty === 1 ? { backgroundColor: '#e9ecef', borderColor: '#e9ecef', color: '#adb5bd' } : {}}
-                                                    onClick={() => updateCartQty(item, item.qty - 1)}
+                                                    disabled={(localQty[item.id] ?? item.qty) === 1 || updatingId === item.id}
+                                                    onClick={() => handleQtyChange(item, (localQty[item.id] ?? item.qty) - 1)}
                                                 ><Minus /></button>
-                                                <input type="number" min="1" className="text-center bg-white border-0" style={{width: 40, fontSize: "20px"}} value={item.qty} onChange={e => updateCartQty(item, Number(e.target.value))} disabled />
-                                                <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => updateCartQty(item, item.qty+1)}><Plus /></button>
+                                                <input
+                                                    type="number" min="1"
+                                                    value={localQty[item.id] ?? item.qty}
+                                                    onChange={e => handleQtyChange(item, Number(e.target.value))}
+                                                    // 移除 disabled，讓使用者可以直接輸入
+                                                    className="text-center bg-white border-0"
+                                                    style={{width: 40, fontSize: "20px"}}
+                                                />
+                                                <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => handleQtyChange(item, (localQty[item.id] ?? item.qty) + 1)}><Plus /></button>
                                             </div>
                                         </td>
                                         <td className="text-center">{item.product.unit}</td>
@@ -612,14 +641,19 @@ function Cart() {
                                             <span className="text-gray-600">單價 ${item.product.price} / 數量</span>
                                             <div className="input-group" style={{maxWidth: 100}}>
                                                 <button
-                                                    className={`btn btn-sm border-0${item.qty === 1 ? ' text-muted border-muted' : ''} me-2`}
+                                                    className={`btn btn-sm border-0${(localQty[item.id] ?? item.qty) === 1 ? ' text-muted border-muted' : ''} me-2`}
                                                     type="button"
-                                                    disabled={item.qty === 1 || updatingId === item.id}
-                                                    style={item.qty === 1 ? { backgroundColor: '#e9ecef', borderColor: '#e9ecef', color: '#adb5bd' } : {}}
-                                                    onClick={() => updateCartQty(item, item.qty - 1)}
+                                                    disabled={(localQty[item.id] ?? item.qty) === 1 || updatingId === item.id}
                                                 ><Minus size={16} color="#777777" /></button>
-                                                <input type="number" min="1" className="text-center bg-white border-0" style={{width: 30, fontSize: "16px"}} value={item.qty} onChange={e => updateCartQty(item, Number(e.target.value))} disabled />
-                                                <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => updateCartQty(item, item.qty+1)}><Plus size={16} color="#777777" /></button>
+                                                <input
+                                                    type="number" min="1"
+                                                    value={localQty[item.id] ?? item.qty}
+                                                    onChange={e => handleQtyChange(item, Number(e.target.value))}
+                                                    // 移除 disabled，讓使用者可以直接輸入
+                                                    className="text-center bg-white border-0"
+                                                    style={{width: 40, fontSize: "20px"}}
+                                                />
+                                                <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => handleQtyChange(item, (localQty[item.id] ?? item.qty) + 1)}><Plus size={16} color="#777777" /></button>
                                             </div>
                                             <button className="btn btn-sm" disabled={updatingId===item.id} onClick={() => removeCartItem(item.id)}><Trash2 className="text-primary" /></button>
                                         </div>
