@@ -183,8 +183,9 @@ function Signup() {
 
                     {mode === "register" && (
                     <div className="mb-3">
-                        <label className="form-label">姓名</label>
+                        <label htmlFor="name" className="form-label">姓名</label>
                         <input
+                        id="name"
                         type="text"
                         className="form-control"
                         placeholder="請輸入姓名"
@@ -197,8 +198,9 @@ function Signup() {
                     )}
 
                     <div className="mb-3">
-                    <label className="form-label">Email</label>
+                    <label htmlFor="email" className="form-label">Email</label>
                     <input
+                        id="email"
                         type="email"
                         className="form-control"
                         placeholder="請輸入 Email"
@@ -214,8 +216,9 @@ function Signup() {
                     </div>
 
                     <div className="mb-4">
-                    <label className="form-label">密碼</label>
+                    <label htmlFor="password" className="form-label">密碼</label>
                     <input
+                        id="password"
                         type="password"
                         className="form-control"
                         placeholder="請輸入密碼"
