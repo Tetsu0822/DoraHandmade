@@ -436,6 +436,7 @@ function Cart() {
             const responses2 = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(responses2.data.data.carts || []);
             reset();
+            setRecipientInfo({ name: "", tel: "", email: "", address: "" })
             showToast();
         } catch (error) {
             console.error("送出訂單失敗:", error);
@@ -690,7 +691,7 @@ function Cart() {
                     className="form-control"
                     placeholder="請輸入聯絡電話"
                     {...register("tel", {
-                        required: "請輸入聯絡電話",twPhoneValidation
+                        required: "請輸入聯絡電話", ...twPhoneValidation
                     })}
                 />
                 {errors.tel && <p className="text-danger">{errors.tel.message}</p>}
@@ -706,7 +707,7 @@ function Cart() {
                     className="form-control"
                     placeholder="請輸入 Email"
                     {...register("email", {
-                        required: "請輸入 Email",emailValidation
+                        required: "請輸入 Email", ...emailValidation
                     })}
                     //onChange={updateBuyerData}
                 />
