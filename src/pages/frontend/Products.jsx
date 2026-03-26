@@ -54,7 +54,7 @@ function Products() {
     fetchProducts();
   }, []);
 
-  const effectivePage = subCat ? 1 : currentPage;
+  const effectivePage = currentPage;
 
   // 排序
   const handleSortChange = (type, label) => {
