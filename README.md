@@ -28,6 +28,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/26 優化_products.scss分頁.active樣式 By MidyWu
 - 2026/03/21 新增搜尋門市功能(綠界)並加入formData.message By Tetsu
 - 2026/03/21 購物車頁面新增檢視優惠券列表 By Tetsu
 - 2026/03/21 優化導航同步網址狀態並補齊登出訊息提示功能 By Tim
