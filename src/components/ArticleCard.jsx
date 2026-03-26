@@ -1,7 +1,11 @@
 import { Link } from "react-router";
 import { Heart } from "lucide-react";
+import { HeartFill } from "./icons";
+import { useFavoriteArticlesContext } from '@contexts/FavoriteArticles';
 
 function ArticleCard({ article }) {
+  const { extraLikes, toggleFavoriteArticle, isArticleFavorite } = useFavoriteArticlesContext();
+  
   return (
     <div className="article-card d-flex flex-column flex-md-row gap-4 p-4 border border-primary-500 rounded-4">
       <Link to={`/article/${article.id}`} className="d-block overflow-hidden rounded-4">
@@ -14,10 +18,10 @@ function ArticleCard({ article }) {
         </div>
         <div className="d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center text-secondary-700">
-            <button type="button" className="article-likeBtn bg-transparent p-3">
-              <Heart />
+            <button type="button" className="article-likeBtn bg-transparent p-3" onClick={() => toggleFavoriteArticle(article)}>
+              {isArticleFavorite(article) ? <HeartFill color="#D75E7E" /> : <Heart />}
             </button>
-            <span className="text-p-20-b">{article.likes}</span>
+            <span className="text-p-20-b">{article.likes + (extraLikes[article.id] || 0)}</span>
           </div>
           <Link to={`/article/${article.id}`} className="btn btn-underline">
             繼續閱讀
