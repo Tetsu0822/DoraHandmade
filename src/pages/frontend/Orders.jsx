@@ -2,28 +2,33 @@ import { useEffect, useState, useContext, useCallback } from "react";
 import { useNavigate, Link } from "react-router";
 import UserContext from "@contexts/UserContext";
 import useMessage from "@hooks/useMessage.jsx";
+import Loading from "@components/Loading";
 import axios from 'axios';
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
 function Orders() {
     const [orders, setOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const { showError, showSuccess } = useMessage();
     const { user } = useContext(UserContext);
 
     const fetchOrders = useCallback(async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/orders`);
             setOrders(response.data.orders);
         } catch (error) {
             console.error("獲取訂單列表失敗:", error);
             showError("獲取訂單列表失敗");
+        } finally {
+            setIsLoading(false);
         }
     }, [showError]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsLoading(true);
         fetchOrders();
     }, [fetchOrders]);
 
@@ -69,6 +74,7 @@ function Orders() {
 
     return (
         <div className="container my-5">
+            <Loading isLoading={isLoading} text="訂單列表載入中" />
             {/* 麵包屑 */}
             <nav aria-label="breadcrumb" className="mb-3">
                 <ol className="breadcrumb">

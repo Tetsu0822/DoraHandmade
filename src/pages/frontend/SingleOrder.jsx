@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router";
 import { useState, useEffect, useContext, useCallback } from "react";
 import useMessage from "@hooks/useMessage.jsx";
+import Loading from "@components/Loading";
 import axios from 'axios';
 import UserContext from "@contexts/UserContext";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
@@ -11,9 +12,11 @@ function SingleOrder() {
     const [order, setOrder] = useState(null);
     const { user } = useContext(UserContext);
     const [isOwner, setIsOwner] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const { showError, showSuccess } = useMessage();
 
     const fetchOrder = useCallback(async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/order/${id}`);
             const fetchedOrder = response.data.order;
@@ -28,11 +31,13 @@ function SingleOrder() {
         } catch (error) {
             console.error("Error fetching order:", error);
             showError("訂單資料讀取失敗，請稍後再試。");
+        } finally {
+            setIsLoading(false);
         }
     }, [id, user, showError]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsLoading(true);
         fetchOrder();
     }, [fetchOrder]);
 
@@ -51,6 +56,7 @@ function SingleOrder() {
     };
 
     const handlePayment = async (orderId) => {
+        setIsLoading(true);
         try {
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/pay/${orderId}`);
             if (response.data.success) {
@@ -111,7 +117,7 @@ function SingleOrder() {
     return (
         <div className="single-order-page py-5">
             <div className="container">
-
+                <Loading text="訂單資料讀取中" isLoading={isLoading} />
                 {/* 麵包屑 */}
                 <nav
                     style={{ "--bs-breadcrumb-divider": "'>'" }}

@@ -29,18 +29,14 @@ const BackendLayout = () => {
     const onSubmit = useCallback(async (formData) => {
         try {
             if (formData.username === ADMIN_USERNAME && formData.password === ADMIN_PASSWORD) {
-                setIsLogin(true);
-                localStorage.setItem("adminLogin", "true");
-
-            // 登入六角API
-            const response = await axios.post(`${VITE_API_BASE}/admin/signin`, formData);
-            const setCookie = () => {
+                // 登入六角API
+                const response = await axios.post(`${VITE_API_BASE}/admin/signin`, formData);
                 const { token, expired } = response.data;
                 document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
                 axios.defaults.headers.common.Authorization = token;
-            };
-            setCookie();
-            navigate("/admin/product");
+                setIsLogin(true);
+                localStorage.setItem("adminLogin", "true");
+                navigate("/admin/product");
             } else {
                 showError("帳號或密碼錯誤");
             }
@@ -50,13 +46,31 @@ const BackendLayout = () => {
         }
     }, [navigate, showError]);
 
-    // 初始化時自動讀取 localStorage 判斷是否已登入
+    // 初始化時自動讀取 localStorage 判斷是否已登入，並驗證 token
     useEffect(() => {
-        if (localStorage.getItem("adminLogin") === "true") {
-            setTimeout(() => {
-                setIsLogin(true);
-            }, 0); // 延遲設置狀態，避免 React 警告
-        }
+        const checkLogin = async () => {
+            if (localStorage.getItem("adminLogin") === "true") {
+                // 取得 token 並設置 axios headers
+                const token = document.cookie.replace(
+                    /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
+                    "$1"
+                );
+                if (token) {
+                    axios.defaults.headers.common.Authorization = token;
+                }
+                try {
+                    // 檢查登入狀態（用六角 API 驗證 token）
+                    await axios.post(`${VITE_API_BASE}/api/user/check`);
+                    setIsLogin(true);
+                } catch (error) {
+                    // token 驗證失敗，導回登入頁
+                    console.error("Token 驗證失敗:", error);
+                    setIsLogin(false);
+                    localStorage.removeItem("adminLogin");
+                }
+            }
+        };
+        checkLogin();
     }, []);
 
     const location = useLocation();
@@ -83,9 +97,18 @@ const BackendLayout = () => {
                         <Link className="nav-link" to="/admin/coupon">優惠券管理</Link>
                     </li>
                     <li className="nav-item">
-                        <button className="btn btn-link nav-link" onClick={() => {
+                        <button className="btn btn-link nav-link" onClick={async () => {
+                            try {
+                                await axios.post(`${VITE_API_BASE}/logout`);
+                            } catch (e) {
+                                // 即使 API 失敗也繼續清除本地狀態
+                                console.error("登出 API 失敗:", e);
+                            }
                             setIsLogin(false);
                             localStorage.removeItem("adminLogin");
+                            delete axios.defaults.headers.common.Authorization;
+                            // 清除 hexToken cookie
+                            document.cookie = 'hexToken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
                         }}>登出</button>
                     </li>
                 </ul>

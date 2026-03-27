@@ -1,5 +1,6 @@
 import axios from "axios";
 import OrderToast from "@components/OrderToast";
+import Loading from "@components/Loading";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
@@ -20,6 +21,7 @@ const VITE_ECPAY_POLL_URL    = import.meta.env.VITE_ECPAY_POLL_URL;
 
 function Cart() {
     const [ cartData, setCartData ] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     // ── 新增：每個 item 的本地數量暫存 ──
     const [localQty, setLocalQty] = useState({});
     const [cartError, setCartError] = useState("");
@@ -478,9 +480,9 @@ function Cart() {
 
 
 
-  // API 取得購物車資料顯示在此
-  useEffect(() => {
-    recipientModalRef.current = new bootstrap.Modal('#recipientModal', {
+    // API 取得購物車資料顯示在此
+    useEffect(() => {
+        recipientModalRef.current = new bootstrap.Modal('#recipientModal', {
             keyboard: false
         });
 
@@ -494,18 +496,22 @@ function Cart() {
         });
 
     const fetchCartData = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
         } catch (error) {
             console.log("取得購物車資料失敗:", error);
+        } finally {
+            setIsLoading(false);
         }
     }
     fetchCartData();
   }, []);
   return (
     <>
-    <div className="container">
+    <div className="container" style={{ position: "relative", minHeight: 300 }}>
+        <Loading isLoading={isLoading} text="購物車載入中" />
         <div className="row">
             <div className="col-sm-12 col-md-9">
                 <div className="mt-6 mb-6 mt-md-15 mb-md-15">

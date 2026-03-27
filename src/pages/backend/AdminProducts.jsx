@@ -40,16 +40,7 @@ function AdminProducts() {
     // 取得產品列表的 API 呼叫
     const fetchProducts = useCallback(async (page = 1) => {
         try {
-            const token = document.cookie.replace(
-                /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
-                "$1"
-            );
-            axios.defaults.headers.common.Authorization = token;
-            const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/admin/products?page=${page}`, {
-                headers: {
-                    Authorization: token,
-                },
-            });
+            const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/admin/products?page=${page}`);
             console.log("產品列表:", response.data.products);
             setProducts(response.data.products);
             setPagination(response.data.pagination);
