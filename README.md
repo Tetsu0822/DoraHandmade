@@ -28,6 +28,7 @@
 
 請在更新時，記得在此填寫更新紀錄！
 
+- 2026/03/27 優化客製化表單聯絡電話輸入體驗與對齊樣式 By Tim
 - 2026/03/27 實作文章收藏功能 By PeiYiWu
 - 2026/03/26 優化_products.scss分頁.active樣式 By MidyWu
 - 2026/03/21 新增搜尋門市功能(綠界)並加入formData.message By Tetsu

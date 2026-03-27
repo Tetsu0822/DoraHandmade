@@ -368,7 +368,7 @@ const CustomForm = () => {
             <div className="form-group">
               <label htmlFor="phone">聯絡電話</label>
               <input
-                type="text"
+                type="tel"
                 id="phone"
                 name="phone"
                 placeholder="請輸入聯絡電話"
