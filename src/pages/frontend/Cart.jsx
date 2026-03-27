@@ -22,6 +22,7 @@ function Cart() {
     const [ cartData, setCartData ] = useState([]);
     // ── 新增：每個 item 的本地數量暫存 ──
     const [localQty, setLocalQty] = useState({});
+    const [cartError, setCartError] = useState("");
     const debounceRef = useRef({});
     // 初始化 localQty（cartData 載入後同步）
     useEffect(() => {
@@ -29,6 +30,7 @@ function Cart() {
         cartData.forEach(item => { init[item.id] = item.qty; });
         setLocalQty(init);
     }, [cartData]);
+    const [deliveryMethod, setDeliveryMethod] = useState("familyMart");
     const [ updatingId, setUpdatingId ] = useState(null);
     // 優惠券、運費等狀態可在此新增
     const [ couponCode, setCouponCode ] = useState("");
@@ -215,7 +217,7 @@ function Cart() {
             }
         }
     };
-    const [ couponStatus, setCouponStatus ] = useState("");
+    const [ couponStatus, setCouponStatus ] = useState({ message: "", type: "" });
     const [ showCouponList, setShowCouponList ] = useState(false);
 
     // 優惠券列表（固定資料）
@@ -358,8 +360,12 @@ function Cart() {
             // 重新取得購物車資料
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
+            setCartError("")
         } catch (error) {
             console.log("更新購物車數量失敗:", error);
+            setCartError("數量更新失敗，請稍後再試");
+            // 恢復為原本數量
+            setLocalQty(prev => ({ ...prev, [item.id]: item.qty }));
         }
         setUpdatingId(null);
     }, []);
@@ -386,24 +392,27 @@ function Cart() {
             // 重新取得購物車資料
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
+            setCartError("")
         } catch (error) {
             console.log("刪除購物車項目失敗:", error);
+            setCartError("刪除商品失敗，請稍後再試");
         }
         setUpdatingId(null);
     };
 
 
     // 使用優惠券
-    const applyCoupon = async () => {
-        if (!couponCode) return;
-        setCouponStatus("正在套用...");
+    const applyCoupon = async (codeOverride) => {
+        const code = codeOverride ?? couponCode;
+        if (!code) return;
+        setCouponStatus({ message: "正在套用...", type: "" });
         try {
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/coupon`, {
                 data: {
-                    code: couponCode
+                    code: code
                 }
             });
-            setCouponStatus(response.data.message || "優惠券已套用！");
+            setCouponStatus({ message: response.data.message || "優惠券已套用！", type: "success" });
             setFinalTotal(response.data.data.final_total);
 
             // 重新取得購物車資料
@@ -411,7 +420,7 @@ function Cart() {
             setCartData(cartRes.data.data.carts);
         } catch (error) {
             console.log("套用優惠券失敗:", error);
-            setCouponStatus("優惠券無效或已使用。");
+            setCouponStatus({ message: "優惠券無效或已使用。", type: "danger" });
             setFinalTotal(null);
         }
     };
@@ -501,6 +510,11 @@ function Cart() {
             <div className="col-sm-12 col-md-9">
                 <div className="mt-6 mb-6 mt-md-15 mb-md-15">
                     <h2 className="cart-heading-title">購物車</h2>
+                    {cartError && (
+                        <p className="text-danger mb-3" style={{ fontSize: "0.9rem" }}>
+                            <TriangleAlert size="1em" /> {cartError}
+                        </p>
+                    )}
                     {/* ── 空購物車提示 ── */}
                     {cartData.length === 0 ? (
                         <div style={{
@@ -681,7 +695,12 @@ function Cart() {
                                         type="button"
                                         className="btn border-0 p-0"
                                         style={{ color: "#999", fontSize: "1.1rem", lineHeight: 1 }}
-                                        onClick={() => setShowCouponList(false)}
+                                        onClick={() => {
+                                            const coupon = availableCoupons[0];
+                                            setCouponCode(coupon.code);
+                                            setShowCouponList(false);
+                                            applyCoupon(coupon.code);  // ← 直接帶入 code 觸發
+                                        }}
                                     >✕</button>
                                 </div>
                                 {availableCoupons.map((coupon) => (
@@ -713,6 +732,7 @@ function Cart() {
                                             onClick={() => {
                                                 setCouponCode(coupon.code);
                                                 setShowCouponList(false);
+                                                applyCoupon(coupon.code);  // ← 直接帶入 code 觸發
                                             }}
                                         >套用此券</button>
                                     </div>
@@ -732,12 +752,6 @@ function Cart() {
                         />
                         <button
                             type="button"
-                            className="btn btn-sm text-white me-2"
-                            style={{ background: "#493B3F", whiteSpace: "nowrap" }}
-                            onClick={applyCoupon}
-                        >套用</button>
-                        <button
-                            type="button"
                             className="btn btn-sm"
                             style={{
                                 background: "#fff",
@@ -748,7 +762,12 @@ function Cart() {
                             onClick={() => setShowCouponList(prev => !prev)}
                         >{showCouponList ? "收起" : "檢視"}</button>
                     </div>
-                    {couponStatus && <p className="mt-2">{couponStatus}</p>}
+                    {couponStatus.message && (
+                        <p className={`mt-2 ${couponStatus.type ? `text-${couponStatus.type}` : "text-secondary"}`}
+                        style={{ fontSize: "0.9rem" }}>
+                            {couponStatus.message}
+                        </p>
+                    )}
                 </div>
                 {/* 付款與取貨方式 */}
                 <h2 className="cart-heading-title">付款與取貨方式</h2>
@@ -1134,30 +1153,55 @@ function Cart() {
 
                     {/* 全家 */}
                     <div className="form-check d-flex align-items-center mb-2">
-                        <input type="radio" id="familyMart" name="deliveryMethod" value="familyMart" className="form-check-input me-1" defaultChecked />
+                        <input type="radio"
+                            id="familyMart"
+                            name="deliveryMethod"
+                            value="familyMart"
+                            className="form-check-input me-1"
+                            checked={deliveryMethod === "familyMart"}
+                            onChange={() => setDeliveryMethod("familyMart")}
+                        />
                         <label htmlFor="familyMart" className="form-check-label text-p-16-b me-2">全家超商取貨</label>
-                        <button
-                            className="btn border-0"
-                            type="button"
-                            style={{ padding: "12px 24px", gap: "8px" }}
-                            onClick={() => openCvsMap("FAMIC2C")}
-                        >
-                            <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
-                        </button>
+                        {
+                            deliveryMethod === "familyMart" && (
+                                <>
+                                <button
+                                    className="btn border-0"
+                                    type="button"
+                                    style={{ padding: "12px 24px", gap: "8px" }}
+                                    onClick={() => openCvsMap("FAMIC2C")}
+                                >
+                                    <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
+                                </button>
+                                </>
+                            )
+                        }
                     </div>
 
                     {/* 711 */}
                     <div className="form-check d-flex align-items-center mb-2">
-                        <input type="radio" id="uniMart" name="deliveryMethod" value="uniMart" className="form-check-input me-1" />
+                        <input type="radio"
+                            id="uniMart"
+                            name="deliveryMethod"
+                            value="uniMart"
+                            className="form-check-input me-1"
+                            checked={deliveryMethod === "uniMart"}
+                            onChange={() => setDeliveryMethod("uniMart")}
+                        />
                         <label htmlFor="uniMart" className="form-check-label text-p-16-b me-2">711 超商取貨</label>
-                        <button
-                            className="btn border-0"
-                            type="button"
-                            style={{ padding: "12px 24px", gap: "8px" }}
-                            onClick={() => openCvsMap("UNIMARTC2C")}
-                        >
-                            <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
-                        </button>
+                        {
+                            deliveryMethod === "uniMart" && (
+                                <>
+                                <button
+                                    className="btn border-0"
+                                    type="button"
+                                    style={{ padding: "12px 24px", gap: "8px" }}
+                                    onClick={() => openCvsMap("UNIMARTC2C")}
+                                >
+                                    <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
+                                </button>
+                                </>)
+                        }
                     </div>
 
                     {/* 已選門市顯示卡片 */}
