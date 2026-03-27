@@ -52,6 +52,11 @@
     &:disabled {
         color: #fff;
         opacity: 0.5;
+        cursor: not-allowed;
+        &:hover {
+            background: $primary-700;
+            color: #fff;
+        }
     }
 }
 
