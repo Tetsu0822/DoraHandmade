@@ -169,8 +169,8 @@ function Cart() {
                     }
                     return "empty"; // 尚無資料，繼續等
                 } catch (e) {
-                    console.error("輪詢門市資料失敗:", e);
-                    return "error"; // fetch 失敗，停止輪詢
+                    console.error("搜尋門市資料失敗:", e);
+                    return "error"; // fetch 失敗，停止搜尋
                 }
             };
 
