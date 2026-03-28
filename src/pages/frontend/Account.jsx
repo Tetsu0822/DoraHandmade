@@ -1,39 +1,95 @@
 import axios from "axios";
+import { useEffect, useState, useCallback } from "react";
+import { useContext } from "react";
+import UserContext from "@contexts/UserContext";
 import { useNavigate } from "react-router";
-const API_LOGOUT_URL = import.meta.env.VITE_API_LOGOUT_URL;
+import { UserCircle } from "lucide-react";
+import useMessage from "@hooks/useMessage.jsx";
+
 function Account() {
     const navigate = useNavigate();
+    const [ isLoggedIn, setIsLoggedIn ] = useState(false);
+    const { user, setUser } = useContext(UserContext);
+    const { showSuccess, showError } = useMessage();
 
-    const LogOut = async () => {
-        // 清除 token 並導向登入頁面
-        const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
-        if (token) {
-            try {
-                await axios.post(API_LOGOUT_URL, {}, {
-                    headers: {
-                        Authorization: token,
-                    },
-                });
-            } catch (error) {
-                console.error("登出失敗:", error);
-            }
-        }
-        // 清除 cookie 並導向登入頁面
-        document.cookie = "doraToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        setTimeout(() => {
-            alert("您已成功登出，將自動導向登入頁面");
-            navigate("/login");
-        }, 500);
+    const LogOut = useCallback(() => {
+        const expiredDate = "Thu, 01 Jan 1970 00:00:00 UTC";
+        // 清除 cookie，指定 path 為 /
+        document.cookie = `doraToken=; expires=${expiredDate}; path=/;`;
+        // 清除 cookie，指定 path 為 /DoraHandmade
+        document.cookie = `doraToken=; expires=${expiredDate}; path=/DoraHandmade;`;
 
+        setIsLoggedIn(false);
+        setUser(null);
+        showSuccess("已登出");
+        navigate("/login");
+    }, [setUser, showSuccess, navigate]);
+
+    function maskString(str) {
+        if (!str) return "";
+        if (str.length <= 2) return str;
+        const first = str[0];
+        const last = str[str.length - 1];
+        return first + "*".repeat(str.length - 2) + last;
     }
+
+    // email 專用遮罩
+    function maskEmail(email) {
+        if (!email) return "";
+        const [name, domain] = email.split("@");
+        return maskString(name) + "@" + domain;
+    }
+
+    useEffect(() => {
+        // 取得 token
+        const token = document.cookie.split("; ").find(row => row.startsWith("doraToken="))?.split("=")[1];
+        if (!token && !user) {
+            navigate("/login");
+        } else {
+            const tokenData = {
+                token: token,
+            }
+            const checkUser = async () => {
+                try {
+                    const response = await axios.post(import.meta.env.VITE_API_USER_CHECK_URL, tokenData);
+                    if (response.data.success === true) {
+                        setIsLoggedIn(true);
+                    } else {
+                        setIsLoggedIn(false);
+                        showError("使用者驗證失敗，請重新登入");
+                        navigate("/login");
+                    }
+                } catch (error) {
+                    console.error("使用者驗證失敗:", error);
+                    setIsLoggedIn(false);
+                    showError("使用者驗證失敗，請重新登入");
+                    navigate("/login");
+                }
+            };
+            checkUser();
+
+        }
+    }, [navigate, user, showError]);
+
+
     return (
         <>
-        <div className="container py-15">
-            <h1>帳戶資訊</h1>
-            <p>這裡是帳戶資訊頁面，請在此顯示使用者的相關資訊。</p>
-            {/* 顯示登出按鈕 */}
-            <button className="btn btn-secondary" onClick={() => LogOut()}>登出</button>
-        </div>
+        {isLoggedIn && user ? (
+            <div className="container my-5">
+                <h2 className="account-heading-title mb-4">帳戶資訊</h2>
+                {user.name ? (
+                    <p className="account-info"><UserCircle className="me-2" />{maskString(user.name)}</p>
+                ) : null}
+                {user.email ? (
+                    <p className="account-info"><UserCircle className="me-2" />{maskEmail(user.email)}</p>
+                ) : null}
+                <button className="btn btn-secondary mt-3" onClick={LogOut}>登出</button>
+            </div>
+        ) : (
+            <div className="container my-5">
+                <div className="alert alert-primary">請先登入以查看帳戶資訊</div>
+            </div>
+        )}
         </>
     );
 }

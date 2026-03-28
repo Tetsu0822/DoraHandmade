@@ -80,20 +80,43 @@ body {
 // Navigation Links
 .nav-link-custom {
   transition: 0.3s ease;
+  // 1. 預設顏色
+  color: $gray-600 !important;
 
   svg {
     color: $gray-600;
-    transition: 0.3s ease;
   }
 
-  &:hover,
-  &:hover svg {
-    color: $primary !important;
+  // 2. 核心修正：僅在選單「展開中」或是「明確處於 Active」時才強制橘色
+  // Hover 狀態下，如果選單是收合的，我們給予較淡的橘色或維持灰色，直到開啟
+  &:hover:not(.show) {
+    color: $primary-400 !important; // 懸停但未開啟時，使用較淡的品牌色或不變
+
+    svg {
+      color: $primary-400;
+    }
   }
 
+  &.show,
+  &.show svg,
   &.active,
   &.active svg {
     color: $primary !important;
+  }
+
+  // 3. 焦點重置：移除所有點擊後產生的外框
+  &:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  // 4. 暴力保護：只要沒展開且滑鼠移開，絕對變灰色
+  &:not(.show):not(:hover) {
+    color: $gray-600 !important;
+
+    svg {
+      color: $gray-600 !important;
+    }
   }
 }
 
@@ -105,21 +128,66 @@ body {
     border-color: $primary-200;
   }
 
-  .dropdown-item {
+  .dropdown-item,
+  .dropdown-item-toggle {
     font-weight: 600;
     text-align: center;
-    transition: 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
+    width: auto;
+    margin: 4px 8px;
+    padding: 6px 16px;
+    clear: both;
+    color: $gray-700;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    border-radius: 12px; 
 
     &:hover {
       background-color: $primary-50 !important;
-      color: $secondary-700 !important;
+      color: $primary-700 !important;
+      box-shadow: 0 2px 8px rgba($primary-700, 0.1);
     }
+  }
+
+  // 子選單標籤 (成品/材料)
+  .dropdown-item-toggle {
+    cursor: default;
+
+    @media (min-width: 992px) {
+      // 電腦版徹底禁用交互，但保留 Hover 觸發
+      pointer-events: none;
+      // 為了安全，讓 pointer-events 只作用於點擊
+
+      // 用更精確的禁用點擊：
+      &:active {
+        pointer-events: none;
+      }
+
+      background-color: transparent;
+      border: 1px solid transparent;
+
+      &:hover {
+        background-color: $primary-50 !important;
+        border-color: $primary-100;
+      }
+    }
+  }
+
+  // 真正的連結才顯式設回 pointer
+  .dropdown-item:not(.dropdown-item-toggle) {
+    cursor: pointer;
   }
 
   &.show>.nav-link-custom,
   &.show>.nav-link-custom svg {
     color: $primary !important;
   }
+
+  // Debug
+  // border: 2px solid red !important;
 }
 
 // User Greeting
@@ -194,9 +262,10 @@ body {
       box-shadow: none;
       border: none;
       background-color: transparent !important;
+      display: none; // 預設隱藏
     }
 
-    // 行動版點擊展開（配合 Bootstrap 的 .show 類名）
+    // 行動版點擊展開（配合 Bootstrap 的 .show 類名，或我們手動加上的 .show）
     &.show>.dropdown-menu {
       display: block !important;
     }
@@ -206,7 +275,8 @@ body {
     //   display: block !important;
     // }
 
-    .dropdown-item {
+    .dropdown-item,
+    .dropdown-item-toggle {
       padding-left: 2rem;
       background-color: transparent;
 
@@ -223,5 +293,11 @@ body {
   .navbar-collapse {
     background-color: $white;
     border-radius: 0.5rem;
+    // border: 3px solid blue !important; // Debug
+  }
+
+  // 強制顯示，防止 Bootstrap JS 干擾 React 狀態
+  .force-show {
+    display: block !important;
   }
 }

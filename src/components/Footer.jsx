@@ -68,7 +68,7 @@ const Footer = () => {
                 <Link to="/faq">常見問題</Link>
               </li>
               <li>
-                <Link to="/articles">文章專區</Link>
+                <Link to="/article">文章專區</Link>
               </li>
               <li>
                 <Link to="/site-info">網站連結</Link>
@@ -83,7 +83,7 @@ const Footer = () => {
           <div className="footer-section">
             <div className="footer-logo-container">
               <img
-                src="/Handmade_Bow.png"
+                src={logoImg}
                 alt="愛哆啦也愛手作"
                 className="me-2"
               />
@@ -136,7 +136,7 @@ const Footer = () => {
                 <Link to="/faq">常見問題</Link>
               </li>
               <li>
-                <Link to="/articles">文章專區</Link>
+                <Link to="/article">文章專區</Link>
               </li>
               <li>
                 <Link to="/site-info">網站連結</Link>

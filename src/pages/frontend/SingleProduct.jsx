@@ -5,7 +5,6 @@ import { ShoppingCart } from 'lucide-react';
 import { Heart } from 'lucide-react';
 import { Minus } from 'lucide-react';
 import { Plus } from 'lucide-react';
-
 import axios from 'axios';
 import product1 from '@images/product-1.png';
 import product2 from '@images/product-2.png';
@@ -41,7 +40,11 @@ function SingleProduct() {
   }
   }, [id]);
 
+<<<<<<< HEAD
  const relatedProducts = [
+=======
+  const relatedProducts = [
+>>>>>>> 592223fbe0eed60f17c41ced2a39e6b03489b24e
   { id: 1, title: "銀白冬夜亮片蝴蝶結", price: 777, images: product1 },
   { id: 2, title: "聖誕紅緞帶雙層蝴蝶結", price: 777, images: product2 },
   { id: 3, title: "聖誕雪花點點蝴蝶結", price: 777, images: product3 },

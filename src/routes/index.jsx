@@ -8,11 +8,19 @@ import CustomForm from "../pages/frontend/CustomForm.jsx";
 import Orders from "../pages/frontend/Orders.jsx";
 import Login from "../pages/frontend/Login.jsx";
 import Account from "../pages/frontend/Account.jsx";
+import Faq from "../pages/frontend/Faq.jsx";
+import Workshop from "../pages/frontend/Workshop.jsx";
+import Articles from "../pages/frontend/Articles.jsx";
+import SingleArticle from "../pages/frontend/SingleArticle.jsx";
+import MyFavorites from "../pages/frontend/MyFavorites.jsx";
 import SingleOrder from "../pages/frontend/SingleOrder.jsx";
 import NotFound from "../pages/frontend/NotFound.jsx";
+import SiteInfo from "../pages/frontend/SiteInfo.jsx";
 import AdminProducts from "../pages/backend/AdminProducts.jsx";
 import BackendLayout from "../layout/BackendLayout.jsx";
 import AdminOrders from "../pages/backend/AdminOrders.jsx";
+import Dashboard from "../pages/backend/Dashboard.jsx";
+import AdminCoupons from "../pages/backend/AdminCoupons.jsx";
 
 export const routes = createHashRouter([
     {
@@ -52,12 +60,36 @@ export const routes = createHashRouter([
                 element: <SingleOrder />
             },
             {
+                path: "article",
+                element: <Articles />
+            },
+            {
+                path: "article/:id",
+                element: <SingleArticle />
+            },
+            {
                 path: "login",
                 element: <Login />
             },
             {
                 path: "account",
                 element: <Account />
+            },
+            {
+                path: "favorites",
+                element: <MyFavorites />
+            },
+            {
+                path: "faq",
+                element: <Faq />
+            },
+            {
+                path: "workshop",
+                element: <Workshop />
+            },
+            {
+                path: "site-info",
+                element: <SiteInfo />
             },
             {
                 path: "*",
@@ -70,12 +102,21 @@ export const routes = createHashRouter([
         element: <BackendLayout />,
         children: [
             {
+                index: true,
+                path: "dashboard",
+                element: <Dashboard />
+            },
+            {
                 path: "product",
                 element: <AdminProducts />
             },
             {
                 path: "order",
                 element: <AdminOrders />
+            },
+            {
+                path: "coupon",
+                element: <AdminCoupons />
             }
         ]
     }

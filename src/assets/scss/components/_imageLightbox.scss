@@ -1,0 +1,81 @@
+@import "../pages/customFormVariables";
+
+#imageLightbox {
+  .modal-backdrop.show {
+    backdrop-filter: blur(12px);
+    background-color: rgba(0, 0, 0, 0.85);
+  }
+
+  .modal-content {
+    background: transparent;
+  }
+
+  .lightbox-image-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .lightbox-toolkit {
+    background: rgba(white, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(white, 0.2);
+    height: 56px;
+    padding: 0 16px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    .zoom-btn {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50% !important;
+      border-color: $primary-200;
+      color: $primary-700;
+      background: white;
+      transition: $transition-btn;
+
+      &:hover {
+        background-color: $primary-700;
+        color: white;
+        border-color: $primary-700;
+        transform: scale(1.05);
+      }
+
+      svg {
+        display: block;
+      }
+    }
+
+    .zoom-percentage {
+      font-weight: 700;
+      color: $primary-700;
+      min-width: 50px;
+      text-align: center;
+      font-size: 16px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

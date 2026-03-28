@@ -1,0 +1,96 @@
+.site-info-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.site-info-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px); // 毛玻璃效果
+  border: 2px solid #ffffff;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 260px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  // 裝飾用背景漸層
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 224, 240, 0.5) 0%, transparent 70%);
+    z-index: -1;
+  }
+}
+
+.site-info-title {
+  text-align: center;
+  color: #ff55a3;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  .icon {
+    font-size: 1.2rem;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+  }
+}
+
+.site-info-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  li {
+    width: 100%;
+  }
+
+  .nav-item {
+    display: block;
+    text-decoration: none;
+    color: #ff66aa;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 12px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    background: transparent;
+
+    &::before {
+      content: "🌸";
+      margin-right: 10px;
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    &:hover {
+      background: #fff0f6;
+      color: #ff1a75;
+      padding-left: 20px;
+      box-shadow: inset 0 0 0 1px #ffc0e0;
+
+      &::before {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}

@@ -1,6 +1,8 @@
 import axios from "axios";
 import OrderToast from "@components/OrderToast";
-import { useState, useEffect, useRef } from "react";
+import Loading from "@components/Loading";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { currency } from "../../utils/filter";
@@ -9,12 +11,222 @@ import { emailValidation, twPhoneValidation } from "../../utils/validation";
 const VITE_API_BASE = import.meta.env.VITE_API_BASE;
 const VITE_API_PATH = import.meta.env.VITE_API_PATH;
 
+// 綠界物流設定（從 .env 讀取，金鑰不寫死在程式碼）
+const VITE_ECPAY_MERCHANT_ID = import.meta.env.VITE_ECPAY_MERCHANT_ID;
+const VITE_ECPAY_HASH_KEY    = import.meta.env.VITE_ECPAY_HASH_KEY;
+const VITE_ECPAY_HASH_IV     = import.meta.env.VITE_ECPAY_HASH_IV;
+const VITE_ECPAY_MAP_BASE    = import.meta.env.VITE_ECPAY_MAP_BASE;
+const VITE_ECPAY_REPLY_URL   = import.meta.env.VITE_ECPAY_REPLY_URL;
+const VITE_ECPAY_POLL_URL    = import.meta.env.VITE_ECPAY_POLL_URL;
+
 function Cart() {
     const [ cartData, setCartData ] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    // ── 新增：每個 item 的本地數量暫存 ──
+    const [localQty, setLocalQty] = useState({});
+    const [cartError, setCartError] = useState("");
+    const debounceRef = useRef({});
+    // 初始化 localQty（cartData 載入後同步）
+    useEffect(() => {
+        const init = {};
+        cartData.forEach(item => { init[item.id] = item.qty; });
+        setLocalQty(init);
+    }, [cartData]);
+    const [deliveryMethod, setDeliveryMethod] = useState("familyMart");
     const [ updatingId, setUpdatingId ] = useState(null);
     // 優惠券、運費等狀態可在此新增
     const [ couponCode, setCouponCode ] = useState("");
-    const [ couponStatus, setCouponStatus ] = useState("");
+    // 選擇的門市資訊
+    const [selectedStore, setSelectedStore] = useState(null); // { name, id, type }
+
+    // 綠界超商地圖設定
+    // 綠界物流設定（從頂部 .env 變數讀入）
+    const ECPAY_MERCHANT_ID = VITE_ECPAY_MERCHANT_ID;
+    const ECPAY_HASH_KEY    = VITE_ECPAY_HASH_KEY;
+    const ECPAY_HASH_IV     = VITE_ECPAY_HASH_IV;
+    const ECPAY_MAP_BASE    = VITE_ECPAY_MAP_BASE;
+
+    // 綠界 CheckMacValue 產生（依官方文件規格）
+    const generateCheckMacValue = async (params) => {
+        // Step 1：按 key 字母順序排序（case-insensitive）
+        const sorted = Object.keys(params)
+            .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+            .map(k => `${k}=${params[k]}`)
+            .join("&");
+
+        // Step 2：前後加上 HashKey / HashIV
+        const raw = `HashKey=${ECPAY_HASH_KEY}&${sorted}&HashIV=${ECPAY_HASH_IV}`;
+
+        // Step 3：URLEncode 整個字串（.NET 風格）
+        const urlEncoded = encodeURIComponent(raw)
+            .replace(/%20/g, "+")
+            .replace(/%21/g, "!")
+            .replace(/%27/g, "'")
+            .replace(/%28/g, "(")
+            .replace(/%29/g, ")")
+            .replace(/%2A/g, "*")
+            .replace(/%7E/g, "~");
+
+        // Step 4：轉小寫
+        const lowerStr = urlEncoded.toLowerCase();
+
+        // Step 5：SHA256 → 轉大寫
+        const msgBuffer  = new TextEncoder().encode(lowerStr);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+        const hashArray  = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    };
+
+    // 開啟綠界超商地圖
+    const openCvsMap = async (subType) => {
+        // 監聽子視窗透過 postMessage 傳回的門市資訊（後端已組好格式化字串）
+        const handleMessage = (event) => {
+            if (!event.data || event.data.type !== "CVS_STORE_SELECTED") return;
+            setSelectedStore({
+                label:   event.data.storeLabel || "",  // 後端組好的完整字串，直接存入 message
+                id:      event.data.storeID    || "",  // 備用顯示
+                name:    event.data.storeName  || "",
+                address: event.data.address    || "",
+                brand:   event.data.brand      || "",
+                subType: event.data.subType    || subType,
+            });
+            window.removeEventListener("message", handleMessage);
+        };
+        window.addEventListener("message", handleMessage);
+
+        const tradeNo  = "Cart" + Date.now().toString().slice(-8);
+        const replyUrl = VITE_ECPAY_REPLY_URL;
+
+        // 組成要簽章的參數（不含 HashKey/HashIV）
+        const params = {
+            MerchantID:       ECPAY_MERCHANT_ID,
+            MerchantTradeNo:  tradeNo,
+            LogisticsType:    "CVS",
+            LogisticsSubType: subType,
+            IsCollection:     "N",
+            ServerReplyURL:   replyUrl,
+            // 手機裝置帶 Device=1，讓綠界顯示行動版地圖介面
+            Device: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "1" : "0",
+        };
+
+        const checkMac = await generateCheckMacValue(params);
+        const formParams = { ...params, CheckMacValue: checkMac };
+
+        const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            // ── 手機版：開新分頁 → 選完門市 → cvsmap.php 存 session ────────
+            // 使用者切回購物車頁時，visibilitychange 觸發輪詢撈取門市資料
+
+            // 開新分頁提交 POST
+            const form = document.createElement("form");
+            form.method  = "POST";
+            form.action  = ECPAY_MAP_BASE;
+            form.target  = "_blank";
+            form.enctype = "application/x-www-form-urlencoded";
+
+            Object.entries(formParams).forEach(([k, v]) => {
+                const input = document.createElement("input");
+                input.type  = "hidden";
+                input.name  = k;
+                input.value = v;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            // 監聽使用者切回本頁（visibilitychange）
+            let pollTimer = null;
+            let pollCount = 0;
+            const MAX_POLL = 20; // 最多輪詢 20 次（約 10 秒）
+
+            const stopPoll = () => {
+                clearInterval(pollTimer);
+                document.removeEventListener("visibilitychange", onVisible);
+            };
+
+            const pollStore = async () => {
+                try {
+                    const res = await fetch(
+                        `${VITE_ECPAY_POLL_URL}?clear=1`,
+                        { credentials: "include" }
+                    );
+                    const data = await res.json();
+
+                    if (data.found) {
+                        setSelectedStore({
+                            label:   data.storeLabel,
+                            id:      data.storeID,
+                            name:    data.storeName,
+                            address: data.address,
+                            brand:   data.brand,
+                            subType: data.subType,
+                        });
+                        stopPoll();
+                        return "found";
+                    }
+                    return "empty"; // 尚無資料，繼續等
+                } catch (e) {
+                    console.error("搜尋門市資料失敗:", e);
+                    return "error"; // fetch 失敗，停止搜尋
+                }
+            };
+
+            const onVisible = async () => {
+                if (document.visibilityState !== "visible") return;
+
+                // 切回頁面時立即查一次
+                const result = await pollStore();
+                if (result === "found" || result === "error") return;
+
+                // 還沒有資料，每 500ms 輪詢，最多 MAX_POLL 次
+                pollTimer = setInterval(async () => {
+                    pollCount++;
+                    const result = await pollStore();
+                    if (result === "found" || result === "error" || pollCount >= MAX_POLL) {
+                        stopPoll();
+                    }
+                }, 500);
+            };
+
+            document.addEventListener("visibilitychange", onVisible);
+        } else {
+            // ── 桌機版：開新視窗，選完由 postMessage 傳回 ──────────────────
+            const mapWindow = window.open("", "cvsMap", "width=900,height=700,scrollbars=yes");
+
+            const form = document.createElement("form");
+            form.method  = "POST";
+            form.action  = ECPAY_MAP_BASE;
+            form.target  = "cvsMap";
+            form.enctype = "application/x-www-form-urlencoded";
+
+            Object.entries(formParams).forEach(([k, v]) => {
+                const input = document.createElement("input");
+                input.type  = "hidden";
+                input.name  = k;
+                input.value = v;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            if (!mapWindow || mapWindow.closed) {
+                alert("請允許瀏覽器開啟彈出視窗後再試一次");
+            }
+        }
+    };
+    const [ couponStatus, setCouponStatus ] = useState({ message: "", type: "" });
+    const [ showCouponList, setShowCouponList ] = useState(false);
+
+    // 優惠券列表（固定資料）
+    const availableCoupons = [
+        { name: "2026新春優惠", code: "newyear2026", discount: "9折" },
+        { name: "新會員折扣",   code: "newmember",   discount: "95折" },
+    ];
     // 折扣後的金額
     const [finalTotal, setFinalTotal] = useState(null);
     // useForm 表單驗證
@@ -136,8 +348,8 @@ function Cart() {
         setCommonRecipients(prev => prev.filter(recipient => recipient.id !== id));
     }
 
-  // 更新購物車數量
-    const updateCartQty = async (item, newQty) => {
+    // 更新購物車數量
+    const updateCartQty = useCallback(async (item, newQty) => {
         if (newQty < 1) return;
         setUpdatingId(item.id);
         try {
@@ -150,11 +362,29 @@ function Cart() {
             // 重新取得購物車資料
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
+            setCartError("")
         } catch (error) {
-            console.log("Error updating cart:", error);
+            console.log("更新購物車數量失敗:", error);
+            setCartError("數量更新失敗，請稍後再試");
+            // 恢復為原本數量
+            setLocalQty(prev => ({ ...prev, [item.id]: item.qty }));
         }
         setUpdatingId(null);
-    };
+    }, []);
+
+    // debounce 版本的數量更新
+    const handleQtyChange = useCallback((item, newQty) => {
+        if (newQty < 1) return;
+        // 立即更新 UI
+        setLocalQty(prev => ({ ...prev, [item.id]: newQty }));
+        // 清掉上一個 timer
+        if (debounceRef.current[item.id]) clearTimeout(debounceRef.current[item.id]);
+        // 800ms 後才打 API
+        debounceRef.current[item.id] = setTimeout(() => {
+            updateCartQty(item, newQty);
+        }, 800);
+    }, [updateCartQty]);
+
 
     // 刪除購物車項目
     const removeCartItem = async (itemId) => {
@@ -164,31 +394,35 @@ function Cart() {
             // 重新取得購物車資料
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
+            setCartError("")
         } catch (error) {
-            console.log("Error removing cart item:", error);
+            console.log("刪除購物車項目失敗:", error);
+            setCartError("刪除商品失敗，請稍後再試");
         }
         setUpdatingId(null);
     };
 
 
     // 使用優惠券
-    const applyCoupon = async () => {
-        if (!couponCode) return;
-        setCouponStatus("正在套用...");
+    const applyCoupon = async (codeOverride) => {
+        const code = codeOverride ?? couponCode;
+        if (!code) return;
+        setCouponStatus({ message: "正在套用...", type: "" });
         try {
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/coupon`, {
                 data: {
-                    code: couponCode
+                    code: code
                 }
             });
-            setCouponStatus(response.data.message || "優惠券已套用！");
+            setCouponStatus({ message: response.data.message || "優惠券已套用！", type: "success" });
             setFinalTotal(response.data.data.final_total);
 
             // 重新取得購物車資料
             const cartRes = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(cartRes.data.data.carts);
         } catch (error) {
-            setCouponStatus("優惠券無效或已使用。");
+            console.log("套用優惠券失敗:", error);
+            setCouponStatus({ message: "優惠券無效或已使用。", type: "danger" });
             setFinalTotal(null);
         }
     };
@@ -218,26 +452,26 @@ function Cart() {
                         tel: formData.tel,
                         address: formData.address,
                     },
-                    message: `付款方式:${formData.paymentMethod}，收件人:${recipient.name}，電話:${recipient.tel}，Email:${recipient.email}，地址:${recipient.address}`,
-                    recipient: isSameAsBuyer ? {
-                        name: formData.name,
-                        email: formData.email,
-                        tel: formData.tel,
-                        address: formData.address,
-                    } : {
-                        name: recipientInfo.name,
-                        email: recipientInfo.email,
-                        tel: recipientInfo.tel,
-                        address: recipientInfo.address,
-                    },
+                    message: [
+                        `付款方式:${formData.paymentMethod}`,
+                        `收件人:${recipient.name}`,
+                        `電話:${recipient.tel}`,
+                        `Email:${recipient.email}`,
+                        `地址:${recipient.address}`,
+                        selectedStore
+                            ? `取貨門市:${selectedStore.label}`
+                            : `取貨門市:未選擇`,
+                    ].join("，"),
+                    recipient,
                 }
-            }
+            };
             const response = await axios.post(`${VITE_API_BASE}/api/${VITE_API_PATH}/order`, data);
             setOrderId(response.data.orderId);
             // 更新購物車列表
             const responses2 = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(responses2.data.data.carts || []);
             reset();
+            setRecipientInfo({ name: "", tel: "", email: "", address: "" })
             showToast();
         } catch (error) {
             console.error("送出訂單失敗:", error);
@@ -246,9 +480,9 @@ function Cart() {
 
 
 
-  // API 取得購物車資料顯示在此
-  useEffect(() => {
-    recipientModalRef.current = new bootstrap.Modal('#recipientModal', {
+    // API 取得購物車資料顯示在此
+    useEffect(() => {
+        recipientModalRef.current = new bootstrap.Modal('#recipientModal', {
             keyboard: false
         });
 
@@ -262,108 +496,284 @@ function Cart() {
         });
 
     const fetchCartData = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
         } catch (error) {
-            console.log("Error fetching cart data:", error);
+            console.log("取得購物車資料失敗:", error);
+        } finally {
+            setIsLoading(false);
         }
-      }
-      fetchCartData();
+    }
+    fetchCartData();
   }, []);
   return (
     <>
-    <div className="container">
+    <div className="container" style={{ position: "relative", minHeight: 300 }}>
+        <Loading isLoading={isLoading} text="購物車載入中" />
         <div className="row">
             <div className="col-sm-12 col-md-9">
                 <div className="mt-6 mb-6 mt-md-15 mb-md-15">
                     <h2 className="cart-heading-title">購物車</h2>
-                    {/* 電腦版購物車顯示 */}
-                    <div className="d-none d-md-block">
-                    <div className="card">
-                        <div className="table-responsive">
-                            <table className="table table-borderless align-middle mb-0">
-                            <thead>
-                                <tr>
-                                <th style={{background: "#EAE1E3"}} scope="col">商品</th>
-                                <th style={{background: "#EAE1E3"}} scope="col">單價</th>
-                                <th style={{background: "#EAE1E3"}} scope="col">數量</th>
-                                <th style={{background: "#EAE1E3"}} scope="col">單位</th>
-                                <th style={{background: "#EAE1E3"}} scope="col">小計</th>
-                                <th style={{background: "#EAE1E3"}} scope="col">操作</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {cartData.map(item => (
-                                <tr key={item.id}>
-                                    <td>
-                                    <img src={item.product.imageUrl} alt={item.product.title} style={{width: 40, height: 40, objectFit: 'cover', borderRadius: '50%', marginRight: 8}} />
-                                    {item.product.title}
-                                    </td>
-                                    <td>${item.product.price}</td>
-                                    <td>
-                                        <div className="input-group" style={{maxWidth: 140}}>
-                                            <button
-                                                className={`btn btn-sm border-0${item.qty === 1 ? ' text-muted border-muted' : ''} me-2`}
-                                                type="button"
-                                                disabled={item.qty === 1 || updatingId === item.id}
-                                                style={item.qty === 1 ? { backgroundColor: '#e9ecef', borderColor: '#e9ecef', color: '#adb5bd' } : {}}
-                                                onClick={() => updateCartQty(item, item.qty - 1)}
-                                            ><Minus /></button>
-                                            <input type="number" min="1" className="text-center bg-white border-0" style={{width: 40, fontSize: "20px"}} value={item.qty} onChange={e => updateCartQty(item, Number(e.target.value))} disabled />
-                                            <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => updateCartQty(item, item.qty+1)}><Plus /></button>
-                                        </div>
-                                    </td>
-                                    <td className="text-center">{item.product.unit}</td>
-                                    <td>{currency(item.total)}</td>
-                                    <td>
-                                        <button className="btn btn-danger btn-sm text-white" disabled={updatingId===item.id} onClick={() => removeCartItem(item.id)}><Trash2 color="white" /> 刪除</button>
-                                    </td>
-                                </tr>
-                                ))}
-                            </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    </div>
-                    {/* 手機版購物車顯示 */}
-                    <div className="d-md-none">
-                        <div className="card mobile-card" style={{borderRadius: "16px 16px 0 0"}}>
-                            <div className="mobile-card-header fw-bold mb-2">商品明細</div>
-                            {cartData.map(item => (
-                            <div key={item.id} className="d-flex justify-content-between align-items-center p-2">
-                                <div style={{flex:1}}>
-                                    <div className="fw-bold text-p-20-b">{item.product.title}</div>
-                                    <div className="d-flex justify-content-start align-items-center mt-1 text-p-16-b">
-                                        <span className="text-gray-600">單價 ${item.product.price} / 數量</span>
-                                        <div className="input-group" style={{maxWidth: 100}}>
-                                            <button
-                                                className={`btn btn-sm border-0${item.qty === 1 ? ' text-muted border-muted' : ''} me-2`}
-                                                type="button"
-                                                disabled={item.qty === 1 || updatingId === item.id}
-                                                style={item.qty === 1 ? { backgroundColor: '#e9ecef', borderColor: '#e9ecef', color: '#adb5bd' } : {}}
-                                                onClick={() => updateCartQty(item, item.qty - 1)}
-                                            ><Minus size={16} color="#777777" /></button>
-                                            <input type="number" min="1" className="text-center bg-white border-0" style={{width: 30, fontSize: "16px"}} value={item.qty} onChange={e => updateCartQty(item, Number(e.target.value))} disabled />
-                                            <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => updateCartQty(item, item.qty+1)}><Plus size={16} color="#777777" /></button>
-                                        </div>
-                                        <button className="btn btn-sm" disabled={updatingId===item.id} onClick={() => removeCartItem(item.id)}><Trash2 className="text-primary" /></button>
-                                    </div>
-                                </div>
-                                <div className="fw-bold" style={{fontSize: "1.1rem"}}>${item.total}</div>
+                    {cartError && (
+                        <p className="text-danger mb-3" style={{ fontSize: "0.9rem" }}>
+                            <TriangleAlert size="1em" /> {cartError}
+                        </p>
+                    )}
+                    {/* ── 空購物車提示 ── */}
+                    {cartData.length === 0 ? (
+                        <div style={{
+                            textAlign: "center",
+                            padding: "64px 24px 80px",
+                            fontFamily: "'Noto Serif TC', 'PingFang TC', sans-serif",
+                        }}>
+                            {/* 浮動 icon */}
+                            <div className="float-icon" style={{ fontSize: "3rem", marginBottom: "24px" }}>
+                                🛍️
                             </div>
-                            ))}
+
+                            {/* Badge */}
+                            <div style={{
+                                display: "inline-block",
+                                padding: "6px 20px",
+                                borderRadius: "20px",
+                                background: "#FFF0F4",
+                                border: "1.5px solid #ECD4DE",
+                                color: "#C2547A",
+                                fontSize: "0.78rem",
+                                letterSpacing: "0.2em",
+                                fontWeight: 600,
+                                marginBottom: "24px",
+                                textTransform: "uppercase",
+                            }}>
+                                Empty Cart
+                            </div>
+
+                            <h3 style={{
+                                fontFamily: "'Noto Serif TC', serif",
+                                fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)",
+                                fontWeight: 600,
+                                color: "#2a2a2a",
+                                margin: "0 0 16px",
+                                lineHeight: "1.6",
+                            }}>
+                                目前購物車還沒有商品
+                            </h3>
+
+                            <p style={{
+                                color: "#888",
+                                fontSize: "0.92rem",
+                                lineHeight: "1.9",
+                                margin: "0 0 40px",
+                            }}>
+                                快去挑選喜歡的手作飾品，<br />
+                                為日常增添一點儀式感吧 ♡
+                            </p>
+
+                            {/* 分隔線 */}
+                            <div style={{
+                                display: "flex", alignItems: "center", gap: "12px",
+                                marginBottom: "36px", maxWidth: 360, margin: "0 auto 36px",
+                            }}>
+                                <div style={{ flex: 1, height: "1px", background: "#F0E4EA" }} />
+                                <span style={{ color: "#D4A0B4", fontSize: "0.8rem", letterSpacing: "0.1em" }}>立即選購</span>
+                                <div style={{ flex: 1, height: "1px", background: "#F0E4EA" }} />
+                            </div>
+
+                            {/* 選購按鈕 */}
+                            <Link
+                                to="/product"
+                                style={{
+                                    display: "inline-flex", alignItems: "center", gap: "6px",
+                                    padding: "12px 32px", borderRadius: "24px",
+                                    background: "#C2547A", color: "#fff",
+                                    fontSize: "0.9rem", fontWeight: 500,
+                                    textDecoration: "none",
+                                }}
+                            >前往商品頁面 →</Link>
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                        {/* 電腦版購物車顯示 */}
+                        <div className="d-none d-md-block">
+                        <div className="card">
+                            <div className="table-responsive">
+                                <table className="table table-borderless align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                    <th style={{background: "#EAE1E3"}} scope="col">商品</th>
+                                    <th style={{background: "#EAE1E3"}} scope="col">單價</th>
+                                    <th style={{background: "#EAE1E3"}} scope="col">數量</th>
+                                    <th style={{background: "#EAE1E3"}} scope="col">單位</th>
+                                    <th style={{background: "#EAE1E3"}} scope="col">小計</th>
+                                    <th style={{background: "#EAE1E3"}} scope="col">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cartData.map(item => (
+                                    <tr key={item.id}>
+                                        <td>
+                                        <img src={item.product.imageUrl} alt={item.product.title} style={{width: 40, height: 40, objectFit: 'cover', borderRadius: '50%', marginRight: 8}} />
+                                        {item.product.title}
+                                        </td>
+                                        <td>${item.product.price}</td>
+                                        <td>
+                                            <div className="input-group" style={{maxWidth: 140}}>
+                                                <button
+                                                    className={`btn btn-sm border-0${(localQty[item.id] ?? item.qty) === 1 ? ' text-muted border-muted' : ''} me-2`}
+                                                    type="button"
+                                                    disabled={(localQty[item.id] ?? item.qty) === 1 || updatingId === item.id}
+                                                    onClick={() => handleQtyChange(item, (localQty[item.id] ?? item.qty) - 1)}
+                                                ><Minus /></button>
+                                                <input
+                                                    type="number" min="1"
+                                                    value={localQty[item.id] ?? item.qty}
+                                                    onChange={e => handleQtyChange(item, Number(e.target.value))}
+                                                    // 移除 disabled，讓使用者可以直接輸入
+                                                    className="text-center bg-white border-0"
+                                                    style={{width: 40, fontSize: "20px"}}
+                                                />
+                                                <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => handleQtyChange(item, (localQty[item.id] ?? item.qty) + 1)}><Plus /></button>
+                                            </div>
+                                        </td>
+                                        <td className="text-center">{item.product.unit}</td>
+                                        <td>{currency(item.total)}</td>
+                                        <td>
+                                            <button className="btn btn-danger btn-sm text-white" disabled={updatingId===item.id} onClick={() => removeCartItem(item.id)}><Trash2 color="white" /> 刪除</button>
+                                        </td>
+                                    </tr>
+                                    ))}
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+                        {/* 手機版購物車顯示 */}
+                        <div className="d-md-none">
+                            <div className="card mobile-card" style={{borderRadius: "16px 16px 0 0"}}>
+                                <div className="mobile-card-header fw-bold mb-2">商品明細</div>
+                                {cartData.map(item => (
+                                <div key={item.id} className="d-flex justify-content-between align-items-center p-2">
+                                    <div style={{flex:1}}>
+                                        <div className="fw-bold text-p-20-b">{item.product.title}</div>
+                                        <div className="d-flex justify-content-start align-items-center mt-1 text-p-16-b">
+                                            <span className="text-gray-600">單價 ${item.product.price} / 數量</span>
+                                            <div className="input-group" style={{maxWidth: 100}}>
+                                                <button
+                                                    className={`btn btn-sm border-0${(localQty[item.id] ?? item.qty) === 1 ? ' text-muted border-muted' : ''} me-2`}
+                                                    type="button"
+                                                    disabled={(localQty[item.id] ?? item.qty) === 1 || updatingId === item.id}
+                                                ><Minus size={16} color="#777777" /></button>
+                                                <input
+                                                    type="number" min="1"
+                                                    value={localQty[item.id] ?? item.qty}
+                                                    onChange={e => handleQtyChange(item, Number(e.target.value))}
+                                                    // 移除 disabled，讓使用者可以直接輸入
+                                                    className="text-center bg-white border-0"
+                                                    style={{width: 40, fontSize: "20px"}}
+                                                />
+                                                <button className="btn btn-sm border-0" type="button" disabled={updatingId===item.id} onClick={() => handleQtyChange(item, (localQty[item.id] ?? item.qty) + 1)}><Plus size={16} color="#777777" /></button>
+                                            </div>
+                                            <button className="btn btn-sm" disabled={updatingId===item.id} onClick={() => removeCartItem(item.id)}><Trash2 className="text-primary" /></button>
+                                        </div>
+                                    </div>
+                                    <div className="fw-bold" style={{fontSize: "1.1rem"}}>${item.total}</div>
+                                </div>
+                                ))}
+                            </div>
+                        </div>
+                        </>
+                    )}
                 </div>
                 {/* 優惠券輸入區塊 */}
                 <div className="mt-6 mb-6 mt-md-8 mb-md-8">
                     <h2 className="cart-heading-title">使用優惠券</h2>
-                    <div className="d-flex" style={{maxWidth: 400}}>
-                        <input type="text" className="form-control me-2" placeholder="輸入優惠券代碼" value={couponCode} onChange={e => setCouponCode(e.target.value)} />
-                        <button className="btn btn-primary btn-sm text-white" onClick={applyCoupon}>套用</button>
+
+                    {/* 優惠券列表（可折疊） */}
+                    {showCouponList && (
+                        <div className="mb-3" style={{ maxWidth: 500 }}>
+                            <div className="border rounded-3 overflow-hidden">
+                                <div className="px-3 py-2 d-flex justify-content-between align-items-center"
+                                     style={{ background: "#f8f3f0", borderBottom: "1px solid #e8ddd8" }}>
+                                    <span className="fw-bold text-p-16-b" style={{ color: "#493B3F" }}>可用優惠券</span>
+                                    <button
+                                        type="button"
+                                        className="btn border-0 p-0"
+                                        style={{ color: "#999", fontSize: "1.1rem", lineHeight: 1 }}
+                                        onClick={() => {
+                                            const coupon = availableCoupons[0];
+                                            setCouponCode(coupon.code);
+                                            setShowCouponList(false);
+                                            applyCoupon(coupon.code);  // ← 直接帶入 code 觸發
+                                        }}
+                                    >✕</button>
+                                </div>
+                                {availableCoupons.map((coupon) => (
+                                    <div
+                                        key={coupon.code}
+                                        className="d-flex align-items-center justify-content-between px-3 py-3"
+                                        style={{ borderBottom: "1px solid #f0e8e4", background: "#fff" }}
+                                    >
+                                        <div>
+                                            <p className="mb-0 fw-bold text-p-16-b" style={{ color: "#493B3F" }}>
+                                                {coupon.name}
+                                            </p>
+                                            <p className="mb-0 small" style={{ color: "#888" }}>
+                                                代碼：<code style={{ color: "#c0607a" }}>{coupon.code}</code>
+                                                &nbsp;折扣：<span className="fw-bold" style={{ color: "#493B3F" }}>{coupon.discount}</span>
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm ms-3 flex-shrink-0"
+                                            style={{
+                                                background: "#fff0f4",
+                                                color: "#c0607a",
+                                                border: "1px solid #f5c6d0",
+                                                borderRadius: "8px",
+                                                fontSize: "0.82rem",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                            onClick={() => {
+                                                setCouponCode(coupon.code);
+                                                setShowCouponList(false);
+                                                applyCoupon(coupon.code);  // ← 直接帶入 code 觸發
+                                            }}
+                                        >套用此券</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 輸入框 + 按鈕列 */}
+                    <div className="d-flex" style={{ maxWidth: 500 }}>
+                        <input
+                            type="text"
+                            className="form-control me-2"
+                            placeholder="輸入優惠券代碼"
+                            value={couponCode}
+                            onChange={e => setCouponCode(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-sm"
+                            style={{
+                                background: "#fff",
+                                border: "1px solid #ccc",
+                                color: "#493B3F",
+                                whiteSpace: "nowrap",
+                            }}
+                            onClick={() => setShowCouponList(prev => !prev)}
+                        >{showCouponList ? "收起" : "檢視"}</button>
                     </div>
-                    {couponStatus && <p className="mt-2">{couponStatus}</p>}
+                    {couponStatus.message && (
+                        <p className={`mt-2 ${couponStatus.type ? `text-${couponStatus.type}` : "text-secondary"}`}
+                        style={{ fontSize: "0.9rem" }}>
+                            {couponStatus.message}
+                        </p>
+                    )}
                 </div>
                 {/* 付款與取貨方式 */}
                 <h2 className="cart-heading-title">付款與取貨方式</h2>
@@ -417,7 +827,7 @@ function Cart() {
                     className="form-control"
                     placeholder="請輸入聯絡電話"
                     {...register("tel", {
-                        required: "請輸入聯絡電話",twPhoneValidation
+                        required: "請輸入聯絡電話", ...twPhoneValidation
                     })}
                 />
                 {errors.tel && <p className="text-danger">{errors.tel.message}</p>}
@@ -433,7 +843,7 @@ function Cart() {
                     className="form-control"
                     placeholder="請輸入 Email"
                     {...register("email", {
-                        required: "請輸入 Email",emailValidation
+                        required: "請輸入 Email", ...emailValidation
                     })}
                     //onChange={updateBuyerData}
                 />
@@ -746,37 +1156,92 @@ function Cart() {
                 {/* 取貨方式 */}
                 <h3 className="text-p-20-b text-gray-600 mb-3">取貨方式</h3>
                 <div className="d-flex flex-column mb-6 mb-md-8">
-                    <div className="form-check d-flex align-items-center  mb-2">
-                        <input type="radio" id="familyMart" name="deliveryMethod" value="familyMart" className="form-check-input me-1" defaultChecked />
-                        <label htmlFor="familyMart" className="form-check-label text-p-16-b me-2">全家超商取貨</label>
-                        <button
-                            className="btn border-0"
-                            type="button"
-                            style={{
-                                padding: "12px 24px 12px 24px",
-                                gap: "8px",
-                            }}
-                            onClick={() => {
-                                window.open("cvs-map?cvs=UNIMART&IsCollection=N", "", "width=800,height=800");
-                            }}
-                        >
-                            <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>搜尋門市</span>
-                        </button>
-                    </div>
+
+                    {/* 全家 */}
                     <div className="form-check d-flex align-items-center mb-2">
-                        <input type="radio" id="uniMart" name="deliveryMethod" value="uniMart" className="form-check-input me-1" />
-                        <label htmlFor="uniMart" className="form-check-label text-p-16-b me-2">711 超商取貨</label>
-                        <button
-                            className="btn border-0"
-                            type="button"
-                            style={{
-                                padding: "12px 24px 12px 24px",
-                                gap: "8px",
-                            }}
-                        >
-                            <span className="text-p-16-b" style={{color: "#493B3F", borderBottom: "1px solid #493B3F",lineHeight: "150%",paddingBottom: "8px"}}>搜尋門市</span>
-                        </button>
+                        <input type="radio"
+                            id="familyMart"
+                            name="deliveryMethod"
+                            value="familyMart"
+                            className="form-check-input me-1"
+                            checked={deliveryMethod === "familyMart"}
+                            onChange={() => setDeliveryMethod("familyMart")}
+                        />
+                        <label htmlFor="familyMart" className="form-check-label text-p-16-b me-2">全家超商取貨</label>
+                        {
+                            deliveryMethod === "familyMart" && (
+                                <>
+                                <button
+                                    className="btn border-0"
+                                    type="button"
+                                    style={{ padding: "12px 24px", gap: "8px" }}
+                                    onClick={() => openCvsMap("FAMIC2C")}
+                                >
+                                    <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
+                                </button>
+                                </>
+                            )
+                        }
                     </div>
+
+                    {/* 711 */}
+                    <div className="form-check d-flex align-items-center mb-2">
+                        <input type="radio"
+                            id="uniMart"
+                            name="deliveryMethod"
+                            value="uniMart"
+                            className="form-check-input me-1"
+                            checked={deliveryMethod === "uniMart"}
+                            onChange={() => setDeliveryMethod("uniMart")}
+                        />
+                        <label htmlFor="uniMart" className="form-check-label text-p-16-b me-2">711 超商取貨</label>
+                        {
+                            deliveryMethod === "uniMart" && (
+                                <>
+                                <button
+                                    className="btn border-0"
+                                    type="button"
+                                    style={{ padding: "12px 24px", gap: "8px" }}
+                                    onClick={() => openCvsMap("UNIMARTC2C")}
+                                >
+                                    <span className="text-p-16-b" style={{ color: "#493B3F", borderBottom: "1px solid #493B3F", lineHeight: "150%", paddingBottom: "8px" }}>搜尋門市</span>
+                                </button>
+                                </>)
+                        }
+                    </div>
+
+                    {/* 已選門市顯示卡片 */}
+                    {selectedStore && (
+                        <div
+                            className="mt-3 p-3 rounded-3 d-flex align-items-start gap-3"
+                            style={{ background: "#fff8f5", border: "1px solid #f0e0d8", maxWidth: 480 }}
+                        >
+                            <div style={{ fontSize: "1.4rem", lineHeight: 1.2 }}>
+                                {selectedStore.brand === "全家" ? "🏪" : "🏬"}
+                            </div>
+                            <div className="flex-grow-1">
+                                <p className="mb-0 fw-bold text-p-16-b" style={{ color: "#493B3F" }}>
+                                    {selectedStore.brand} · {selectedStore.name}
+                                </p>
+                                {selectedStore.id && (
+                                    <p className="mb-0 small" style={{ color: "#888" }}>
+                                        門市代號：{selectedStore.id}
+                                    </p>
+                                )}
+                                {selectedStore.address && (
+                                    <p className="mb-0 small" style={{ color: "#888" }}>
+                                        {selectedStore.address}
+                                    </p>
+                                )}
+                            </div>
+                            <button
+                                type="button"
+                                className="btn border-0 p-0 flex-shrink-0"
+                                style={{ color: "#aaa", fontSize: "1rem" }}
+                                onClick={() => setSelectedStore(null)}
+                            >✕</button>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="col-sm-12 col-md-3">
@@ -787,7 +1252,6 @@ function Cart() {
                     <div className="d-flex">
                         <div className="p-2 flex-grow-1">商品小計</div>
                         <div className="p-2">
-                            {/* 商品小計金額 */}
                             {currency(cartData.reduce((sum, item) => sum + item.total, 0))}
                         </div>
                     </div>
@@ -802,21 +1266,9 @@ function Cart() {
                         )}
                     </div>
                     <div className="d-flex">
-                        <div className="p-2 flex-grow-1">運費</div>
-                        <div className="p-2">
-                            {
-                                // 商品小計為 0 時免運費，反之則+$100
-                                cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? "--" : currency(100)
-                            }
-                        </div>
-                    </div>
-                    <div className="d-flex">
                         <div className="p-2 flex-grow-1">結帳金額</div>
                         <div className="p-2">
-                            {
-                                // 商品小計為 0 時結帳金額為 0，反之則為商品小計+新會員折扣+運費
-                                cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? 0 : currency(finalTotal !== null ? Math.floor(finalTotal) + 100 : subtotal + 100)
-                            }
+                            {cartData.reduce((sum, item) => sum + item.total, 0) === 0 ? 0 : currency(finalTotal !== null ? Math.floor(finalTotal) : subtotal)}
                         </div>
                     </div>
                 </div>
