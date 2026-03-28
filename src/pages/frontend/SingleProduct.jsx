@@ -106,7 +106,7 @@ function SingleProduct() {
         alert("系統忙碌中，請稍後再試");
       }
     } catch (error) {
-      alert("系統忙碌中，請稍後再試");
+      alert(error.message || "系統忙碌中，請稍後再試");
     }
   };
 
@@ -202,7 +202,7 @@ function SingleProduct() {
 
               <div className="d-flex flex-row gap-3 mb-3 mt-4">
                 <button
-                  className="btn btn-sm btn-outline-primary flex-grow-1 text-nowrap d-flex align-items-center justify-content-center"
+                  className="btn btn-sm btn-dora-outline flex-grow-1 text-nowrap d-flex align-items-center justify-content-center"
                   onClick={() => handleAddToCartClick(product)}
                 >
                   加入購物車
