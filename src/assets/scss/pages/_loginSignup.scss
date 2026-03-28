@@ -8,11 +8,6 @@ $text-dark: #333;
 $text-gray: #666;
 
 
-// ===== Breakpoints =====
-$mobile: 576px;
-$tablet: 768px;
-
-
 // ===== Auth Page =====
 .auth-wrapper {
   min-height: 100vh;
@@ -63,19 +58,21 @@ $tablet: 768px;
 
 // ===== Button =====
 .auth-btn {
-    background: $primary-700;
+  background: $primary-700;
+  color: #fff;
+  border-radius: 0px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+
+  &:hover {
+    background: $primary-900;
     color: #fff;
-    border-radius: 0px;
-    padding-top: 18px;
-    padding-bottom: 18px;
-    &:hover {
-        background: $primary-900;
-        color: #fff;
-    }
-    &:disabled {
-        color: #fff;
-        opacity: 0.5;
-    }
+  }
+
+  &:disabled {
+    color: #fff;
+    opacity: 0.5;
+  }
 }
 
 
@@ -90,13 +87,12 @@ $tablet: 768px;
 }
 
 
-
 // =============================
 // Responsive
 // =============================
 
-// Tablet
-@media (max-width: $tablet) {
+// Tablet（< 768px）
+@include media-breakpoint-down(md) {
 
   .auth-card {
     max-width: 380px;
@@ -109,8 +105,8 @@ $tablet: 768px;
 }
 
 
-// Mobile
-@media (max-width: $mobile) {
+// Mobile（< 576px）
+@include media-breakpoint-down(sm) {
 
   .auth-wrapper {
     padding: 16px;
