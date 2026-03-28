@@ -29,7 +29,7 @@ function SingleProduct() {
     const getProduct = async () => {
       try {
         const res = await axios.get(`${API_BASE}/api/${API_PATH}/product/${id}`);
-        
+
         setProduct(res.data.product);
       } catch (error) {
         console.error("取得商品失敗：", error);
@@ -40,11 +40,7 @@ function SingleProduct() {
   }
   }, [id]);
 
-<<<<<<< HEAD
  const relatedProducts = [
-=======
-  const relatedProducts = [
->>>>>>> 592223fbe0eed60f17c41ced2a39e6b03489b24e
   { id: 1, title: "銀白冬夜亮片蝴蝶結", price: 777, images: product1 },
   { id: 2, title: "聖誕紅緞帶雙層蝴蝶結", price: 777, images: product2 },
   { id: 3, title: "聖誕雪花點點蝴蝶結", price: 777, images: product3 },
@@ -64,7 +60,7 @@ function SingleProduct() {
         qty: Number(qty) // 確保數量是數字
       }
     };
-      const res = await axios.post(`${API_BASE}/api/${API_PATH}/cart`, 
+      const res = await axios.post(`${API_BASE}/api/${API_PATH}/cart`,
         cartData
       );
       if (res.data.success) {
@@ -122,13 +118,13 @@ function SingleProduct() {
     </div>
   );
 }
-  
 
-  
+
+
 
   return (
     <>
-    
+
     <div className="single-product container mt-4">
       <div className="container">
         <nav
@@ -156,12 +152,12 @@ function SingleProduct() {
               <span className="fs-3 fw-bold text-pink">
                 ${product.price}
               </span>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="ms-auto btn p-1 border-0 bg-transparent d-block d-md-none"
                 onClick={handleAddToWishlist}
               >
-                <Heart            
+                <Heart
                 />
               </button>
             </div>
@@ -173,40 +169,40 @@ function SingleProduct() {
             </div>
             {/* 操作按鈕 */}
               <div className="d-flex flex-row gap-3 mb-3  mt-4">
-                
-                  <button 
+
+                  <button
                     className="btn btn-sm btn-outline-primary flex-grow-1 text-nowrap d-flex align-items-center justify-content-center"
-                     onClick={() => handleAddToCart(product.id,qty)} 
+                     onClick={() => handleAddToCart(product.id,qty)}
                   >
                    加入購物車
                   </button>
-                
-                
-                  <button 
+
+
+                  <button
                     className="btn btn-sm btn-primary flex-grow-1 text-nowrap d-flex align-items-center justify-content-center text-white "
                     onClick={handleBuyNow}
                   >
                    <span className='mr-2'>立即購買</span> <ShoppingCart />
                   </button>
-                
+
 
                 {/* 加入收藏按鈕 */}
-                
 
-                  <button 
+
+                  <button
                     className="btn btn-sm  flex-grow-1 text-nowrap d-flex align-items-center justify-content-center d-none d-md-block btn-add-cart"
                     onClick={() => handleAddToWishlist(product)}>
-                  
+
                     <span className='mr-2 '><Heart className={isFavorite(product.id) ? "is-favorite" : ""} /></span>
                     <span>加入收藏</span>
                   </button>
-                
+
               </div>
 
-            
-          
-       
-            
+
+
+
+
           </div>
         </div>
       </div>
@@ -214,10 +210,10 @@ function SingleProduct() {
         <div className="mb-5 border-bottom border-primary-200 pb-4 border-bottom border-primary-200 pb-4 ">
           <h6 className="fw-bold mb-3">商品介紹</h6>
           {product.content?.split('\n').map((line, index) => (
-            
+
             line.trim() && <p key={index} className="mb-2">{line}</p>
           ))}
-          
+
         </div>
         <div className="mb-5 border-bottom border-primary-200 pb-4" >
            <h6 className="fw-bold mb-3">商品特色</h6>
@@ -225,7 +221,7 @@ function SingleProduct() {
               {product.features?.split('\n').map((feature, index) => (
                 feature.trim() && <li key={index} className="mb-2">{feature}</li>
               ))}
-                           
+
             </ul>
         </div>
         <div className="mb-5 border-bottom border-primary-200 pb-4 ">
@@ -245,8 +241,8 @@ function SingleProduct() {
                 </p>
               )
             );
-          })}    
-          
+          })}
+
 
         </div>
         <div className="mb-5 border-bottom border-primary-200 pb-4">
@@ -279,9 +275,9 @@ function SingleProduct() {
             <div className="col-md-3 col-12 mb-4" key={item.id}>
               {/* 卡片容器：必須要有 position-relative */}
               <div className="card w-100 h-100 border-0 shadow-sm position-relative">
-                
+
                 {/* 1. 愛心收藏按鈕 (絕對定位在圖片右上角) */}
-                <button 
+                <button
                   className="btn btn-light shadow-sm rounded-circle position-absolute wishlist-btn "
                   style={{ top: '30px', right: '30px', zIndex: 10, padding: '12px 12px' }}
                   onClick={() => handleAddToWishlist(item)}
@@ -290,15 +286,15 @@ function SingleProduct() {
                 </button>
 
                 <img src={item.images} className="card-img-top image-hover p-4" alt={item.title} style={{ objectFit: 'cover' }} />
-                
+
                 <div className="card-body p-2 d-flex flex-column px-4">
                   <p className="card-title text-truncate small mb-2 fw-bold text-gray-600">{item.title}</p>
-                  
+
                   {/* 2. 金額與購物車 */}
                   <div className="d-flex justify-content-between align-items-center mt-auto">
                     <span className=" fw-bold">NT${item.price}</span>
-                    <button 
-                      className="btn btn-sm  p-1 btn-add-cart-icon" 
+                    <button
+                      className="btn btn-sm  p-1 btn-add-cart-icon"
                       onClick={() => handleAddToCart(item.id,1)}
                     >
                       <ShoppingCart />
@@ -308,8 +304,8 @@ function SingleProduct() {
               </div>
             </div>
           ))}
-            
-            
+
+
           </div>
 
         </div>
