@@ -286,7 +286,6 @@ function Cart() {
     const updateRecipientData = (e) => {
         const { name, value } = e.target;
         setRecipientInfo(prev => ({ ...prev, [name]: value }));
-        console.log("recipientInfo:", recipientInfo);
     };
 
     const buyerName = watch("name");
@@ -364,8 +363,7 @@ function Cart() {
             setCartData(response.data.data.carts);
             setCartError("")
         } catch (error) {
-            console.log("更新購物車數量失敗:", error);
-            setCartError("數量更新失敗，請稍後再試");
+            setCartError("數量更新失敗，請稍後再試", error);
             // 恢復為原本數量
             setLocalQty(prev => ({ ...prev, [item.id]: item.qty }));
         }
@@ -396,8 +394,7 @@ function Cart() {
             setCartData(response.data.data.carts);
             setCartError("")
         } catch (error) {
-            console.log("刪除購物車項目失敗:", error);
-            setCartError("刪除商品失敗，請稍後再試");
+            setCartError("刪除商品失敗，請稍後再試", error);
         }
         setUpdatingId(null);
     };
@@ -420,8 +417,7 @@ function Cart() {
             // 重新取得購物車資料
             const cartRes = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(cartRes.data.data.carts);
-        } catch (error) {
-            console.log("套用優惠券失敗:", error);
+        } catch {
             setCouponStatus({ message: "優惠券無效或已使用。", type: "danger" });
             setFinalTotal(null);
         }
@@ -501,7 +497,7 @@ function Cart() {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/cart`);
             setCartData(response.data.data.carts);
         } catch (error) {
-            console.log("取得購物車資料失敗:", error);
+            setCartError("購物車資料載入失敗，請稍後再試", error);
         } finally {
             setIsLoading(false);
         }
