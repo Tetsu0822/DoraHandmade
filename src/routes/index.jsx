@@ -15,6 +15,7 @@ import SingleArticle from "../pages/frontend/SingleArticle.jsx";
 import MyFavorites from "../pages/frontend/MyFavorites.jsx";
 import SingleOrder from "../pages/frontend/SingleOrder.jsx";
 import NotFound from "../pages/frontend/NotFound.jsx";
+import SiteInfo from "../pages/frontend/SiteInfo.jsx";
 import AdminProducts from "../pages/backend/AdminProducts.jsx";
 import BackendLayout from "../layout/BackendLayout.jsx";
 import AdminOrders from "../pages/backend/AdminOrders.jsx";
@@ -85,6 +86,10 @@ export const routes = createHashRouter([
             {
                 path: "workshop",
                 element: <Workshop />
+            },
+            {
+                path: "site-info",
+                element: <SiteInfo />
             },
             {
                 path: "*",

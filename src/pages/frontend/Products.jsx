@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import ProductCard from "@components/ProductCard";
+import Loading from "@components/Loading";
 import {
   ChevronLeft,
   ChevronRight,
@@ -39,17 +40,24 @@ function Products() {
   const [sortOpen, setSortOpen] = useState(false);
   const [materialOpen, setMaterialOpen] = useState(false);
 
+  // 載入中
+  const [isLoading, setIsLoading] = useState(false);
+
   // API 取得商品
   useEffect(() => {
     async function fetchProducts() {
       try {
+        setIsLoading(true);
+
         const res = await axios.get(`${API_BASE}/api/${API_PATH}/products/all`);
         const enabledProducts = res.data.products?.filter(p => p.is_enabled && !p.is_placeholder) || [];
         setProducts(enabledProducts);
         setSortedProducts(enabledProducts);
       } catch (err) {
         console.error("取得商品失敗", err);
-      }
+      }finally {
+      setIsLoading(false);
+    }
     }
     fetchProducts();
   }, []);
@@ -199,6 +207,7 @@ function Products() {
 
         {/* 主要內容 */}
         <main className="col-12 col-md-9 col-lg-9 p-4">
+          <Loading isLoading={isLoading} text="商品載入中..." />
           <header className="mb-4">
             <ul className="list-unstyled mb-4 d-flex align-items-center main-content-title">
               <li>
