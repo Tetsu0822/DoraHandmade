@@ -41,14 +41,12 @@ function AdminProducts() {
     const fetchProducts = useCallback(async (page = 1) => {
         try {
             const response = await axios.get(`${VITE_API_BASE}/api/${VITE_API_PATH}/admin/products?page=${page}`);
-            console.log("產品列表:", response.data.products);
             setProducts(response.data.products);
             setPagination(response.data.pagination);
             setCurrentPage(page);
             // showSuccess("產品列表取得成功");
         } catch (error) {
-            console.error("取得產品列表失敗:", error);
-            showError("取得產品列表失敗");
+            showError("取得產品列表失敗", error.message);
         }
     }, [showError]);
 
